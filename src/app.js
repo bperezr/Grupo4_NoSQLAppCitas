@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
+const sucursalesRoutes = require('./routes/sucursalesRoutes');
 
 const app = express();
 
@@ -12,12 +13,14 @@ connectDB();
 
 // ⚙️ Configurar EJS como motor de plantillas
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'public/pages')); // Usar la misma carpeta donde está index.ejs
+app.set('views', path.join(__dirname, 'public/pages'));
+
+
 
 // 🧠 Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
-    secret: 'mediconnect_secret', // En producción, usar una variable de entorno
+    secret: 'mediconnect_secret',
     resave: false,
     saveUninitialized: true,
     cookie: { maxAge: 2 * 60 * 60 * 1000 } // 2 horas
@@ -41,8 +44,14 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages/login.html'));
 });
 
+app.use((req, res, next) => {
+    res.locals.request = req;
+    next();
+});
+
 // 🔐 Rutas POST y protegidas
 app.use('/', authRoutes);
+app.use('/', sucursalesRoutes);
 
 // 🚀 Iniciar el servidor
 const PORT = process.env.PORT || 5010;

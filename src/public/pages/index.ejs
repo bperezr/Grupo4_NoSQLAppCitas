@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>MediConnect</title>
     <link rel="stylesheet" href="/css/styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
@@ -19,7 +19,7 @@
             </button>
         </div>
         <div class="header__logo">
-            <img class="logo__img" src="/images/logo4.svg" alt="">
+            <img class="logo__img" src="/images/logo4.svg" alt="Logo MediConnect">
             <span class="logo__text">Medi Connect</span>
         </div>
         <div class="header__profile">
@@ -32,40 +32,41 @@
 
     <nav class="sidebar">
         <ul class="sidebar__list">
-            <li class="list__item list__item--active">
-                <a class="item__area" href="#" title="Inicio">
+            <li class="list__item <%= request.originalUrl === '/' + usuario.rol ? 'list__item--active' : '' %>">
+                <a class="item__area" href="/<%= usuario.rol %>" title="Inicio">
                     <i class="fa-solid fa-house"></i>
-                    <span class="area__text area__text--active">INICIO</span>
+                    <span
+                        class="area__text <%= request.originalUrl === '/' + usuario.rol ? 'area__text--active' : '' %>">Inicio</span>
                 </a>
             </li>
 
             <% if (usuario.rol==='admin' || usuario.rol==='doctor' ) { %>
                 <li class="list__item">
-                    <a class="item__area" href="colaboradores.html" title="Doctores">
+                    <a class="item__area" href="/colaboradores.html" title="Doctores">
                         <i class="fa-solid fa-user-doctor"></i>
                         <span class="area__text">Doctores</span>
                     </a>
                 </li>
                 <li class="list__item">
-                    <a class="item__area" href="pacientes.html" title="Pacientes">
+                    <a class="item__area" href="/pacientes.html" title="Pacientes">
                         <i class="fa-solid fa-user"></i>
                         <span class="area__text">Pacientes</span>
                     </a>
                 </li>
                 <li class="list__item">
-                    <a class="item__area" href="articulos.html" title="Citas">
+                    <a class="item__area" href="/articulos.html" title="Citas">
                         <i class="fa-solid fa-box"></i>
                         <span class="area__text">Citas</span>
                     </a>
                 </li>
                 <li class="list__item">
-                    <a class="item__area" href="proveedores.html" title="Medicamentos">
+                    <a class="item__area" href="/proveedores.html" title="Medicamentos">
                         <i class="fa-solid fa-pills"></i>
                         <span class="area__text">Medicamentos</span>
                     </a>
                 </li>
                 <li class="list__item">
-                    <a class="item__area" href="recetas.html" title="Recetas">
+                    <a class="item__area" href="/recetas.html" title="Recetas">
                         <i class="fa-solid fa-prescription-bottle-medical"></i>
                         <span class="area__text">Recetas</span>
                     </a>
@@ -73,36 +74,36 @@
                 <% } %>
 
                     <% if (usuario.rol==='admin' ) { %>
-                        <li class="list__divider">
-                            <span class="divider__text">ADMIN</span>
-                        </li>
+                        <li class="list__divider"><span class="divider__text">ADMIN</span></li>
 
                         <li class="list__item">
-                            <a class="item__area" href="especialidades.html" title="Especialidades">
+                            <a class="item__area" href="/especialidades.html" title="Especialidades">
                                 <i class="fa-solid fa-stethoscope"></i>
                                 <span class="area__text">Especialidades</span>
                             </a>
                         </li>
                         <li class="list__item">
-                            <a class="item__area" href="horarios.html" title="Horarios">
+                            <a class="item__area" href="/horarios.html" title="Horarios">
                                 <i class="fa-solid fa-clock"></i>
                                 <span class="area__text">Horarios</span>
                             </a>
                         </li>
-                        <li class="list__item">
-                            <a class="item__area" href="consultorios.html" title="Consultorios">
+                        <li
+                            class="list__item <%= request.originalUrl.includes('/sucursales') ? 'list__item--active' : '' %>">
+                            <a class="item__area" href="/admin/sucursales" title="Sucursales">
                                 <i class="fa-solid fa-hospital-user"></i>
-                                <span class="area__text">Consultorios</span>
+                                <span
+                                    class="area__text <%= request.originalUrl.includes('/sucursales') ? 'area__text--active' : '' %>">Sucursales</span>
                             </a>
                         </li>
                         <li class="list__item">
-                            <a class="item__area" href="calificaciones.html" title="Calificaciones">
+                            <a class="item__area" href="/calificaciones.html" title="Calificaciones">
                                 <i class="fa-solid fa-star-half-stroke"></i>
                                 <span class="area__text">Calificaciones</span>
                             </a>
                         </li>
                         <li class="list__item">
-                            <a class="item__area" href="auditoria.html" title="Auditoría">
+                            <a class="item__area" href="/auditoria.html" title="Auditoría">
                                 <i class="fa-solid fa-database"></i>
                                 <span class="area__text">Auditoría</span>
                             </a>
@@ -126,18 +127,30 @@
             </div>
 
             <div class="container__content">
-                <div class="content">
-                    <div class="content__title">
-                        <h1>¡BIENVENIDO <%= usuario.rol.toUpperCase() %>!</h1>
-                        <p>Has iniciado sesión como <%= usuario.email %>.</p>
-                    </div>
-                </div>
+                <% if (typeof viewParcial !=='undefined' ) { %>
+                    <%- include(viewParcial) %>
+                        <% } else { %>
+                            <div class="content">
+                                <div class="content__title">
+                                    <h1>¡Bienvenido <%= usuario.rol.toUpperCase() %>!</h1>
+                                    <p>Has iniciado sesión como <%= usuario.email %>.</p>
+                                </div>
+                            </div>
+                            <% } %>
             </div>
+
         </section>
     </main>
 
+
     <script src="https://kit.fontawesome.com/fa4744a987.js" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="/js/toggleSidebar.js" defer></script>
+    <script src="/js/toggleSidebar.js" defer></script>
+    <!-- DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </body>
 
 </html>

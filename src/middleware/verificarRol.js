@@ -1,5 +1,3 @@
-// src/middleware/verificarRol.js
-
 function getRedirectURL(rol) {
     switch (rol) {
         case 'admin': return '/admin';
