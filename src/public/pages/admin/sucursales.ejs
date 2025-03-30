@@ -1,0 +1,141 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Sucursales</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="abrirModal()" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-plus"></i> Agregar nueva sucursal
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaSucursales" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Dirección</th>
+                        <th>Teléfono</th>
+                        <th>Horario</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% sucursales.forEach(sucursal=> { %>
+                        <tr>
+                            <td>
+                                <%= sucursal.nombre %>
+                            </td>
+                            <td>
+                                <%= sucursal.direccion %>
+                            </td>
+                            <td>
+                                <%= sucursal.telefono %>
+                            </td>
+                            <td>
+                                <%= sucursal.horarioAtencion %>
+                            </td>
+                            <td class="text-center">
+                                <% if (sucursal.estado==='activo' ) { %>
+                                    <i class="fa-solid fa-lock-open" style="color: green;"></i>
+                                    <% } else { %>
+                                        <i class="fa-solid fa-lock" style="color: orange;"></i>
+                                        <% } %>
+                            </td>
+                            <td class="text-center">
+                                <a href="/admin/sucursales/editar/<%= sucursal._id %>" class="btn__icon" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </a>
+                                <button class="btn__icon eliminar-btn" data-id="<%= sucursal._id %>" title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para agregar nueva sucursal -->
+<div id="modalSucursal" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModal()">&times;</span>
+        <h2>Agregar nueva sucursal</h2>
+        <form action="/admin/sucursales" method="POST" class="modal__form">
+            <input type="text" name="nombre" placeholder="Nombre de la sucursal" required>
+            <input type="text" name="direccion" placeholder="Dirección" required>
+            <input type="text" name="telefono" placeholder="Teléfono" required>
+            <input type="text" name="horarioAtencion" placeholder="Horario de atención" required>
+            <select name="estado" required>
+                <option value="">Seleccione estado</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+            </select>
+            <button type="submit" class="btn__agregar-nueva">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tablaSucursales')) {
+            $('#tablaSucursales').DataTable().clear().destroy();
+        }
+
+        $('#tablaSucursales').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            },
+            responsive: true
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".eliminar-btn").forEach(boton => {
+            boton.addEventListener("click", function () {
+                const id = this.dataset.id;
+
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "Esta acción no se puede deshacer.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, eliminar",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Crear formulario y enviarlo
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/admin/sucursales/eliminar/${id}`;
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+<script>
+    function abrirModal() {
+        document.getElementById("modalSucursal").style.display = "block";
+    }
+    function cerrarModal() {
+        document.getElementById("modalSucursal").style.display = "none";
+    }
+    window.onclick = function (event) {
+        const modal = document.getElementById("modalSucursal");
+        if (event.target == modal) {
+            cerrarModal();
+        }
+    }
+</script>

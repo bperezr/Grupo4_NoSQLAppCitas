@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso Denegado</title>
+    <link rel="stylesheet" href="/css/stylesSecondary.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="login-page">
+        <div class="login-wrapper">
+            <div class="mainLogin">
+                <div class="logo">
+                    <img src="/images/logo4.svg" alt="logo">
+                    <p class="logo-text">MediConnect</p>
+                </div>
+
+                <div class="signup">
+                    <form action="<%= getRedirectURL(usuario.rol) %>" method="GET">
+                        <label style="color: var(--c-danger); font-size: 1.6em;">⛔ Acceso Denegado</label>
+                        <p style="margin-top: 10px; font-size: 1rem; text-align: center;">
+                            No tienes permiso para acceder a esta sección.
+                        </p>
+                        <button type="submit" class="btn-login">Volver al Panel Principal</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2025 MediConnect</p>
+        </footer>
+    </div>
+</body>
+
+</html>

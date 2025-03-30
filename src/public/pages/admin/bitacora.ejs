@@ -1,0 +1,81 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Bitácora de Actividades</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="eliminarRegistros()" class="btn__agregar-nueva">Eliminar todos los registros</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaBitacora" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Acción</th>
+                        <th>Fecha y Hora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% registros.forEach(registro => { %>
+                        <tr>
+                            <td><%= registro.usuarioInfo.email %> (<%= registro.usuarioInfo.rol %>)</td>
+                            <td><%= registro.tipoAccion %></td>
+                            <td><%= registro.fechaHora.toLocaleString() %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    // Inicializar el DataTable
+    document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tablaBitacora')) {
+            $('#tablaBitacora').DataTable().clear().destroy();
+        }
+
+        $('#tablaBitacora').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+            },
+            responsive: true
+        });
+    });
+
+    // Función para eliminar todos los registros
+    function eliminarRegistros() {
+        Swal.fire({
+            title: "¿Estás seguro?",
+            text: "Esta acción eliminará todos los registros de la bitácora.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch('/admin/bitacora/eliminar-todos', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                }).then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Eliminado!', 'Todos los registros han sido eliminados.', 'success');
+                            location.reload();  // Recargar la página para reflejar los cambios
+                        } else {
+                            Swal.fire('Error!', 'Hubo un problema al eliminar los registros.', 'error');
+                        }
+                    });
+            }
+        });
+    }
+</script>

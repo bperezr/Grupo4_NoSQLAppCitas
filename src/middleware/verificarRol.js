@@ -1,3 +1,12 @@
+function getRedirectURL(rol) {
+    switch (rol) {
+        case 'admin': return '/admin';
+        case 'doctor': return '/doctor';
+        case 'paciente': return '/paciente';
+        default: return '/login';
+    }
+}
+
 exports.verificarRol = (rolRequerido) => {
     return (req, res, next) => {
         const usuario = req.session.usuario;
@@ -7,7 +16,10 @@ exports.verificarRol = (rolRequerido) => {
         }
 
         if (usuario.rol !== rolRequerido) {
-            return res.status(403).send('Acceso denegado');
+            return res.status(403).render('denegado', {
+                usuario,
+                getRedirectURL
+            });
         }
 
         next();

@@ -16,14 +16,12 @@ exports.login = async (req, res) => {
             return res.redirect('/login?error=clave');
         }
 
-        // ✅ Guardar sesión
         req.session.usuario = {
             id: usuario._id,
             email: usuario.email,
             rol: usuario.rol
         };
 
-        // ✅ Redirigir al dashboard correspondiente
         switch (usuario.rol) {
             case 'admin':
                 return res.redirect('/admin');
