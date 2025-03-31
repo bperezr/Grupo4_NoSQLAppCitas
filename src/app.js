@@ -14,7 +14,19 @@ connectDB();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public/pages'));
 
+//Crear los usuarios
+const run = require('./test/crearUsuario'); 
 
+const iniciarUsuarios = async () => {
+    try {
+        await run(); 
+        console.log('Usuarios verificados o creados correctamente.');
+    } catch (error) {
+        console.error('Error al crear usuarios:', error);
+    }
+};
+
+iniciarUsuarios();
 
 // 🧠 Middleware
 app.use(bodyParser.urlencoded({ extended: false }));

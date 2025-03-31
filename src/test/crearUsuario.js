@@ -5,6 +5,12 @@ const Usuario = require('../models/usuarios');
 const run = async () => {
     await mongoose.connect('mongodb://localhost:27017/mediConnect');
 
+    const usuariosExistentes = await Usuario.countDocuments();
+    if (usuariosExistentes > 0) {
+        console.log('Los usuarios ya existen en la base de datos.');
+        return;
+    }
+
     const salt = await bcrypt.genSalt(10);
 
     // Admin
@@ -37,7 +43,6 @@ const run = async () => {
     await Usuario.insertMany([admin, doctor, paciente]);
 
     console.log('Usuarios creados con éxito');
-    mongoose.disconnect();
 };
 
-run();
+module.exports = run;
