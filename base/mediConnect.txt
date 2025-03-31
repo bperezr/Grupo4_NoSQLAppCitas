@@ -51,7 +51,7 @@ db.createCollection("Especialidades", {
             properties: {
                 nombreEspecialidad: { bsonType: "string" },
                 descripcion: { bsonType: "string" },
-                precioConsulta: { bsonType: "double" }
+                precioConsulta: { bsonType: "number" }
             }
         }
     },
