@@ -459,3 +459,7 @@ body {
 .modal__form button:hover {
     background-color: var(--secondary-clr);
 }
+
+.swal2-container {
+    z-index: 10000 !important;
+}
