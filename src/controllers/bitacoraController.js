@@ -46,7 +46,7 @@ exports.eliminarTodos = async (req, res) => {
 
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
-            tipoAccion: `Se eliminaron todos los registros de la bitácora por ${req.session.usuario.email}`,
+            tipoAccion: `Se eliminaron todos los registros`,
             fechaHora: new Date()
         });
 

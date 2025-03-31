@@ -51,46 +51,24 @@ exports.crear = async (req, res) => {
     }
 };
 
-exports.verSucursal = async (req, res) => {
-    try {
-        const sucursal = await Sucursal.findById(req.params.id);
-        if (!sucursal) {
-            return res.status(404).send('Sucursal no encontrada');
-        }
-
-        const bitacora = new BitacoraUso({
-            usuarioId: req.session.usuario.id,
-            tipoAccion: `Abrió la sucursal: ${sucursal.nombre}`
-        });
-        await bitacora.save();
-
-        res.render('index', {
-            usuario: req.session.usuario,
-            sucursal,
-            viewParcial: 'admin/editar-sucursal',
-        });
-    } catch (error) {
-        console.error('Error al obtener la sucursal para editar:', error);
-        res.status(500).send('Error al obtener la sucursal');
-    }
-};
-
 exports.actualizar = async (req, res) => {
     try {
         const sucursal = await Sucursal.findByIdAndUpdate(req.params.id, req.body, { new: true });
 
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
-            tipoAccion: `Actualizó sucursal: ${sucursal.nombre}`
+            tipoAccion: `Actualizó la sucursal: ${sucursal.nombre}`,
+            fechaHora: new Date()
         });
         await bitacora.save();
 
-        res.redirect('/admin/sucursales');
+        res.redirect('/admin/sucursales?editado=1');
     } catch (error) {
         console.error('Error al actualizar sucursal:', error);
         res.status(500).send('Error al actualizar');
     }
 };
+
 
 exports.eliminar = async (req, res) => {
     try {
