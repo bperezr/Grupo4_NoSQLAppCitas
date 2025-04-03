@@ -6,6 +6,11 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const sucursalesRoutes = require('./routes/sucursalesRoutes');
 const bitacoraRoutes = require('./routes/bitacoraRoutes');
+const citasRoutes = require('./routes/citasRoutes');
+const { obtenerHorariosDisponibles } = require('./controllers/horariosController');
+const { generarHorarios } = require('./controllers/horariosController');
+const doctoresRoutes = require('./routes/doctoresRoutes');
+
 
 const app = express();
 
@@ -53,6 +58,11 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages/login.html'));
 });
 
+
+//Citas y horarios
+generarHorarios();
+app.get('/horarios', obtenerHorariosDisponibles);
+
 app.use((req, res, next) => {
     res.locals.request = req;
     next();
@@ -61,6 +71,8 @@ app.use((req, res, next) => {
 app.use('/', authRoutes);
 app.use('/', sucursalesRoutes);
 app.use('/', bitacoraRoutes);
+app.use('/', citasRoutes);
+app.use('/', doctoresRoutes);
 
 const PORT = process.env.PORT || 5010;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
