@@ -1,0 +1,105 @@
+<div>
+    <h1>Horarios Disponibles</h1>
+    
+    <!-- Selector de Doctor -->
+    <label for="doctorSelect">Elige un Doctor:</label>
+    <select id="doctorSelect">
+        <option value="">Seleccionar Doctor</option>
+        <!-- Los doctores se agregan dinámicamente -->
+    </select>
+
+    <table id="tablaHorarios">
+        <thead>
+            <tr>
+                <th>Doctor</th>
+                <th>Hora Inicio</th>
+                <th>Hora Fin</th>
+                <th>Motivo Consulta</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se llenan los horarios mediante JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Cargar la lista de doctores
+        fetch('/doctores') 
+            .then(response => {
+                if (!response.ok) throw new Error('Error al obtener los doctores');
+                return response.json();
+            })
+            .then(doctores => {
+                const doctorSelect = document.getElementById('doctorSelect');
+                doctores.forEach(doctor => {
+                    const option = document.createElement('option');
+                    option.value = doctor._id;
+                    option.textContent = doctor.nombre;
+                    doctorSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error al obtener doctores:', error);
+            });
+
+        //Cambio del doctor
+        document.getElementById('doctorSelect').addEventListener('change', function () {
+            const doctorId = this.value;
+            cargarHorarios(doctorId);
+        });
+        
+        // Función para cargar los horarios
+        function cargarHorarios(doctorId = '') {
+            fetch('/horarios')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al obtener los horarios');
+                    }
+                    return response.json();
+                })
+                .then(horarios => {
+                    const tablaBody = document.querySelector('#tablaHorarios tbody');
+                    if (tablaBody) {
+                        tablaBody.innerHTML = ''; // Limpiar la tabla antes de agregar nuevos datos
+                        
+                        // Filtrar horarios por doctor si se selecciona uno
+                        const horariosFiltrados = doctorId ? horarios.filter(horario => horario.doctorId._id === doctorId) : horarios;
+
+                        if (horariosFiltrados.length > 0) {
+                            horariosFiltrados.forEach(horario => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${horario.doctorId.nombre}</td>
+                                    <td>${horario.horaInicio}</td>  <!-- Usamos la hora directamente sin modificarla -->
+                                    <td>${horario.horaFin}</td>     <!-- Usamos la hora directamente sin modificarla -->
+                                    <td>
+                                        <form action="/agendar" method="POST">
+                                            <input type="hidden" name="pacienteId" value="1">
+                                            <input type="hidden" name="doctorId" value="${horario.doctorId._id}">
+                                            <input type="hidden" name="fechaHora" value="${horario.horaInicio}"> <!-- Fecha original sin cambios -->
+                                            <input type="text" name="motivo" placeholder="Motivo de la cita" required>
+                                            <button type="submit" class="btn-agendar">Agendar Cita</button>
+                                        </form>
+                                    </td>
+                                `;
+                                tablaBody.appendChild(row);
+                            });
+                        } else {
+                            tablaBody.innerHTML = '<tr><td colspan="4">No hay horarios disponibles.</td></tr>';
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener horarios:', error);
+                    const tablaBody = document.querySelector('#tablaHorarios tbody');
+                    if (tablaBody) {
+                        tablaBody.innerHTML = '<tr><td colspan="4">Error al cargar los horarios.</td></tr>';
+                    }
+                });
+        }
+    });
+</script>
+
