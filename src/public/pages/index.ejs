@@ -41,10 +41,11 @@
             </li>
 
             <% if (usuario.rol==='admin' || usuario.rol==='doctor' ) { %>
-                <li class="list__item">
-                    <a class="item__area" href="/colaboradores.html" title="Doctores">
+                <li class="list__item <%= request.originalUrl.includes('/admin/doctores') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/doctores" title="Doctores">
                         <i class="fa-solid fa-user-doctor"></i>
-                        <span class="area__text">Doctores</span>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/doctores') ? 'area__text--active' : '' %>">Doctores</span>
                     </a>
                 </li>
                 <li class="list__item">

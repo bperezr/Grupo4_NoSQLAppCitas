@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Doctores</title>
+</head>
+<body>
+    <h1>Lista de Doctores</h1>
+    
+    <!-- Mostrar la lista de doctores -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+                <th>Especialidad</th>
+                <th>Sucursal</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% doctores.forEach(doctor => { %>
+                <tr>
+                    <td><%= doctor.nombre %></td>
+                    <td><%= doctor.apellido %></td>
+                    <td><%= doctor.email %></td>
+                    <td><%= doctor.especialidad %></td>
+                    <td><%= doctor.sucursalId.nombre %></td>
+                    <td><%= doctor.estado %></td>
+                    <td>
+                        <a href="/doctores/editar/<%= doctor._id %>">Editar</a> |
+                        <a href="/doctores/activar/<%= doctor._id %>">Activar</a> |
+                        <a href="/doctores/desactivar/<%= doctor._id %>">Desactivar</a>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <h2>Crear Doctor</h2>
+    <form action="/doctores/crear" method="POST">
+        <label for="nombre">Nombre:</label>
+        <input type="text" name="nombre" required>
+        <label for="apellido">Apellido:</label>
+        <input type="text" name="apellido" required>
+        <label for="email">Email:</label>
+        <input type="email" name="email" required>
+        <label for="especialidad">Especialidad:</label>
+        <input type="text" name="especialidad" required>
+        <label for="sucursalId">Sucursal:</label>
+        <input type="text" name="sucursalId" required>
+        <label for="horarioAtencion">Horario de Atención:</label>
+        <input type="text" name="horarioAtencion">
+        <button type="submit">Crear Doctor</button>
+    </form>
+</body>
+</html>

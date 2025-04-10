@@ -27,7 +27,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Cargar la lista de doctores
-        fetch('/doctores') 
+        fetch('/doctores/citas') 
             .then(response => {
                 if (!response.ok) throw new Error('Error al obtener los doctores');
                 return response.json();
@@ -37,7 +37,7 @@
                 doctores.forEach(doctor => {
                     const option = document.createElement('option');
                     option.value = doctor._id;
-                    option.textContent = doctor.nombre;
+                    option.textContent = `${doctor.nombre} ${doctor.apellido}`;
                     doctorSelect.appendChild(option);
                 });
             })
