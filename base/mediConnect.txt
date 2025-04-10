@@ -1,4 +1,4 @@
-//use mediConnect;
+use mediConnect;
 
 db.createCollection("Usuarios", {
     validator: {
@@ -14,7 +14,7 @@ db.createCollection("Usuarios", {
             }
         }
     },
-    validationAction: "error"
+    validationAction: "error test"
 });
 
 db.Usuarios.createIndex({ email: 1 }, { unique: true });
