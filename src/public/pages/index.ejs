@@ -41,10 +41,11 @@
             </li>
 
             <% if (usuario.rol==='admin' || usuario.rol==='doctor' ) { %>
-                <li class="list__item">
-                    <a class="item__area" href="/colaboradores.html" title="Doctores">
+                <li class="list__item <%= request.originalUrl.includes('/admin/doctores') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/doctores" title="Doctores">
                         <i class="fa-solid fa-user-doctor"></i>
-                        <span class="area__text">Doctores</span>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/doctores') ? 'area__text--active' : '' %>">Doctores</span>
                     </a>
                 </li>
                 <li class="list__item">
@@ -53,10 +54,10 @@
                         <span class="area__text">Pacientes</span>
                     </a>
                 </li>
-                <li class="list__item">
-                    <a class="item__area" href="/articulos.html" title="Citas">
+                <li class="list__item <%= request.originalUrl.includes('/citas') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/citas" title="Citas">
                         <i class="fa-solid fa-box"></i>
-                        <span class="area__text">Citas</span>
+                        <span class="area__text <%= request.originalUrl.includes('/citas') ? 'area__text--active' : '' %>">Citas</span>
                     </a>
                 </li>
                 <li class="list__item">
