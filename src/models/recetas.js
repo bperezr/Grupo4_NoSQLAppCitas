@@ -1,11 +1,21 @@
 const mongoose = require('mongoose');
+const {Schema} = mongoose;
 
-const recetaSchema = new mongoose.Schema({
-    pacienteId: { type: mongoose.Schema.Types.ObjectId },
-    doctorId: { type: mongoose.Schema.Types.ObjectId },
-    medicamentos: [{ type: String }],
-    indicaciones: { type: String },
-    fechaEmision: { type: Date }
-}, { timestamps: true });
+const recetaSchema = new Schema({
+    pacienteId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
+    doctorId: { type: Schema.Types.ObjectId, ref: 'Doctor', required: true },
+    sucursalId: { type: Schema.Types.ObjectId, ref: 'Sucursal', required: true },
+    fechaEntrega: { type: Date, required: true },
+    estado: { type: String, required: true, enum: ["Pendiente", "Entregado", "Parcial", "Cancelado"] },
+    medicamentos: [{
+      medicamentoId: { type: Schema.Types.ObjectId, ref: 'Medicamento', required: true },
+      cantidad: { type: Number, required: true, min: 1 }
+    }],
+    notas: { type: String }
+  });
 
-module.exports = mongoose.model('Recetas', recetaSchema, 'Recetas');
+  const Receta = mongoose.model('Receta', recetaSchema);
+
+  module.exports = {
+    Receta
+  };

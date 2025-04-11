@@ -83,26 +83,6 @@ db.Doctores.createIndex({ email: 1 }, { unique: true });
 db.Doctores.createIndex({ especialidad: 1 });
 db.Doctores.createIndex({ sucursalId: 1 });
 
-db.createCollection("Recetas", {
-    validator: {
-        $jsonSchema: {
-            bsonType: "object",
-            required: ["pacienteId", "doctorId", "medicamentos", "indicaciones", "fechaEmision"],
-            properties: {
-                pacienteId: { bsonType: "objectId" },
-                doctorId: { bsonType: "objectId" },
-                medicamentos: { bsonType: "array", items: { bsonType: "string" } },
-                indicaciones: { bsonType: "string" },
-                fechaEmision: { bsonType: "date" }
-            }
-        }
-    },
-    validationAction: "error"
-});
-
-db.Recetas.createIndex({ pacienteId: 1 });
-db.Recetas.createIndex({ doctorId: 1 });
-
 db.createCollection("HistorialCitas", {
     validator: {
         $jsonSchema: {
@@ -239,3 +219,140 @@ db.createCollection("BitacoraUso", {
 
 db.BitacoraUso.createIndex({ usuarioId: 1 });
 db.BitacoraUso.createIndex({ fechaHora: -1 });
+
+
+// Medicamentos
+db.createCollection("medicamentos", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["nombre", "marca", "tipo", "stock", "unidad", "fechaIngreso", "activo"],
+      properties: {
+        nombre: {
+          bsonType: "string",
+          description: "El nombre del medicamento es obligatorio y debe ser una cadena."
+        },
+        marca: {
+          bsonType: "string",
+          description: "La marca es obligatoria."
+        },
+        tipo: {
+          bsonType: "string",
+          description: "El tipo (categoría) del medicamento es obligatorio."
+        },
+        stock: {
+          bsonType: "int",
+          minimum: 0,
+          description: "El stock disponible debe ser un entero igual o mayor a 0."
+        },
+        unidad: {
+          bsonType: "string",
+          description: "La unidad de medida (p.ej. mg, ml) es obligatoria."
+        },
+        fechaIngreso: {
+          bsonType: "date",
+          description: "La fecha de ingreso al inventario es obligatoria."
+        },
+        activo: {
+          bsonType: "bool",
+          description: "Indica si el medicamento está activo (true o false)."
+        }
+      }
+    }
+  },
+  validationLevel: "strict",
+  validationAction: "error"
+});
+
+//Recetas
+db.createCollection("Recetas", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["pacienteId", "doctorId", "sucursalId", "fechaEntrega", "estado", "medicamentos"],
+      properties: {
+        pacienteId: {
+          bsonType: "objectId",
+          description: "Referencia al ID del paciente es obligatoria."
+        },
+        doctorId: {
+          bsonType: "objectId",
+          description: "Referencia al ID del doctor es obligatoria."
+        },
+        sucursalId: {
+          bsonType: "objectId",
+          description: "Referencia al ID de la sucursal de entrega es obligatoria."
+        },
+        fechaEntrega: {
+          bsonType: "date",
+          description: "La fecha de entrega de la receta es obligatoria."
+        },
+        estado: {
+          bsonType: "string",
+          enum: ["Pendiente", "Entregado","Cancelado"],
+          description: "El estado debe ser uno de: Pendiente, Entregado, Cancelado."
+        },
+        medicamentos: {
+          bsonType: "array",
+          description: "Arreglo de medicamentos asociados a la receta.",
+          items: {
+            bsonType: "object",
+            required: ["medicamentoId", "cantidad"],
+            properties: {
+              medicamentoId: {
+                bsonType: "objectId",
+                description: "Referencia al medicamento."
+              },
+              cantidad: {
+                bsonType: "int",
+                minimum: 1,
+                description: "La cantidad debe ser un entero mayor o igual a 1."
+              }
+            }
+          }
+        },
+        notas: {
+          bsonType: "string",
+          description: "Campo opcional para observaciones adicionales."
+        }
+      }
+    }
+  },
+  validationLevel: "strict",
+  validationAction: "error"
+});
+
+// Entregas
+db.createCollection("Entregas", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["recetaId", "medicamentoId", "cantidadEntregada", "fechaEntrega", "entregadoPor"],
+      properties: {
+        recetaId: {
+          bsonType: "objectId",
+          description: "Referencia a la receta asociada es obligatoria."
+        },
+        medicamentoId: {
+          bsonType: "objectId",
+          description: "Referencia al medicamento entregado es obligatoria."
+        },
+        cantidadEntregada: {
+          bsonType: "int",
+          minimum: 1,
+          description: "Cantidad entregada, debe ser un entero mayor o igual a 1."
+        },
+        fechaEntrega: {
+          bsonType: "date",
+          description: "La fecha en la que se realizó la entrega es obligatoria."
+        },
+        entregadoPor: {
+          bsonType: "objectId",
+          description: "Referencia al usuario que realizó la entrega es obligatoria."
+        }
+      }
+    }
+  },
+  validationLevel: "strict",
+  validationAction: "error"
+});
