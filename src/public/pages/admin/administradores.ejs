@@ -1,0 +1,269 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Administradores</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="abrirModal()" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-plus"></i> Agregar nuevo Admin
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaUsuarios" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th>Reinicio de Contraseña</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% administradores.forEach(admin=> { %>
+                        <tr>
+                            <td>
+                                <%= admin.email %>
+                            </td>
+                            <td>
+                                <%= admin.rol %>
+                            </td>
+                            <td>
+                                <% if (admin.reinicioContraseña===false ) { %>
+                                    <i class="fa-solid fa-circle-check" style="color: green;"></i> No Requiere reinicio
+                                    <% } else { %>
+                                        <i class="fa-solid fa-circle-xmark" style="color: orange"></i> Requiere reinicio
+                                        <% } %>
+                            </td>
+                            <td>
+                                <% if (admin.estado==='activo' ) { %>
+                                    <i class="fa-solid fa-lock-open" style="color: green;"></i>
+                                    <% } else { %>
+                                        <i class="fa-solid fa-lock" style="color: orange;"></i>
+                                        <% } %>
+                            </td>
+                            <td class="text-center">
+                                <% if (admin.email !==usuario.email) { %>
+                                    <button class="btn__icon" title="Editar" data-admin='<%- JSON.stringify(admin) %>'
+                                        onclick="cargarUsuarioDesdeAtributo(this)">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+
+                                    <button class="btn__icon eliminar-btn" data-id="<%= admin._id %>" title="Eliminar">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                    <% } else { %>
+                                        <i class="fa-solid fa-user-lock" title="No puede modificar su propio usuario"
+                                            style="color: gray;"></i>
+                                        <% } %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para agregar -->
+<div id="modalUsuario" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModal()">&times;</span>
+        <h2>Agregar nuevo administrador</h2>
+        <form action="/admin/administradores" method="POST" class="modal__form">
+            <input type="email" name="email" placeholder="Correo electrónico" required>
+            <input type="hidden" name="rol" value="admin">
+            <select name="estado" required>
+                <option value="activo" selected>Activo</option>
+                <option value="inactivo">Inactivo</option>
+            </select>
+            <p class="nota-info">
+                La contraseña temporal será <strong>mediConnect01</strong>. El usuario deberá cambiarla al iniciar
+                sesión.
+            </p>
+            <button type="submit" class="btn__agregar-nueva">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para editar  -->
+<div id="modalEditarUsuario" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModalEditar()">&times;</span>
+        <h2>Editar administrador</h2>
+        <form id="formEditarUsuario" method="POST" class="modal__form">
+            <input type="email" name="email" id="editarEmail" placeholder="Correo electrónico" required>
+            <input type="hidden" name="rol" value="admin">
+            <select name="estado" id="editarEstado" required>
+                <option value="">Seleccione estado</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+            </select>
+
+            <div class="form__group">
+                <label for="editarReinicio" class="form__label">¿Reiniciar contraseña en el próximo inicio?</label>
+                <label class="switch">
+                    <input type="checkbox" name="reinicioContraseña" id="editarReinicio">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn__agregar-nueva">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        if ($.fn.DataTable.isDataTable('#tablaUsuarios')) {
+            $('#tablaUsuarios').DataTable().clear().destroy();
+        }
+
+        $('#tablaUsuarios').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            }
+            ,
+            responsive: true
+        });
+
+        // Confirmar eliminación
+        document.querySelectorAll(".eliminar-btn").forEach(boton => {
+            boton.addEventListener("click", function () {
+                const id = this.dataset.id;
+
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "Esta acción no se puede deshacer.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, eliminar",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/admin/administradores/eliminar/${id}`;
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // Confirmar edición antes de enviar
+        const formEditar = document.getElementById('formEditarUsuario');
+        if (formEditar) {
+            formEditar.addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: '¿Guardar cambios?',
+                    text: "Se actualizará la información del administrador.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formEditar.submit();
+                    }
+                });
+            });
+        }
+
+        // Mostrar SweetAlert de éxito si editado
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('editado') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Administrador actualizado!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+            const url = new URL(window.location);
+            url.searchParams.delete('editado');
+            window.history.replaceState({}, document.title, url);
+        }
+    });
+
+    // Mostrar SweetAlert de éxito si agregado
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('agregado') === '1') {
+        Swal.fire({
+            icon: 'success',
+            title: '¡Administrador agregado!',
+            showConfirmButton: false,
+            timer: 2000
+        });
+        const url = new URL(window.location);
+        url.searchParams.delete('agregado');
+        window.history.replaceState({}, document.title, url);
+    }
+
+    // Mostrar SweetAlert de éxito si eliminado
+    if (urlParams.get('eliminado') === '1') {
+        Swal.fire({
+            icon: 'success',
+            title: '¡Administrador eliminado!',
+            showConfirmButton: false,
+            timer: 2000
+        });
+        const url = new URL(window.location);
+        url.searchParams.delete('eliminado');
+        window.history.replaceState({}, document.title, url);
+    }
+
+    // Lógica de modal AGREGAR
+    function abrirModal() {
+        document.getElementById("modalUsuario").style.display = "block";
+    }
+
+    function cerrarModal() {
+        document.getElementById("modalUsuario").style.display = "none";
+    }
+
+    // Lógica de modal EDITAR
+    function cargarUsuarioDesdeAtributo(btn) {
+        const usuario = JSON.parse(btn.getAttribute('data-admin'));
+        abrirModalEditar(usuario);
+    }
+
+    function abrirModalEditar(usuario) {
+        document.getElementById("editarEmail").value = usuario.email;
+        document.getElementById("editarEstado").value = usuario.estado;
+        document.getElementById("editarReinicio").checked = usuario.reinicioContraseña === true;
+
+        const form = document.getElementById("formEditarUsuario");
+        form.action = `/admin/administradores/editar/${usuario._id}`;
+
+        document.getElementById("modalEditarUsuario").style.display = "block";
+    }
+
+
+    function cerrarModalEditar() {
+        document.getElementById("modalEditarUsuario").style.display = "none";
+    }
+
+    // Cierre del modal al hacer clic fuera
+    window.onclick = function (event) {
+        const modalAgregar = document.getElementById("modalUsuario");
+        const modalEditar = document.getElementById("modalEditarUsuario");
+
+        if (event.target === modalAgregar) {
+            cerrarModal();
+        }
+
+        if (event.target === modalEditar) {
+            cerrarModalEditar();
+        }
+    }
+</script>

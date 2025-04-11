@@ -9,8 +9,8 @@ db.createCollection("Usuarios", {
                 email: { bsonType: "string", pattern: "^.+@.+\..+$", description: "Debe ser un correo válido" },
                 contraseña: { bsonType: "string", minLength: 8, description: "Debe tener al menos 8 caracteres" },
                 rol: { bsonType: "string", enum: ["paciente", "doctor", "admin"], description: "Rol del usuario" },
-                especialidad: { bsonType: "string", description: "Especialidad del doctor (opcional)" },
-                estado: { bsonType: "string", enum: ["activo", "inactivo"] }
+                estado: { bsonType: "string", enum: ["activo", "inactivo"] },
+                reinicioContraseña: {bsonType: "bool", description: "Indica si el usuario debe reiniciar su contraseña"}
             }
         }
     },
@@ -153,7 +153,6 @@ db.createCollection("Sucursales", {
                 nombre: { bsonType: "string" },
                 direccion: { bsonType: "string" },
                 telefono: { bsonType: "string" },
-                horarioAtencion: { bsonType: "string" },
                 estado: { bsonType: "string", enum: ["activo", "inactivo"] }
             }
         }

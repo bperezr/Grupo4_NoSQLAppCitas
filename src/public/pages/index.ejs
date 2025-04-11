@@ -76,17 +76,19 @@
 
                     <% if (usuario.rol==='admin' ) { %>
                         <li class="list__divider"><span class="divider__text">ADMIN</span></li>
-
+                        <li
+                        class="list__item <%= request.originalUrl.includes('/administradores') ? 'list__item--active' : '' %>">
+                        <a class="item__area" href="/admin/administradores" title="Administradores">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <span class="area__text <%= request.originalUrl.includes('/administradores') ? 'area__text--active' : '' %>">
+                                Administradores
+                            </span>
+                        </a>
+                    </li>
                         <li class="list__item">
                             <a class="item__area" href="/especialidades.html" title="Especialidades">
                                 <i class="fa-solid fa-stethoscope"></i>
                                 <span class="area__text">Especialidades</span>
-                            </a>
-                        </li>
-                        <li class="list__item">
-                            <a class="item__area" href="/horarios.html" title="Horarios">
-                                <i class="fa-solid fa-clock"></i>
-                                <span class="area__text">Horarios</span>
                             </a>
                         </li>
                         <li
@@ -95,12 +97,6 @@
                                 <i class="fa-solid fa-hospital-user"></i>
                                 <span
                                     class="area__text <%= request.originalUrl.includes('/sucursales') ? 'area__text--active' : '' %>">Sucursales</span>
-                            </a>
-                        </li>
-                        <li class="list__item">
-                            <a class="item__area" href="/calificaciones.html" title="Calificaciones">
-                                <i class="fa-solid fa-star-half-stroke"></i>
-                                <span class="area__text">Calificaciones</span>
                             </a>
                         </li>
                         <li

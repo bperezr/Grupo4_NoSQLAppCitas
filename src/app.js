@@ -10,6 +10,7 @@ const citasRoutes = require('./routes/citasRoutes');
 const { obtenerHorariosDisponibles } = require('./controllers/horariosController');
 const { generarHorarios } = require('./controllers/horariosController');
 const doctoresRoutes = require('./routes/doctoresRoutes');
+const administradoresRoutes = require('./routes/administradoresRoutes');
 
 
 const app = express();
@@ -20,11 +21,11 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public/pages'));
 
 //Crear los usuarios
-const run = require('./test/crearUsuario'); 
+const run = require('./test/crearUsuario');
 
 const iniciarUsuarios = async () => {
     try {
-        await run(); 
+        await run();
         console.log('Usuarios verificados o creados correctamente.');
     } catch (error) {
         console.error('Error al crear usuarios:', error);
@@ -58,7 +59,6 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages/login.html'));
 });
 
-
 //Citas y horarios
 generarHorarios();
 app.get('/horarios', obtenerHorariosDisponibles);
@@ -73,6 +73,7 @@ app.use('/', sucursalesRoutes);
 app.use('/', bitacoraRoutes);
 app.use('/', citasRoutes);
 app.use('/', doctoresRoutes);
+app.use('/', administradoresRoutes);
 
 const PORT = process.env.PORT || 5010;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
