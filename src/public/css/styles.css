@@ -563,6 +563,23 @@ input:checked+.slider:before {
 
 /* -------------------------------------------------------------  choices */
 
+
+.choices__inner {
+    display: flex !important
+;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    border: 1px solid #ccc !important;
+    border-radius: 6px !important;
+    background-color: #fff !important;
+    min-height: 41px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 0px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+
 .choices__item--selectable {
     background-color: var(--primary-clr) !important;
     color: #fff !important;

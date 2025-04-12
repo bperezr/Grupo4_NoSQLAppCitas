@@ -188,7 +188,7 @@
 
 <script>
 
-    let choicesInstance; // para evitar duplicados
+    let choicesInstance;
 
     function abrirModal() {
         const modal = document.getElementById("modalUsuario");
@@ -196,24 +196,22 @@
 
         const select = document.getElementById("selectEspecialidades");
 
-        // Destruir instancia previa si existe para evitar errores
         if (choicesInstance) {
             choicesInstance.destroy();
         }
 
-        // Reinicializar con configuración correcta
-        choicesInstance = new Choices(select, {
+        choicesInstance = new Choices('#selectEspecialidades', {
             removeItemButton: true,
             placeholderValue: 'Seleccione una o más especialidades',
             noResultsText: 'No hay resultados',
             itemSelectText: '',
             shouldSort: false,
             duplicateItemsAllowed: false,
-            renderSelectedChoices: 'always',
+            renderSelectedChoices: 'auto',
+            searchEnabled: true
         });
+
     }
-
-
 
     function cerrarModal() {
         document.getElementById("modalUsuario").style.display = "none";
