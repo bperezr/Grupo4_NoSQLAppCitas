@@ -63,6 +63,7 @@ app.get('/login', (req, res) => {
 generarHorarios();
 app.get('/horarios', obtenerHorariosDisponibles);
 
+app.use(express.json());
 app.use((req, res, next) => {
     res.locals.request = req;
     next();

@@ -1,4 +1,6 @@
 const Doctor = require('../models/doctores');
+const Sucursal = require('../models/sucursales');
+const BitacoraUso = require('../models/bitacoraUso');
 
 // Obtener todos los doctores
 exports.getDoctoresCitas = async (req, res) => {
@@ -15,12 +17,27 @@ exports.getDoctoresCitas = async (req, res) => {
 exports.getDoctores = async (req, res) => {
     try {
         const doctores = await Doctor.find().populate('sucursalId', 'nombre');
-        res.render('admin/doctores', { doctores });
+        const sucursales = await Sucursal.find(); 
+
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: 'Vio los doctores',
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
+        res.render("index", {
+          usuario: req.session.usuario,
+          doctores,
+          sucursales,
+          viewParcial: "admin/doctores",
+        });
     } catch (error) {
         console.error('Error al obtener doctores:', error);
         res.status(500).send('Error al obtener doctores');
     }
 };
+
 
 // Crear un nuevo doctor
 exports.crearDoctor = async (req, res) => {
@@ -35,6 +52,15 @@ exports.crearDoctor = async (req, res) => {
             horarioAtencion,
             estado: 'activo'
         });
+
+        const tipoAccion = `Agregó al doctor: ${nuevoDoctor.nombre}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
         await nuevoDoctor.save();
         res.redirect('/doctores');
     } catch (error) {
@@ -48,6 +74,13 @@ exports.activarDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         await Doctor.findByIdAndUpdate(id, { estado: 'activo' });
+        const tipoAccion = `Activo al doctor: ${Doctor.nombre}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
         res.redirect('/doctores');
     } catch (error) {
         console.error('Error al activar el doctor:', error);
@@ -60,6 +93,13 @@ exports.desactivarDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         await Doctor.findByIdAndUpdate(id, { estado: 'inactivo' });
+        const tipoAccion = `Desactivo al doctor: ${Doctor.nombre}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
         res.redirect('/doctores');
     } catch (error) {
         console.error('Error al desactivar el doctor:', error);
@@ -72,7 +112,16 @@ exports.editarDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         const doctor = await Doctor.findById(id);
-        res.render('editarDoctor', { doctor });
+        const sucursales = await Sucursal.find();
+        const tipoAccion = `Editó al doctor: ${Doctor.nombre}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
+        res.render('admin/editarDoctor', { doctor, sucursales }); 
     } catch (error) {
         console.error('Error al obtener el doctor:', error);
         res.status(500).send('Error al obtener el doctor');
@@ -92,6 +141,13 @@ exports.actualizarDoctor = async (req, res) => {
             sucursalId,
             horarioAtencion
         });
+        const tipoAccion = `Editó al doctor: ${Doctor.nombre}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
         res.redirect('/doctores');
     } catch (error) {
         console.error('Error al actualizar el doctor:', error);
