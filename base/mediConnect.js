@@ -1,0 +1,283 @@
+//use mediConnect;
+
+//----------------------------------------Crear colecion de Especialidades
+db.createCollection("Especialidades", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["nombreEspecialidad", "precioConsulta"],
+            properties: {
+                nombreEspecialidad: { bsonType: "string" },
+                descripcion: { bsonType: "string" },
+                precioConsulta: { bsonType: ["double", "int"] }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.Especialidades.createIndex({ nombreEspecialidad: 1 }, { unique: true });
+
+//----------------------------------------Crear colecion de Sucursales
+db.createCollection("Sucursales", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["nombre", "direccion", "telefono"],
+            properties: {
+                nombre: { bsonType: "string" },
+                direccion: { bsonType: "string" },
+                telefono: { bsonType: "string" },
+                estado: { bsonType: "string", enum: ["activo", "inactivo"] }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.Sucursales.createIndex({ nombre: 1 });
+
+//----------------------------------------Crear colecion de usuarios
+db.createCollection("Usuarios", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["email", "contraseña", "rol", "estado"],
+            properties: {
+                email: { bsonType: "string", pattern: "^.+@.+\..+$", description: "Debe ser un correo válido" },
+                contraseña: { bsonType: "string", minLength: 8, description: "Debe tener al menos 8 caracteres" },
+                rol: { bsonType: "string", enum: ["paciente", "doctor", "admin"], description: "Rol del usuario" },
+                estado: { bsonType: "string", enum: ["activo", "inactivo"] },
+                reinicioContraseña: { bsonType: "bool", description: "Indica si el usuario debe reiniciar su contraseña" }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.Usuarios.createIndex({ email: 1 }, { unique: true });
+db.Usuarios.createIndex({ rol: 1 });
+db.Usuarios.createIndex({ estado: 1 });
+
+//----------------------------------------Crear colecion de doctores
+db.createCollection("Doctores", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["nombre", "apellidos", "email", "estado", "especialidadId", "sucursalId", "usuarioId"],
+            properties: {
+                nombre: { bsonType: "string" },
+                apellidos: { bsonType: "string" },
+                email: { bsonType: "string", pattern: "^.+@.+\\..+$" },
+                telefono: { bsonType: "string" },
+                especialidadId: {
+                    bsonType: "array",
+                    items: { bsonType: "objectId" }
+                },
+                sucursalId: { bsonType: "objectId" },
+                usuarioId: { bsonType: "objectId" },
+                estado: { bsonType: "string", enum: ["activo", "inactivo"] }
+            }
+        }
+    },
+    validationAction: "error"
+})
+
+db.Doctores.createIndex({ email: 1 }, { unique: true });
+db.Doctores.createIndex({ especialidadId: 1 });
+db.Doctores.createIndex({ sucursalId: 1 });
+db.Doctores.createIndex({ usuarioId: 1 });
+
+
+
+db.Doctores.updateOne(
+    { email: "test333dsdd@email.com" },
+    {
+        $push: {
+            especialidadId: ObjectId("67f9944b41d5a78d6e58b055")
+        }
+    }
+);
+
+
+
+medicinaId = db.Especialidades.findOne({ nombreEspecialidad: "Medicina General" })._id
+nutricionId = db.Especialidades.findOne({ nombreEspecialidad: "Dermatología" })._id
+
+
+db.Doctores.updateMany(
+    { especialidadId: medicinaId },
+    { $push: { especialidadId: nutricionId } }
+)
+
+
+
+//----------------------------------------Crear colecion de Pacientes
+db.createCollection("Pacientes", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["nombre", "apellido", "email", "telefono"],
+            properties: {
+                nombre: { bsonType: "string" },
+                apellido: { bsonType: "string" },
+                email: { bsonType: "string", pattern: "^.+@.+\..+$" },
+                telefono: { bsonType: "string" },
+                direccion: { bsonType: "string" },
+                fechaNacimiento: { bsonType: "date" },
+                historialMedico: { bsonType: "string" }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.Pacientes.createIndex({ email: 1 }, { unique: true });
+db.Pacientes.createIndex({ telefono: 1 });
+
+//----------------------------------------Crear colecion de Citas
+db.createCollection("Citas", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["pacienteId", "doctorId", "fechaHora", "estado"],
+            properties: {
+                pacienteId: { bsonType: "objectId" },
+                doctorId: { bsonType: "objectId" },
+                fechaHora: { bsonType: "date" },
+                estado: { bsonType: "string", enum: ["pendiente", "confirmada", "cancelada"] },
+                motivo: { bsonType: "string" },
+                notas: { bsonType: "string" }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.Citas.createIndex({ pacienteId: 1 });
+db.Citas.createIndex({ doctorId: 1 });
+db.Citas.createIndex({ fechaHora: 1 });
+db.Citas.createIndex({ estado: 1 });
+
+//----------------------------------------Crear colecion de Recetas
+db.createCollection("Recetas", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["pacienteId", "doctorId", "medicamentos", "indicaciones", "fechaEmision"],
+            properties: {
+                pacienteId: { bsonType: "objectId" },
+                doctorId: { bsonType: "objectId" },
+                medicamentos: { bsonType: "array", items: { bsonType: "string" } },
+                indicaciones: { bsonType: "string" },
+                fechaEmision: { bsonType: "date" }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.Recetas.createIndex({ pacienteId: 1 });
+db.Recetas.createIndex({ doctorId: 1 });
+
+//----------------------------------------Crear colecion de Historial de Citas
+db.createCollection("HistorialCitas", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["citaId", "modificadoPor", "fechaModificacion", "cambioRealizado"],
+            properties: {
+                citaId: { bsonType: "objectId" },
+                modificadoPor: { bsonType: "objectId" },
+                fechaModificacion: { bsonType: "date" },
+                cambioRealizado: { bsonType: "string" }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.HistorialCitas.createIndex({ citaId: 1 });
+db.HistorialCitas.createIndex({ modificadoPor: 1 });
+
+
+//----------------------------------------Crear colecion de Horarios Disponibles
+db.createCollection("HorariosDisponibles", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["doctorId", "fecha", "horaInicio", "horaFin", "disponible"],
+            properties: {
+                doctorId: { bsonType: "objectId" },
+                fecha: { bsonType: "date" },
+                horaInicio: { bsonType: "string" },
+                horaFin: { bsonType: "string" },
+                disponible: { bsonType: "bool" }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.HorariosDisponibles.createIndex({ doctorId: 1, fecha: 1 });
+
+//----------------------------------------Crear colecion de Pagos
+db.createCollection("Pagos", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["citaId", "pacienteId", "monto", "fechaPago", "estado"],
+            properties: {
+                citaId: { bsonType: "objectId" },
+                pacienteId: { bsonType: "objectId" },
+                monto: { bsonType: "double" },
+                fechaPago: { bsonType: "date" },
+                estado: { bsonType: "string", enum: ["pendiente", "pagado", "cancelado"] }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.Pagos.createIndex({ citaId: 1 });
+db.Pagos.createIndex({ pacienteId: 1 });
+db.Pagos.createIndex({ estado: 1 });
+
+//----------------------------------------Crear colecion de Notificaciones
+db.createCollection("Notificaciones", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["usuarioId", "mensaje", "tipo", "fechaEnvio", "leido"],
+            properties: {
+                usuarioId: { bsonType: "objectId" },
+                mensaje: { bsonType: "string" },
+                tipo: { bsonType: "string" },
+                fechaEnvio: { bsonType: "date" },
+                leido: { bsonType: "bool" }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.Notificaciones.createIndex({ usuarioId: 1, leido: 1 });
+
+//----------------------------------------Crear colecion de Bitacora de Uso
+db.createCollection("BitacoraUso", {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            required: ["usuarioId", "fechaHora", "tipoAccion"],
+            properties: {
+                usuarioId: { bsonType: "objectId" },
+                fechaHora: { bsonType: "date" },
+                tipoAccion: { bsonType: "string" }
+            }
+        }
+    },
+    validationAction: "error"
+});
+
+db.BitacoraUso.createIndex({ usuarioId: 1 });
+db.BitacoraUso.createIndex({ fechaHora: -1 });

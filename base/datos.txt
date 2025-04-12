@@ -1,0 +1,96 @@
+db.Especialidades.insertMany([
+  {
+    nombreEspecialidad: "Medicina General",
+    descripcion: "Atención primaria y valoración general del paciente.",
+    precioConsulta: 20000.0
+  },
+  {
+    nombreEspecialidad: "Pediatría",
+    descripcion: "Especialidad enfocada en la salud de niños y adolescentes.",
+    precioConsulta: 25000.0
+  },
+  {
+    nombreEspecialidad: "Ginecología",
+    descripcion: "Cuidado del sistema reproductor femenino y salud sexual.",
+    precioConsulta: 30000.0
+  },
+  {
+    nombreEspecialidad: "Dermatología",
+    descripcion: "Tratamiento de enfermedades de la piel, cabello y uñas.",
+    precioConsulta: 35000.0
+  },
+  {
+    nombreEspecialidad: "Cardiología",
+    descripcion: "Diagnóstico y tratamiento de enfermedades del corazón.",
+    precioConsulta: 40000.0
+  },
+  {
+    nombreEspecialidad: "Neurología",
+    descripcion: "Atención de trastornos del sistema nervioso.",
+    precioConsulta: 42000.0
+  },
+  {
+    nombreEspecialidad: "Ortopedia",
+    descripcion: "Tratamiento de lesiones y enfermedades del sistema musculoesquelético.",
+    precioConsulta: 37000.0
+  },
+  {
+    nombreEspecialidad: "Psiquiatría",
+    descripcion: "Atención a trastornos mentales y emocionales.",
+    precioConsulta: 45000.0
+  },
+  {
+    nombreEspecialidad: "Oftalmología",
+    descripcion: "Diagnóstico y tratamiento de enfermedades de los ojos.",
+    precioConsulta: 32000.0
+  },
+  {
+    nombreEspecialidad: "Odontología",
+    descripcion: "Cuidado de los dientes, encías y boca.",
+    precioConsulta: 28000.0
+  }
+]);
+
+db.Sucursales.insertMany([
+    {
+    nombre: "Clínica Central",
+    direccion: "Av. Central, San José",
+    telefono: "2222-2222",
+    estado: "activo"
+  },
+  {
+    nombre: "Clínica Escazú",
+    direccion: "Centro Comercial Plaza Itskatzú, Escazú",
+    telefono: "2288-1100",
+    estado: "activo"
+  },
+  {
+    nombre: "Clínica Heredia Norte",
+    direccion: "300 metros norte del Hospital San Vicente de Paúl, Heredia",
+    telefono: "2260-4422",
+    estado: "activo"
+  },
+  {
+    nombre: "Clínica Cartago Este",
+    direccion: "Frente al parque central de Paraíso, Cartago",
+    telefono: "2551-3333",
+    estado: "inactivo"
+  },
+  {
+    nombre: "Clínica Alajuela Centro",
+    direccion: "Avenida Central, contiguo al Banco Nacional, Alajuela",
+    telefono: "2430-5555",
+    estado: "activo"
+  }
+]);
+
+db.Doctores.insertOne({
+  nombre: "Carlos",
+  apellidos: "Ramírez Soto",
+  email: "doctor@mediconnect.com",
+  telefono: "8877-1122",
+  sucursalId: ObjectId("67f992ce85fac41945732650"),
+  especialidadId: ObjectId("67f9944b41d5a78d6e58b055"),
+  usuarioId: ObjectId("67f95369f025272309c613c6"),
+  estado: "activo"
+});

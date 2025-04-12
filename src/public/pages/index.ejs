@@ -9,6 +9,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
 </head>
 
 <body>
@@ -41,13 +44,14 @@
             </li>
 
             <% if (usuario.rol==='admin' || usuario.rol==='doctor' ) { %>
-                <li class="list__item <%= request.originalUrl.includes('/admin/doctores') ? 'list__item--active' : '' %>">
-                    <a class="item__area" href="/doctores" title="Doctores">
+                <li class="list__item <%= request.originalUrl.includes('/doctores') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/doctores" title="Doctores">
                         <i class="fa-solid fa-user-doctor"></i>
                         <span
                             class="area__text <%= request.originalUrl.includes('/doctores') ? 'area__text--active' : '' %>">Doctores</span>
                     </a>
                 </li>
+
                 <li class="list__item">
                     <a class="item__area" href="/pacientes.html" title="Pacientes">
                         <i class="fa-solid fa-user"></i>
@@ -57,7 +61,8 @@
                 <li class="list__item <%= request.originalUrl.includes('/citas') ? 'list__item--active' : '' %>">
                     <a class="item__area" href="/admin/citas" title="Citas">
                         <i class="fa-solid fa-box"></i>
-                        <span class="area__text <%= request.originalUrl.includes('/citas') ? 'area__text--active' : '' %>">Citas</span>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/citas') ? 'area__text--active' : '' %>">Citas</span>
                     </a>
                 </li>
                 <li class="list__item">
@@ -77,14 +82,15 @@
                     <% if (usuario.rol==='admin' ) { %>
                         <li class="list__divider"><span class="divider__text">ADMIN</span></li>
                         <li
-                        class="list__item <%= request.originalUrl.includes('/administradores') ? 'list__item--active' : '' %>">
-                        <a class="item__area" href="/admin/administradores" title="Administradores">
-                            <i class="fa-solid fa-user-shield"></i>
-                            <span class="area__text <%= request.originalUrl.includes('/administradores') ? 'area__text--active' : '' %>">
-                                Administradores
-                            </span>
-                        </a>
-                    </li>
+                            class="list__item <%= request.originalUrl.includes('/administradores') ? 'list__item--active' : '' %>">
+                            <a class="item__area" href="/admin/administradores" title="Administradores">
+                                <i class="fa-solid fa-user-shield"></i>
+                                <span
+                                    class="area__text <%= request.originalUrl.includes('/administradores') ? 'area__text--active' : '' %>">
+                                    Administradores
+                                </span>
+                            </a>
+                        </li>
                         <li class="list__item">
                             <a class="item__area" href="/especialidades.html" title="Especialidades">
                                 <i class="fa-solid fa-stethoscope"></i>
@@ -149,6 +155,8 @@
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
 </body>
 

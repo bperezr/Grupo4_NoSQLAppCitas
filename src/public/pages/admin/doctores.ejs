@@ -1,60 +1,365 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Doctores</title>
-</head>
-<body>
-    <h1>Lista de Doctores</h1>
-    
-    <!-- Mostrar la lista de doctores -->
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Email</th>
-                <th>Especialidad</th>
-                <th>Sucursal</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% doctores.forEach(doctor => { %>
-                <tr>
-                    <td><%= doctor.nombre %></td>
-                    <td><%= doctor.apellido %></td>
-                    <td><%= doctor.email %></td>
-                    <td><%= doctor.especialidad %></td>
-                    <td><%= doctor.sucursalId.nombre %></td>
-                    <td><%= doctor.estado %></td>
-                    <td>
-                        <a href="/doctores/editar/<%= doctor._id %>">Editar</a> |
-                        <a href="/doctores/activar/<%= doctor._id %>">Activar</a> |
-                        <a href="/doctores/desactivar/<%= doctor._id %>">Desactivar</a>
-                    </td>
-                </tr>
-            <% }) %>
-        </tbody>
-    </table>
+<!-- en el <head> o antes de cerrar el <body> -->
+<div class="content">
+    <div class="content__title">
+        <h1>Doctores</h1>
+    </div>
 
-    <h2>Crear Doctor</h2>
-    <form action="/doctores/crear" method="POST">
-        <label for="nombre">Nombre:</label>
-        <input type="text" name="nombre" required>
-        <label for="apellido">Apellido:</label>
-        <input type="text" name="apellido" required>
-        <label for="email">Email:</label>
-        <input type="email" name="email" required>
-        <label for="especialidad">Especialidad:</label>
-        <input type="text" name="especialidad" required>
-        <label for="sucursalId">Sucursal:</label>
-        <input type="text" name="sucursalId" required>
-        <label for="horarioAtencion">Horario de Atención:</label>
-        <input type="text" name="horarioAtencion">
-        <button type="submit">Crear Doctor</button>
-    </form>
-</body>
-</html>
+    <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="abrirModal()" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-plus"></i> Agregar nuevo Doctor
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaDoctores" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Especialidades</th>
+                        <th>Sucursal</th>
+                        <th>Contraseña</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% doctores.forEach(doc=> { %>
+                        <tr>
+                            <td>
+                                <%= doc.nombre %>
+                                    <%= doc.apellidos %>
+                            </td>
+                            <td>
+                                <% if (doc.especialidadId && doc.especialidadId.length> 0) { %>
+                                    <ul>
+                                        <% doc.especialidadId.forEach(e=> { %>
+                                            <li>
+                                                <%= e.nombreEspecialidad %>
+                                            </li>
+                                            <% }) %>
+                                    </ul>
+                                    <% } else { %>
+                                        ---
+                                        <% } %>
+                            </td>
+
+                            <td>
+                                <%= doc.sucursalId?.nombre || '---' %>
+                            </td>
+                            <td>
+                                <% if (doc.usuarioId?.reinicioContraseña===false) { %>
+                                    <i class="fa-solid fa-circle-check" style="color: green;"></i> No Requiere reinicio
+                                    <% } else if (doc.usuarioId?.reinicioContraseña===true) { %>
+                                        <i class="fa-solid fa-circle-xmark" style="color: orange;"></i> Requiere
+                                        reinicio
+                                        <% } else { %>
+                                            ---
+                                            <% } %>
+                            </td>
+                            <td>
+                                <% if (doc.estado==='activo' ) { %>
+                                    <i class="fa-solid fa-lock-open" style="color: green;"></i>
+                                    <% } else { %>
+                                        <i class="fa-solid fa-lock" style="color: orange;"></i>
+                                        <% } %>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn__icon" title="Ver detalles" data-doctor='<%- JSON.stringify(doc) %>'
+                                    onclick="abrirModalDetalles(this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button class="btn__icon" title="Editar" data-doctor='<%- JSON.stringify(doc) %>'
+                                    onclick="cargarDoctorDesdeAtributo(this)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn__icon eliminar-btn" data-id="<%= doc._id %>" title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para agregar nuevo doctor -->
+<div id="modalUsuario" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModal()">&times;</span>
+        <h2>Agregar nuevo doctor</h2>
+
+        <form action="/admin/doctores" method="POST" class="modal__form">
+
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="text" name="apellidos" placeholder="Apellidos" required>
+            <input type="email" name="email" placeholder="Correo electrónico" required>
+            <input type="text" name="telefono" placeholder="Teléfono" required>
+
+            <select id="selectEspecialidades" name="especialidadId[]" multiple required>
+                <% especialidades.forEach(e=> { %>
+                    <option value="<%= e._id %>">
+                        <%= e.nombreEspecialidad %>
+                    </option>
+                    <% }) %>
+            </select>
+
+            <select name="sucursalId" required>
+                <option value="">Seleccione Sucursal</option>
+                <% sucursales.forEach(s=> { %>
+                    <option value="<%= s._id %>">
+                        <%= s.nombre %>
+                    </option>
+                    <% }) %>
+            </select>
+
+            <select name="estado" required>
+                <option value="activo" selected>Activo</option>
+                <option value="inactivo">Inactivo</option>
+            </select>
+
+            <p class="nota-info">
+                La contraseña temporal será <strong>mediConnect01</strong>. El usuario deberá cambiarla al iniciar
+                sesión.
+            </p>
+
+            <button type="submit" class="btn__agregar-nueva">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para editar doctor -->
+<div id="modalEditarUsuario" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModalEditar()">&times;</span>
+        <h2>Editar doctor</h2>
+        <form id="formEditarDoctor" method="POST" class="modal__form">
+            <input type="text" name="nombre" id="editarNombre" placeholder="Nombre" required>
+            <input type="text" name="apellidos" id="editarApellidos" placeholder="Apellidos" required>
+            <input type="email" name="email" id="editarEmail" placeholder="Correo electrónico" required>
+
+            <select name="especialidadId" id="editarEspecialidad" required></select>
+            <select name="sucursalId" id="editarSucursal" required></select>
+
+            <select name="estado" id="editarEstado" required>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+            </select>
+
+            <button type="submit" class="btn__agregar-nueva">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para ver detalles del doctor -->
+<div id="modalDetallesDoctor" class="modal">
+    <div class="modal__content modal__content--detalles">
+        <span class="modal__close" onclick="cerrarModalDetalles()">&times;</span>
+        <h2 class="modal__title">👨‍⚕️ Detalles del Doctor</h2>
+
+        <div class="modal__info">
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">🧍 Información Personal</h3>
+                <p><strong>Nombre:</strong> <span id="detalleNombre"></span></p>
+                <p><strong>Correo:</strong> <span id="detalleCorreo"></span></p>
+                <p><strong>Teléfono:</strong> <span id="detalleTelefono"></span></p>
+                <p><strong>Estado:</strong> <span id="detalleEstado"></span></p>
+                <p><strong>Contraseña:</strong> <span id="reinicioContrasena"></span></p>
+            </section>
+
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">🏥 Especialidades</h3>
+                <div id="detalleEspecialidadesContainer"></div>
+            </section>
+
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">📌 Sucursal</h3>
+                <p><strong>Nombre:</strong> <span id="detalleSucursalNombre"></span></p>
+                <p><strong>Dirección:</strong> <span id="detalleSucursalDireccion"></span></p>
+                <p><strong>Teléfono:</strong> <span id="detalleSucursalTelefono"></span></p>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    let choicesInstance; // para evitar duplicados
+
+    function abrirModal() {
+        const modal = document.getElementById("modalUsuario");
+        modal.style.display = "block";
+
+        const select = document.getElementById("selectEspecialidades");
+
+        // Destruir instancia previa si existe para evitar errores
+        if (choicesInstance) {
+            choicesInstance.destroy();
+        }
+
+        // Reinicializar con configuración correcta
+        choicesInstance = new Choices(select, {
+            removeItemButton: true,
+            placeholderValue: 'Seleccione una o más especialidades',
+            noResultsText: 'No hay resultados',
+            itemSelectText: '',
+            shouldSort: false,
+            duplicateItemsAllowed: false,
+            renderSelectedChoices: 'always',
+        });
+    }
+
+
+
+    function cerrarModal() {
+        document.getElementById("modalUsuario").style.display = "none";
+    }
+
+    function cerrarModalEditar() {
+        document.getElementById("modalEditarUsuario").style.display = "none";
+    }
+
+    function abrirModalDetalles(btn) {
+        const doctor = JSON.parse(btn.getAttribute('data-doctor'));
+
+        console.log("Contenido usuarioId:", doctor.usuarioId);
+
+        // Info personal
+        document.getElementById("detalleNombre").textContent = `${doctor.nombre} ${doctor.apellidos}`;
+        document.getElementById("detalleCorreo").textContent = doctor.email;
+        document.getElementById("detalleTelefono").textContent = doctor.telefono || '---';
+        document.getElementById("detalleEstado").textContent = doctor.estado === 'activo' ? 'Activo' : 'Inactivo';
+        document.getElementById("reinicioContrasena").textContent =
+            doctor.usuarioId?.reinicioContraseña === false
+                ? 'No requiere reinicio'
+                : doctor.usuarioId?.reinicioContraseña === true
+                    ? 'Requiere reinicio'
+                    : '---';
+
+        // Especialidades (varias)
+        const especialidadesContainer = document.getElementById("detalleEspecialidadesContainer");
+        especialidadesContainer.innerHTML = "";
+
+        if (Array.isArray(doctor.especialidadId) && doctor.especialidadId.length > 0) {
+            doctor.especialidadId.forEach(e => {
+                const nombre = e.nombreEspecialidad || "---";
+                const desc = e.descripcion || "---";
+                const precio = e.precioConsulta ? `₡${e.precioConsulta.toLocaleString()}` : "---";
+
+                const html = `
+                <div class="especialidad-item">
+                    <p><strong>Nombre:</strong> ${nombre}</p>
+                    <p><strong>Descripción:</strong> ${desc}</p>
+                    <p><strong>Precio Consulta:</strong> ${precio}</p>
+                    <hr>
+                </div>
+            `;
+                especialidadesContainer.innerHTML += html;
+            });
+        } else {
+            especialidadesContainer.innerHTML = "<p>---</p>";
+        }
+
+        // Sucursal
+        document.getElementById("detalleSucursalNombre").textContent = doctor.sucursalId?.nombre || '---';
+        document.getElementById("detalleSucursalDireccion").textContent = doctor.sucursalId?.direccion || '---';
+        document.getElementById("detalleSucursalTelefono").textContent = doctor.sucursalId?.telefono || '---';
+
+        document.getElementById("modalDetallesDoctor").style.display = "block";
+    }
+
+
+    function cerrarModalDetalles() {
+        document.getElementById("modalDetallesDoctor").style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        const modalAgregar = document.getElementById("modalUsuario");
+        const modalEditar = document.getElementById("modalEditarUsuario");
+        const modalDetalles = document.getElementById("modalDetallesDoctor");
+
+        if (event.target === modalAgregar) cerrarModal();
+        if (event.target === modalEditar) cerrarModalEditar();
+        if (event.target === modalDetalles) cerrarModalDetalles();
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // DataTable
+        if ($.fn.DataTable.isDataTable('#tablaDoctores')) {
+            $('#tablaDoctores').DataTable().clear().destroy();
+        }
+        $('#tablaDoctores').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            },
+            responsive: true
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        if (urlParams.get('agregado') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Doctor agregado!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        if (urlParams.get('error') === 'usuario' || urlParams.get('error') === 'doctor') {
+            const mensaje = urlParams.get('error') === 'usuario'
+                ? 'Ya existe un usuario con ese correo electrónico.'
+                : 'Ya existe un doctor registrado con ese correo.';
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al agregar',
+                text: mensaje
+            }).then(() => {
+                abrirModal();
+            });
+        }
+
+        if (urlParams.has('agregado') || urlParams.has('error')) {
+            const url = new URL(window.location);
+            url.searchParams.delete('agregado');
+            url.searchParams.delete('error');
+            window.history.replaceState({}, document.title, url);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Detectar click en botón de eliminar
+        document.querySelectorAll('.eliminar-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const doctorId = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Esta acción no se puede deshacer.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Crear formulario y enviarlo con POST
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/admin/doctores/eliminar/${doctorId}`;
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+
+</script>
