@@ -1,60 +1,191 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Doctores</title>
-</head>
-<body>
-    <h1>Lista de Doctores</h1>
-    
-    <!-- Mostrar la lista de doctores -->
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Email</th>
-                <th>Especialidad</th>
-                <th>Sucursal</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% doctores.forEach(doctor => { %>
-                <tr>
-                    <td><%= doctor.nombre %></td>
-                    <td><%= doctor.apellido %></td>
-                    <td><%= doctor.email %></td>
-                    <td><%= doctor.especialidad %></td>
-                    <td><%= doctor.sucursalId.nombre %></td>
-                    <td><%= doctor.estado %></td>
-                    <td>
-                        <a href="/doctores/editar/<%= doctor._id %>">Editar</a> |
-                        <a href="/doctores/activar/<%= doctor._id %>">Activar</a> |
-                        <a href="/doctores/desactivar/<%= doctor._id %>">Desactivar</a>
-                    </td>
-                </tr>
-            <% }) %>
-        </tbody>
-    </table>
+<div class="content">
+    <div class="content__title">
+        <h1>Doctores</h1>
+    </div>
 
-    <h2>Crear Doctor</h2>
-    <form action="/doctores/crear" method="POST">
-        <label for="nombre">Nombre:</label>
-        <input type="text" name="nombre" required>
-        <label for="apellido">Apellido:</label>
-        <input type="text" name="apellido" required>
-        <label for="email">Email:</label>
-        <input type="email" name="email" required>
-        <label for="especialidad">Especialidad:</label>
-        <input type="text" name="especialidad" required>
-        <label for="sucursalId">Sucursal:</label>
-        <input type="text" name="sucursalId" required>
-        <label for="horarioAtencion">Horario de Atención:</label>
-        <input type="text" name="horarioAtencion">
-        <button type="submit">Crear Doctor</button>
-    </form>
-</body>
-</html>
+    <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="abrirModalDoctor()" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-plus"></i> Agregar nuevo doctor
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaDoctores" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Email</th>
+                        <th>Especialidad</th>
+                        <th>Sucursal</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% doctores.forEach(doctor => { %>
+                        <tr>
+                            <td><%= doctor.nombre %></td>
+                            <td><%= doctor.apellido %></td>
+                            <td><%= doctor.email %></td>
+                            <td><%= doctor.especialidad %></td>
+                            <td><%= doctor.sucursalId?.nombre %></td>
+                            <td class="text-center">
+                                <% if (doctor.estado === 'activo') { %>
+                                    <i class="fa-solid fa-lock-open" style="color: green;"></i>
+                                <% } else { %>
+                                    <i class="fa-solid fa-lock" style="color: orange;"></i>
+                                <% } %>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn__icon" title="Editar" data-doctor='<%- JSON.stringify(doctor) %>'
+                                    onclick="cargarDoctorDesdeAtributo(this)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+
+                                <% if (doctor.estado === 'activo') { %>
+                                    <a href="/doctores/desactivar/<%= doctor._id %>" class="btn__icon" title="Desactivar">
+                                        <i class="fa-solid fa-user-slash"></i>
+                                    </a>
+                                <% } else { %>
+                                    <a href="/doctores/activar/<%= doctor._id %>" class="btn__icon" title="Activar">
+                                        <i class="fa-solid fa-user-check"></i>
+                                    </a>
+                                <% } %>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para agregar -->
+<div id="modalDoctor" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModalDoctor()">&times;</span>
+        <h2>Agregar nuevo doctor</h2>
+        <form action="/doctores/crear" method="POST" class="modal__form">
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="text" name="apellido" placeholder="Apellido" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="text" name="especialidad" placeholder="Especialidad" required>
+            <select name="sucursalId" required>
+                <option value="">Seleccione sucursal</option>
+                <% sucursales.forEach(sucursal => { %>
+                    <option value="<%= sucursal._id %>"><%= sucursal.nombre %></option>
+                <% }) %>
+            </select>
+            <select name="estado" required>
+                <option value="">Seleccione estado</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+            </select>
+            <button type="submit" class="btn__agregar-nueva">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para editar -->
+<div id="modalEditarDoctor" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModalEditarDoctor()">&times;</span>
+        <h2>Editar doctor</h2>
+        <form id="formEditarDoctor" method="POST" class="modal__form">
+            <input type="text" name="nombre" id="editarNombreDoctor" placeholder="Nombre" required>
+            <input type="text" name="apellido" id="editarApellidoDoctor" placeholder="Apellido" required>
+            <input type="email" name="email" id="editarEmailDoctor" placeholder="Email" required>
+            <input type="text" name="especialidad" id="editarEspecialidadDoctor" placeholder="Especialidad" required>
+            <select name="sucursalId" id="editarSucursalDoctor" required>
+                <option value="">Seleccione sucursal</option>
+                <% sucursales.forEach(sucursal => { %>
+                    <option value="<%= sucursal._id %>"><%= sucursal.nombre %></option>
+                <% }) %>
+            </select>
+            <select name="estado" id="editarEstadoDoctor" required>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+            </select>
+            <button type="submit" class="btn__agregar-nueva">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tablaDoctores')) {
+            $('#tablaDoctores').DataTable().clear().destroy();
+        }
+
+        $('#tablaDoctores').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            },
+            responsive: true
+        });
+
+        const formEditar = document.getElementById('formEditarDoctor');
+        if (formEditar) {
+            formEditar.addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: '¿Guardar cambios?',
+                    text: "Se actualizará la información del doctor.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formEditar.submit();
+                    }
+                });
+            });
+        }
+    });
+
+    function abrirModalDoctor() {
+        document.getElementById("modalDoctor").style.display = "block";
+    }
+
+    function cerrarModalDoctor() {
+        document.getElementById("modalDoctor").style.display = "none";
+    }
+
+    function cargarDoctorDesdeAtributo(btn) {
+        const doctor = JSON.parse(btn.getAttribute('data-doctor'));
+        abrirModalEditarDoctor(doctor);
+    }
+
+    function abrirModalEditarDoctor(doctor) {
+        document.getElementById("editarNombreDoctor").value = doctor.nombre;
+        document.getElementById("editarApellidoDoctor").value = doctor.apellido;
+        document.getElementById("editarEmailDoctor").value = doctor.email;
+        document.getElementById("editarEspecialidadDoctor").value = doctor.especialidad;
+        document.getElementById("editarSucursalDoctor").value = doctor.sucursalId?._id || "";
+        document.getElementById("editarEstadoDoctor").value = doctor.estado;
+
+        const form = document.getElementById("formEditarDoctor");
+        form.action = `/doctores/editar/${doctor._id}`;
+
+        document.getElementById("modalEditarDoctor").style.display = "block";
+    }
+
+    function cerrarModalEditarDoctor() {
+        document.getElementById("modalEditarDoctor").style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        const modalAgregar = document.getElementById("modalDoctor");
+        const modalEditar = document.getElementById("modalEditarDoctor");
+
+        if (event.target === modalAgregar) cerrarModalDoctor();
+        if (event.target === modalEditar) cerrarModalEditarDoctor();
+    }
+</script>
