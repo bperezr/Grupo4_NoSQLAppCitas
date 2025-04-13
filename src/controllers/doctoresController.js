@@ -1,6 +1,7 @@
 const Doctor = require('../models/doctores');
 const Sucursal = require('../models/sucursales');
 const BitacoraUso = require('../models/bitacoraUso');
+const Especialidad = require('../models/especialidades');
 
 // Obtener todos los doctores
 exports.getDoctoresCitas = async (req, res) => {
@@ -17,7 +18,8 @@ exports.getDoctoresCitas = async (req, res) => {
 exports.getDoctores = async (req, res) => {
     try {
         const doctores = await Doctor.find().populate('sucursalId', 'nombre');
-        const sucursales = await Sucursal.find(); 
+        const sucursales = await Sucursal.find();
+        const especialidades = await Especialidad.find(); 
 
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
@@ -30,6 +32,7 @@ exports.getDoctores = async (req, res) => {
           usuario: req.session.usuario,
           doctores,
           sucursales,
+          especialidades,
           viewParcial: "admin/doctores",
         });
     } catch (error) {
@@ -74,7 +77,9 @@ exports.activarDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         await Doctor.findByIdAndUpdate(id, { estado: 'activo' });
-        const tipoAccion = `Activo al doctor: ${Doctor.nombre}`;
+
+        const doctor = await Doctor.findById(id);
+        const tipoAccion = `Activó al doctor: ${doctor.nombre} ${doctor.apellido}`;
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
             tipoAccion: tipoAccion,
@@ -93,7 +98,9 @@ exports.desactivarDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         await Doctor.findByIdAndUpdate(id, { estado: 'inactivo' });
-        const tipoAccion = `Desactivo al doctor: ${Doctor.nombre}`;
+
+        const doctor = await Doctor.findById(id); 
+        const tipoAccion = `Desactivó al doctor: ${doctor.nombre} ${doctor.apellido}`;
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
             tipoAccion: tipoAccion,
@@ -113,7 +120,7 @@ exports.editarDoctor = async (req, res) => {
         const { id } = req.params;
         const doctor = await Doctor.findById(id);
         const sucursales = await Sucursal.find();
-        const tipoAccion = `Editó al doctor: ${Doctor.nombre}`;
+        const tipoAccion = `Entró a editar al doctor: ${doctor.nombre} ${doctor.apellido}`;
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
             tipoAccion: tipoAccion,
@@ -141,7 +148,9 @@ exports.actualizarDoctor = async (req, res) => {
             sucursalId,
             horarioAtencion
         });
-        const tipoAccion = `Editó al doctor: ${Doctor.nombre}`;
+
+        const doctorActualizado = await Doctor.findById(id);
+        const tipoAccion = `Editó al doctor: ${doctorActualizado.nombre} ${doctorActualizado.apellido}`;
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
             tipoAccion: tipoAccion,

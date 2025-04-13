@@ -73,7 +73,14 @@
             <input type="text" name="nombre" placeholder="Nombre" required>
             <input type="text" name="apellido" placeholder="Apellido" required>
             <input type="email" name="email" placeholder="Email" required>
-            <input type="text" name="especialidad" placeholder="Especialidad" required>
+            <select name="especialidad" required>
+                <option value="">Seleccione especialidad</option>
+                <% especialidades.forEach(especialidad=> { %>
+                    <option value="<%= especialidad.nombreEspecialidad %>">
+                        <%= especialidad.nombreEspecialidad %>
+                    </option>
+                    <% }) %>
+            </select>
             <select name="sucursalId" required>
                 <option value="">Seleccione sucursal</option>
                 <% sucursales.forEach(sucursal => { %>
@@ -99,7 +106,14 @@
             <input type="text" name="nombre" id="editarNombreDoctor" placeholder="Nombre" required>
             <input type="text" name="apellido" id="editarApellidoDoctor" placeholder="Apellido" required>
             <input type="email" name="email" id="editarEmailDoctor" placeholder="Email" required>
-            <input type="text" name="especialidad" id="editarEspecialidadDoctor" placeholder="Especialidad" required>
+            <select name="especialidad" id="editarEspecialidadDoctor" required>
+                <option value="">Seleccione especialidad</option>
+                <% especialidades.forEach(especialidad=> { %>
+                    <option value="<%= especialidad.nombreEspecialidad %>">
+                        <%= especialidad.nombreEspecialidad %>
+                    </option>
+                    <% }) %>
+            </select>
             <select name="sucursalId" id="editarSucursalDoctor" required>
                 <option value="">Seleccione sucursal</option>
                 <% sucursales.forEach(sucursal => { %>

@@ -1,0 +1,189 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Especialidades</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="abrirModalEspecialidades()" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-plus"></i> Agregar nueva especialidad
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaEspecialidades" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Nombre especialidad</th>
+                        <th>Descripción</th>
+                        <th>Precio consulta</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% especialidades.forEach(especialidad=> { %>
+                        <tr>
+                            <td>
+                                <%= especialidad.nombreEspecialidad %>
+                            </td>
+                            <td>
+                                <%= especialidad.descripcion %>
+                            </td>
+                            <td>
+                                <%= especialidad.precioConsulta %>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn__icon" title="Editar" data-especialidades='<%- JSON.stringify(especialidad) %>'
+                                    onclick="cargarEspecialidadDesdeAtributo(this)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn__icon eliminar-btn" data-id="<%= especialidad._id %>" title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para agregar -->
+<div id="modalEspecialidades" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModalEspecialidades()">&times;</span>
+        <h2>Agregar una especialidad</h2>
+        <form action="/especialidades/crear" method="POST" class="modal__form">
+            <input type="text" name="nombreEspecialidad" placeholder="Nombre" required>
+            <input type="text" name="descripcion" placeholder="Descripcion" required>
+            <input type="number" name="precioConsulta" placeholder="Precio Consulta" required>
+            <button type="submit" class="btn__agregar-nueva">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para editar -->
+<div id="modalEditarEspecialidad" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModalEditarEspecialidades()">&times;</span>
+        <h2>Editar especialidad</h2>
+        <form id="formEditarEspecialidad" method="POST" class="modal__form">
+            <input type="text" name="nombreEspecialidad" id="editarNombreEspecialidad" placeholder="Nombre" required>
+            <input type="text" name="descripcion" id="editarDescripcionEspecialidad" placeholder="Descripcion" required>
+            <input type="number" name="precioConsulta" id="editarPrecioConsulta" placeholder="Precio Consulta" required>
+            <button type="submit" class="btn__agregar-nueva">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tablaEspecialidades')) {
+            $('#tablaEspecialidades').DataTable().clear().destroy();
+        }
+
+        $('#tablaEspecialidades').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            },
+            responsive: true
+        });
+
+        const formEditar = document.getElementById('formEditarEspecialidad');
+        if (formEditar) {
+            formEditar.addEventListener('submit', function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: '¿Guardar cambios?',
+                    text: "Se actualizará la información de la especialidad.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formEditar.submit();
+                    }
+                });
+            });
+        }
+    });
+
+    function abrirModalEspecialidades() {
+        document.getElementById("modalEspecialidades").style.display = "block";
+    }
+
+    function cerrarModalEspecialidades() {
+        document.getElementById("modalEspecialidades").style.display = "none";
+    }
+
+    function cargarEspecialidadDesdeAtributo(btn) {
+        const especialidad = JSON.parse(btn.getAttribute('data-especialidades'));
+        abrirModalEditarEspecialidad(especialidad);
+    }
+
+    function abrirModalEditarEspecialidad(especialidad) {
+        document.getElementById("editarNombreEspecialidad").value = especialidad.nombreEspecialidad;
+        document.getElementById("editarDescripcionEspecialidad").value = especialidad.descripcion;
+        document.getElementById("editarPrecioConsulta").value = especialidad.precioConsulta;
+
+        const form = document.getElementById("formEditarEspecialidad");
+        form.action = `/especialidades/editar/${especialidad._id}`;
+
+        document.getElementById("modalEditarEspecialidad").style.display = "block";
+    }
+
+    function cerrarModalEditarEspecialidad() {
+        document.getElementById("modalEditarEspecialidad").style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        const modalAgregar = document.getElementById("modalEspecialidades");
+        const modalEditar = document.getElementById("modalEditarEspecialidad");
+
+        if (event.target === modalAgregar) cerrarModalEspecialidades();
+        if (event.target === modalEditar) cerrarModalEditarEspecialidad();
+    }
+
+    function abrirModalEditarDesdeBoton(button) {
+    const especialidad = {
+        _id: button.getAttribute('data-id'),
+        nombreEspecialidad: button.getAttribute('data-nombre'),
+        descripcion: button.getAttribute('data-descripcion'),
+        precioConsulta: button.getAttribute('data-precio')
+    };
+    abrirModalEditarEspecialidad(especialidad);
+    }
+
+    // Confirmar eliminación
+        document.querySelectorAll(".eliminar-btn").forEach(boton => {
+            boton.addEventListener("click", function () {
+                const id = this.dataset.id;
+
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "Esta acción no se puede deshacer.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, eliminar",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/especialidades/eliminar/${id}`;
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+</script>
+
