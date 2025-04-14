@@ -1,4 +1,7 @@
 const Doctor = require('../models/doctores');
+const Sucursal = require('../models/sucursales');
+const BitacoraUso = require('../models/bitacoraUso');
+const Especialidad = require('../models/especialidades');
 
 // Obtener todos los doctores
 exports.getDoctoresCitas = async (req, res) => {
@@ -15,12 +18,29 @@ exports.getDoctoresCitas = async (req, res) => {
 exports.getDoctores = async (req, res) => {
     try {
         const doctores = await Doctor.find().populate('sucursalId', 'nombre');
-        res.render('admin/doctores', { doctores });
+        const sucursales = await Sucursal.find();
+        const especialidades = await Especialidad.find(); 
+
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: 'Vio los doctores',
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
+        res.render("index", {
+          usuario: req.session.usuario,
+          doctores,
+          sucursales,
+          especialidades,
+          viewParcial: "admin/doctores",
+        });
     } catch (error) {
         console.error('Error al obtener doctores:', error);
         res.status(500).send('Error al obtener doctores');
     }
 };
+
 
 // Crear un nuevo doctor
 exports.crearDoctor = async (req, res) => {
@@ -35,6 +55,15 @@ exports.crearDoctor = async (req, res) => {
             horarioAtencion,
             estado: 'activo'
         });
+
+        const tipoAccion = `Agregó al doctor: ${nuevoDoctor.nombre}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
         await nuevoDoctor.save();
         res.redirect('/doctores');
     } catch (error) {
@@ -48,6 +77,15 @@ exports.activarDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         await Doctor.findByIdAndUpdate(id, { estado: 'activo' });
+
+        const doctor = await Doctor.findById(id);
+        const tipoAccion = `Activó al doctor: ${doctor.nombre} ${doctor.apellido}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
         res.redirect('/doctores');
     } catch (error) {
         console.error('Error al activar el doctor:', error);
@@ -60,6 +98,15 @@ exports.desactivarDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         await Doctor.findByIdAndUpdate(id, { estado: 'inactivo' });
+
+        const doctor = await Doctor.findById(id); 
+        const tipoAccion = `Desactivó al doctor: ${doctor.nombre} ${doctor.apellido}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
         res.redirect('/doctores');
     } catch (error) {
         console.error('Error al desactivar el doctor:', error);
@@ -72,7 +119,16 @@ exports.editarDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         const doctor = await Doctor.findById(id);
-        res.render('editarDoctor', { doctor });
+        const sucursales = await Sucursal.find();
+        const tipoAccion = `Entró a editar al doctor: ${doctor.nombre} ${doctor.apellido}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
+        res.render('admin/editarDoctor', { doctor, sucursales }); 
     } catch (error) {
         console.error('Error al obtener el doctor:', error);
         res.status(500).send('Error al obtener el doctor');
@@ -92,6 +148,15 @@ exports.actualizarDoctor = async (req, res) => {
             sucursalId,
             horarioAtencion
         });
+
+        const doctorActualizado = await Doctor.findById(id);
+        const tipoAccion = `Editó al doctor: ${doctorActualizado.nombre} ${doctorActualizado.apellido}`;
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
         res.redirect('/doctores');
     } catch (error) {
         console.error('Error al actualizar el doctor:', error);

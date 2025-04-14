@@ -10,6 +10,7 @@ const citasRoutes = require('./routes/citasRoutes');
 const { obtenerHorariosDisponibles } = require('./controllers/horariosController');
 const { generarHorarios } = require('./controllers/horariosController');
 const doctoresRoutes = require('./routes/doctoresRoutes');
+const especialidadesRoutes = require('./routes/especialidadRoutes');
 
 
 const app = express();
@@ -63,6 +64,7 @@ app.get('/login', (req, res) => {
 generarHorarios();
 app.get('/horarios', obtenerHorariosDisponibles);
 
+app.use(express.json());
 app.use((req, res, next) => {
     res.locals.request = req;
     next();
@@ -73,6 +75,7 @@ app.use('/', sucursalesRoutes);
 app.use('/', bitacoraRoutes);
 app.use('/', citasRoutes);
 app.use('/', doctoresRoutes);
+app.use('/', especialidadesRoutes);
 
 const PORT = process.env.PORT || 5010;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));

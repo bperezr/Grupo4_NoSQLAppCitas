@@ -3,6 +3,7 @@ const Cita = require("../models/citas");
 const Horario = require("../models/horariosDisponibles");
 const Usuario = require("../models/usuarios"); 
 const Doctor = require("../models/doctores"); 
+const BitacoraUso = require('../models/bitacoraUso');
 
 // Agendar cita
 const agendarCita = async (req, res) => {
@@ -51,6 +52,13 @@ const agendarCita = async (req, res) => {
       estado: "pendiente",
       motivo,
     });
+
+    const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: `Creó una cita para el día y hora: ${nuevaCita.fechaHora}`,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
 
     // Guardar la cita
     await nuevaCita.save();
