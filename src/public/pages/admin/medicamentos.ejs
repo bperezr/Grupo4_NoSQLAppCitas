@@ -3,15 +3,6 @@
         <h1>Medicamentos</h1>
     </div>
 
-    <section class="main__container">
-        <div class="container__header">
-            <div class="btn-agregar-wrapper">
-                <button onclick="abrirModal()" class="btn__agregar-nueva">
-                    <i class="fa-solid fa-plus"></i> Agregar nueva sucursal
-                </button>
-            </div>
-        </div>
-
         <div class="table-container">
             <table id="tablaSucursales" class="display compact nowrap" style="width:100%">
                 <thead>
@@ -25,39 +16,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% sucursales.forEach(sucursal=> { %>
-                        <tr>
-                            <td>
-                                <%= sucursal.nombre %>
-                            </td>
-                            <td>
-                                <%= sucursal.direccion %>
-                            </td>
-                            <td>
-                                <%= sucursal.telefono %>
-                            </td>
-                            <td>
-                                <%= sucursal.horarioAtencion %>
-                            </td>
-                            <td class="text-center">
-                                <% if (sucursal.estado==='activo' ) { %>
-                                    <i class="fa-solid fa-lock-open" style="color: green;"></i>
-                                    <% } else { %>
-                                        <i class="fa-solid fa-lock" style="color: orange;"></i>
-                                        <% } %>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn__icon" title="Editar" data-sucursal='<%- JSON.stringify(sucursal) %>'
-                                    onclick="cargarSucursalDesdeAtributo(this)">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                </button>
-
-                                <button class="btn__icon eliminar-btn" data-id="<%= sucursal._id %>" title="Eliminar">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <% }) %>
+                    
                 </tbody>
             </table>
         </div>
