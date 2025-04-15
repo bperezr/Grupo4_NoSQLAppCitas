@@ -12,6 +12,7 @@ const { generarHorarios } = require('./controllers/horariosController');
 const doctoresRoutes = require('./routes/doctoresRoutes');
 const especialidadesRoutes = require('./routes/especialidadRoutes');
 const medicamentosRoutes = require('./routes/medicamentosRoutes');
+const recetasRoutes = require('./routes/recetasRoutes');
 
 
 const app = express();
@@ -78,6 +79,7 @@ app.use('/', citasRoutes);
 app.use('/', doctoresRoutes);
 app.use('/', especialidadesRoutes);
 app.use('/', medicamentosRoutes);
+app.use('/', recetasRoutes);
 
 const PORT = process.env.PORT || 5010;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));

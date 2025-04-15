@@ -6,7 +6,7 @@ const recetaSchema = new Schema({
     doctorId: { type: Schema.Types.ObjectId, ref: 'Doctor', required: true },
     sucursalId: { type: Schema.Types.ObjectId, ref: 'Sucursal', required: true },
     fechaEntrega: { type: Date, required: true },
-    estado: { type: String, required: true, enum: ["Pendiente", "Entregado", "Parcial", "Cancelado"] },
+    estado: { type: String, required: true, enum: ["Pendiente", "Entregado", "Cancelado"] },
     medicamentos: [{
       medicamentoId: { type: Schema.Types.ObjectId, ref: 'Medicamento', required: true },
       cantidad: { type: Number, required: true, min: 1 }
@@ -14,8 +14,4 @@ const recetaSchema = new Schema({
     notas: { type: String }
   });
 
-  const Receta = mongoose.model('Receta', recetaSchema);
-
-  module.exports = {
-    Receta
-  };
+module.exports = mongoose.model('Receta', recetaSchema);
