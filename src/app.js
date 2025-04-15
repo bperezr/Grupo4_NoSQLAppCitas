@@ -11,6 +11,8 @@ const { obtenerHorariosDisponibles } = require('./controllers/horariosController
 const { generarHorarios } = require('./controllers/horariosController');
 const doctoresRoutes = require('./routes/doctoresRoutes');
 const especialidadesRoutes = require('./routes/especialidadRoutes');
+const historialRoutes = require('./routes/historialCitasRoutes');
+
 
 
 const app = express();
@@ -76,6 +78,7 @@ app.use('/', bitacoraRoutes);
 app.use('/', citasRoutes);
 app.use('/', doctoresRoutes);
 app.use('/', especialidadesRoutes);
+app.use('/', historialRoutes);
 
 const PORT = process.env.PORT || 5010;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
