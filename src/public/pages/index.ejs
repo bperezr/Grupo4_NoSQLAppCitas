@@ -84,10 +84,10 @@
                                     class="area__text <%= request.originalUrl.includes('/especialidades') ? 'area__text--active' : '' %>">Especialidades</span>
                             </a>
                         </li>
-                        <li class="list__item">
-                            <a class="item__area" href="/horarios.html" title="Horarios">
+                        <li class="list__item <%= request.originalUrl.includes('/historialcitas') ? 'list__item--active' : '' %>">
+                            <a class="item__area" href="/admin/historialcitas" title="Citas">
                                 <i class="fa-solid fa-clock"></i>
-                                <span class="area__text">Horarios</span>
+                                <span class="area__text <%= request.originalUrl.includes('/historialcitas') ? 'area__text--active' : '' %>">Historial Citas</span>
                             </a>
                         </li>
                         <li

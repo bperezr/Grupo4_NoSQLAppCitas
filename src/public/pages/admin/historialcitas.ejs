@@ -1,0 +1,83 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Historial Citas</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="table-container">
+            <table id="tablahistorialcitas" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Email Paciente</th>
+                        <th>Estado de la cita</th>
+                        <th>Estado del pago</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% historialcitas.forEach(historial=> { %>
+                        <tr>
+                            <td>
+                                <%= historial.pacienteId.email %>
+                            </td>
+                            <td>
+                                <%= historial.estado %>
+                            </td>
+                            <td>
+                                <%= historial.pago %>
+                            </td>
+                             <td class="text-center">
+                                <button class="btn__icon eliminar-btn" data-id="<%= historial.citaId %>" title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Inicializar DataTable
+        if ($.fn.DataTable.isDataTable('#tablahistorialcitas')) {
+            $('#tablahistorialcitas').DataTable().clear().destroy();
+        }
+
+        $('#tablahistorialcitas').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            },
+            responsive: true
+        });
+
+        // Confirmar eliminación
+        document.querySelectorAll(".eliminar-btn").forEach(boton => {
+            boton.addEventListener("click", function () {
+                const id = this.dataset.id;
+
+                Swal.fire({
+                    title: "¿Estás seguro?",
+                    text: "Esta acción no se puede deshacer.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Sí, cancelar cita",
+                    cancelButtonText: "Cancelar"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/admin/citas/cancelar/${id}`;
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
