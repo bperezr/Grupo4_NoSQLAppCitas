@@ -2,23 +2,237 @@
     <div class="content__title">
         <h1>Medicamentos</h1>
     </div>
-
+    <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="abrirModal()" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-plus"></i> Agregar medicamento
+                </button>
+            </div>
+        </div>
         <div class="table-container">
-            <table id="tablaSucursales" class="display compact nowrap" style="width:100%">
+            <table id="tablaMedicamentos" class="display compact nowrap" style="width:100%">
                 <thead>
                     <tr>
                         <th>Nombre</th>
-                        <th>Dirección</th>
-                        <th>Teléfono</th>
-                        <th>Horario</th>
-                        <th>Estado</th>
+                        <th>Marca</th>
+                        <th>Tipo</th>
+                        <th>Stock</th>
+                        <th>Fecha ingreso</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    
+                    <% item.forEach(med => { %>
+                        <tr>
+                          <td class="text-center"><%= med.nombre %></td>
+                          <td class="text-center"><%= med.marca %></td>
+                          <td class="text-center"><%= med.tipo %></td>
+                          <td class="text-center"><%= med.stock %></td>
+                          <td class="text-center"><%= med.fechaIngreso.toISOString().split('T')[0] %></td>
+                          <td class="text-center">
+                            <!-- Botón Editar -->
+                            <button class="btn__icon" title="Editar"
+                              data-medicamento='<%- JSON.stringify(med) %>'
+                              onclick="cargarMedicamentoDesdeAtributo(this)">
+                              <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                          
+                            <!-- Botón Eliminar -->
+                            <button class="btn__icon eliminar-btn" data-id="<%= med._id %>" title="Eliminar">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      <% }) %>
                 </tbody>
             </table>
         </div>
     </section>
 </div>
+
+<!-- Modal Agregar Medicamento -->
+<div id="modalMedicamento" class="modal">
+    <div class="modal__content">
+      <span class="modal__close" onclick="cerrarModal()">&times;</span>
+      <h2>Agregar nuevo medicamento</h2>
+  
+      <form action="/medicamento/crear" method="POST" class="modal__form">
+        <input type="text" name="nombre" placeholder="Nombre del medicamento" required>
+        <input type="text" name="marca" placeholder="Marca" required>
+      
+        <select name="tipo" required>
+          <option value="">Seleccione tipo</option>
+          <option value="Analgésico">Analgésico</option>
+          <option value="Antibiótico">Antibiótico</option>
+          <option value="Antiinflamatorio">Antiinflamatorio</option>
+          <option value="Antihistamínico">Antihistamínico</option>
+          <option value="Antipirético">Antipirético</option>
+          <option value="Broncodilatador">Broncodilatador</option>
+          <option value="Antidiabético">Antidiabético</option>
+        </select>
+      
+        <input type="number" name="stock" placeholder="Stock disponible" min="0" required>
+      
+        <select name="unidad" required>
+          <option value="">Seleccione unidad</option>
+          <option value="mg">mg</option>
+          <option value="ml">ml</option>
+          <option value="tabletas">Tabletas</option>
+          <option value="cápsulas">Cápsulas</option>
+          <option value="gotas">Gotas</option>
+          <option value="ampollas">Ampollas</option>
+        </select>
+      
+        <input type="date" name="fechaIngreso" required>
+  
+        <button type="submit" class="btn__agregar-nueva">Guardar</button>
+      </form>
+    </div>
+  </div> 
+
+<!-- Modal para editar medicamento -->
+<div id="modalEditarMedicamento" class="modal">
+    <div class="modal__content">
+      <span class="modal__close" onclick="cerrarModalEditarMedicamento()">&times;</span>
+      <h2>Editar medicamento</h2>
+  
+      <form id="formEditarMedicamento" method="POST" class="modal__form">
+        <input type="text" name="nombre" id="editarNombre" placeholder="Nombre del medicamento" required>
+        <input type="text" name="marca" id="editarMarca" placeholder="Marca" required>
+  
+        <select name="tipo" id="editarTipo" required>
+          <option value="">Seleccione tipo</option>
+          <option value="Analgésico">Analgésico</option>
+          <option value="Antibiótico">Antibiótico</option>
+          <option value="Antiinflamatorio">Antiinflamatorio</option>
+          <option value="Antihistamínico">Antihistamínico</option>
+          <option value="Antipirético">Antipirético</option>
+          <option value="Broncodilatador">Broncodilatador</option>
+          <option value="Antidiabético">Antidiabético</option>
+        </select>
+  
+        <input type="number" name="stock" id="editarStock" placeholder="Stock disponible" min="0" required>
+  
+        <select name="unidad" id="editarUnidad" required>
+          <option value="">Seleccione unidad</option>
+          <option value="mg">mg</option>
+          <option value="ml">ml</option>
+          <option value="tabletas">Tabletas</option>
+          <option value="cápsulas">Cápsulas</option>
+          <option value="gotas">Gotas</option>
+          <option value="ampollas">Ampollas</option>
+        </select>
+  
+        <input type="date" name="fechaIngreso" id="editarFechaIngreso" required>
+  
+        <select name="activo" id="editarActivo" required>
+          <option value="true">Activo</option>
+          <option value="false">Inactivo</option>
+        </select>
+  
+        <button type="submit" class="btn__agregar-nueva">Guardar cambios</button>
+      </form>
+    </div>
+  </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tablaEspecialidades')) {
+            $('#tablaEspecialidades').DataTable().clear().destroy();
+        }
+
+    $(document).ready(function () {
+      $('#tablaMedicamentos').DataTable({
+        responsive: true,
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+        }
+      });
+    });
+
+    // Confirmar edición antes de enviar
+const formEditar = document.getElementById('formEditarMedicamento');
+  if (formEditar) {
+    formEditar.addEventListener('submit', function (e) {
+      e.preventDefault();
+      Swal.fire({
+        title: '¿Guardar cambios?',
+        text: "Se actualizará la información del medicamento.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, guardar',
+        cancelButtonText: 'Cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          formEditar.submit();
+        }
+      });
+    });
+  }
+    // Mostrar SweetAlert de éxito si editado
+    const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('editado') === '1') {
+    Swal.fire({
+      icon: 'success',
+      title: '¡Medicamento actualizado!',
+      showConfirmButton: false,
+      timer: 2000
+    });
+    const url = new URL(window.location);
+    url.searchParams.delete('editado');
+    window.history.replaceState({}, document.title, url);
+  }
+});
+
+function abrirModal() {
+    document.getElementById('modalMedicamento').style.display = 'block';
+  }
+
+  function cerrarModal() {
+    document.getElementById('modalMedicamento').style.display = 'none';
+  }
+
+  // Lógica de modal EDITAR
+  function cargarMedicamentoDesdeAtributo(btn) {
+    const med = JSON.parse(btn.getAttribute('data-medicamento'));
+    abrirModalEditarMedicamento(med);
+  }
+
+  function abrirModalEditarMedicamento(med) {
+  document.getElementById("editarNombre").value = med.nombre;
+  document.getElementById("editarMarca").value = med.marca;
+  document.getElementById("editarTipo").value = med.tipo;
+  document.getElementById("editarStock").value = med.stock;
+  document.getElementById("editarUnidad").value = med.unidad;
+  document.getElementById("editarFechaIngreso").value = med.fechaIngreso.split('T')[0];
+  document.getElementById("editarActivo").value = med.activo.toString();
+
+  const form = document.getElementById("formEditarMedicamento");
+  form.action = `/medicamento/actualizar/${med._id}`;
+
+  document.getElementById("modalEditarMedicamento").style.display = "block";
+}
+
+  function cerrarModalEditarMedicamento() {
+    document.getElementById("modalEditarMedicamento").style.display = "none";
+  }
+
+  // Cierre del modal al hacer clic fuera
+  window.onclick = function (event) {
+    const modalAgregar = document.getElementById("modalMedicamento");
+    const modalEditar = document.getElementById("modalEditarMedicamento");
+
+    if (event.target === modalAgregar) {
+      cerrarModal();
+    }
+
+    if (event.target === modalEditar) {
+      cerrarModalEditarMedicamento();
+    }
+  }
+
+</script>

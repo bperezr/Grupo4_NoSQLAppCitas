@@ -11,8 +11,4 @@ const medicamentoSchema = new Schema({
   activo: { type: Boolean, default: true }
 });
 
-const Medicamento = mongoose.model('Medicamento', medicamentoSchema);
-
-module.exports = {
-    Medicamento
-  };
+module.exports = mongoose.model('Medicamento', medicamentoSchema);

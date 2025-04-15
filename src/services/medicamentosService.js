@@ -1,12 +1,25 @@
-const itemMedicamento = require('../models/medicamentos')
+const MedicamentoModel = require('../models/medicamentos'); 
 
-class Medicamentos{
+class Medicamentos {
 
-    async crearMedicamento(data) {
-        const item = new itemMedicamento(data);
-        await item.save();
-        return item;
-      }
+  async crearMedicamento(data) {
+    const item = new MedicamentoModel(data);
+    await item.save();
+    return item;
+  }
+
+  async getMedicamento() {
+    return await MedicamentoModel.find(); 
+  }
+
+  async actualizarMedicamento(id, data) {
+    return await MedicamentoModel.findByIdAndUpdate(id, data, { new: true });
+  }
+  
+  async eliminarMedicamento(id) {
+    return await MedicamentoModel.findByIdAndDelete(id);
+  }
+
 }
 
 module.exports = new Medicamentos();
