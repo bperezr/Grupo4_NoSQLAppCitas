@@ -14,9 +14,9 @@ exports.getEspecialidades = async (req, res) => {
         await bitacora.save();
 
         res.render("index", {
-          usuario: req.session.usuario,
-          especialidades,
-          viewParcial: "admin/especialidades",
+            usuario: req.session.usuario,
+            especialidades,
+            viewParcial: "admin/especialidades",
         });
     } catch (error) {
         console.error('Error al obtener las especialidades:', error);
@@ -24,78 +24,60 @@ exports.getEspecialidades = async (req, res) => {
     }
 };
 
-// Crear una nueva especialidad
+// Crear especialidad
 exports.crearEspecialidad = async (req, res) => {
     try {
         const { nombreEspecialidad, descripcion, precioConsulta } = req.body;
+
         const nuevaEspecialidad = new Especialidades({
             nombreEspecialidad,
             descripcion,
-            precioConsulta:  parseFloat(precioConsulta)
+            precioConsulta: parseFloat(precioConsulta)
         });
 
-        const tipoAccion = `Agregó una especialidad: ${nuevaEspecialidad.nombreEspecialidad}`;
+        await nuevaEspecialidad.save();
+
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
+            tipoAccion: `Agregó una especialidad: ${nuevaEspecialidad.nombreEspecialidad}`,
             fechaHora: new Date()
         });
         await bitacora.save();
 
-        await nuevaEspecialidad.save();
-        res.redirect('/especialidades');
+        res.redirect('/admin/especialidades?agregado=1');
     } catch (error) {
         console.error('Error al crear la especialidad:', error);
         res.status(500).send('Error al crear la especialidad');
     }
 };
 
-// Editar una especialidad
-exports.editarEspecialidad = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const especialidad = await Especialidades.findById(id);
-        const tipoAccion = `Editó la especialidad: ${especialidad.nombreEspecialidad}`;
-        const bitacora = new BitacoraUso({
-            usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
-            fechaHora: new Date()
-        });
-        await bitacora.save();
-
-        res.render('admin/editarEspecialidad', { especialidad }); 
-    } catch (error) {
-        console.error('Error al obtener la especialidad:', error);
-        res.status(500).send('Error al obtener la especilidad');
-    }
-};
-
-// Actualizar los datos de una especilidad
+// Actualizar especialidad
 exports.actualizarEspecialidad = async (req, res) => {
     try {
         const { id } = req.params;
         const { nombreEspecialidad, descripcion, precioConsulta } = req.body;
+
         await Especialidades.findByIdAndUpdate(id, {
             nombreEspecialidad,
             descripcion,
-            precioConsulta:  parseFloat(precioConsulta)
+            precioConsulta: parseFloat(precioConsulta)
         });
-        const especialidad = await Especialidades.findById(id); 
-        const tipoAccion = `Editó la especilidad: ${especialidad.nombreEspecialidad}`;
+
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
+            tipoAccion: `Editó la especialidad: ${nombreEspecialidad}`,
             fechaHora: new Date()
         });
         await bitacora.save();
-        res.redirect('/especialidades');
+
+        res.redirect('/admin/especialidades?editado=1');
     } catch (error) {
         console.error('Error al actualizar la especialidad:', error);
-        res.status(500).send('Error al actualizar la especilidad');
+        res.status(500).send('Error al actualizar la especialidad');
     }
 };
 
-// Eliminar una especialidad
+// Eliminar especialidad
 exports.eliminarEspecialidad = async (req, res) => {
     try {
         const { id } = req.params;
@@ -105,17 +87,17 @@ exports.eliminarEspecialidad = async (req, res) => {
             return res.status(404).send('Especialidad no encontrada');
         }
 
-        const tipoAccion = `Eliminó la especialidad: ${especialidad.nombreEspecialidad}`;
+        await Especialidades.findByIdAndDelete(id);
+
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
+            tipoAccion: `Eliminó la especialidad: ${especialidad.nombreEspecialidad}`,
             fechaHora: new Date()
         });
         await bitacora.save();
 
-        await Especialidades.findByIdAndDelete(id);
+        res.redirect('/admin/especialidades?eliminado=1');
 
-        res.redirect('/especialidades');
     } catch (error) {
         console.error('Error al eliminar la especialidad:', error);
         res.status(500).send('Error al eliminar la especialidad');

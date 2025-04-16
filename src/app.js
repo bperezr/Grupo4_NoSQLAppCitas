@@ -10,7 +10,7 @@ const { obtenerHorariosDisponibles } = require('./controllers/horariosController
 const { generarHorarios } = require('./controllers/horariosController');
 const doctoresRoutes = require('./routes/doctoresRoutes');
 const administradoresRoutes = require('./routes/administradoresRoutes');
-const especialidadesRoutes = require('./routes/especialidadRoutes');
+const especialidadesRoutes = require('./routes/especialidadesRoutes');
 const historialRoutes = require('./routes/historialCitasRoutes');
 
 // Local
@@ -39,7 +39,7 @@ const iniciarUsuarios = async () => {
 
 iniciarUsuarios();
 
-// 🧠 Middleware
+//Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
     secret: 'mediconnect_secret',
