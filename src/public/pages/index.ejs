@@ -93,8 +93,18 @@
                         </li>
                         <li class="list__item">
                             <a class="item__area" href="/especialidades.html" title="Especialidades">
+
+                        <li class="list__item <%= request.originalUrl.includes('/admin/especialidades') ? 'list__item--active' : '' %>">
+                            <a class="item__area" href="/especialidades" title="Doctores">
                                 <i class="fa-solid fa-stethoscope"></i>
-                                <span class="area__text">Especialidades</span>
+                                <span
+                                    class="area__text <%= request.originalUrl.includes('/especialidades') ? 'area__text--active' : '' %>">Especialidades</span>
+                            </a>
+                        </li>
+                        <li class="list__item <%= request.originalUrl.includes('/historialcitas') ? 'list__item--active' : '' %>">
+                            <a class="item__area" href="/admin/historialcitas" title="Citas">
+                                <i class="fa-solid fa-clock"></i>
+                                <span class="area__text <%= request.originalUrl.includes('/historialcitas') ? 'area__text--active' : '' %>">Historial Citas</span>
                             </a>
                         </li>
                         <li

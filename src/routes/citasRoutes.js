@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { generarHorarios, obtenerHorariosDisponibles } = require("../controllers/horariosController");
 const { agendarCita, cancelarCita } = require("../controllers/citasController");
+const Doctor = require("../models/doctores");
+const Sucursal = require("../models/sucursales");
 
 // Ruta para generar horarios automáticamente
 router.post("/generar-horarios", async (req, res) => {
@@ -20,10 +22,24 @@ router.get("/horarios", obtenerHorariosDisponibles);
 router.post("/agendar", agendarCita);
 
 // Ruta para cancelar una cita
-router.put("/cancelar/:citaId", cancelarCita);
+router.post("/admin/citas/cancelar/:citaId", cancelarCita);
 
-router.get('/admin/citas', (req, res) => {
-    res.render('admin/citas'); 
+router.get("/admin/citas", async (req, res) => {
+  try {
+    const doctores = await Doctor.find();
+    const sucursales = await Sucursal.find(); 
+    const usuario = req.session.usuario;
+
+    res.render("index", {
+      usuario,
+      doctores,
+      sucursales,
+      viewParcial: "admin/citas",
+    });
+  } catch (error) {
+    console.error("Error al cargar citas:", error);
+    res.status(500).send("Error al cargar la vista de citas");
+  }
 });
 
 module.exports = router;
