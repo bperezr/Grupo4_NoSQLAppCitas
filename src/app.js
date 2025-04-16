@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const sucursalesRoutes = require('./routes/sucursalesRoutes');
 const bitacoraRoutes = require('./routes/bitacoraRoutes');
@@ -12,6 +11,10 @@ const { generarHorarios } = require('./controllers/horariosController');
 const doctoresRoutes = require('./routes/doctoresRoutes');
 const administradoresRoutes = require('./routes/administradoresRoutes');
 
+// Local
+//const connectDB = require('./config/db');
+// Atlas
+const connectDB = require('./config/dbAtlas');
 
 const app = express();
 
@@ -40,7 +43,7 @@ app.use(session({
     secret: 'mediconnect_secret',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 2 * 60 * 60 * 1000 } // 2 horas
+    cookie: { maxAge: 2 * 60 * 60 * 1000 } // 2h
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));

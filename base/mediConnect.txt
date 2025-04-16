@@ -88,30 +88,6 @@ db.Doctores.createIndex({ especialidadId: 1 });
 db.Doctores.createIndex({ sucursalId: 1 });
 db.Doctores.createIndex({ usuarioId: 1 });
 
-
-
-db.Doctores.updateOne(
-    { email: "test333dsdd@email.com" },
-    {
-        $push: {
-            especialidadId: ObjectId("67f9944b41d5a78d6e58b055")
-        }
-    }
-);
-
-
-
-medicinaId = db.Especialidades.findOne({ nombreEspecialidad: "Medicina General" })._id
-nutricionId = db.Especialidades.findOne({ nombreEspecialidad: "Dermatología" })._id
-
-
-db.Doctores.updateMany(
-    { especialidadId: medicinaId },
-    { $push: { especialidadId: nutricionId } }
-)
-
-
-
 //----------------------------------------Crear colecion de Pacientes
 db.createCollection("Pacientes", {
     validator: {
