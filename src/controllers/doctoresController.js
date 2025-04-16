@@ -44,18 +44,13 @@ exports.crear = async (req, res) => {
         console.log("Datos recibidos desde el formulario:");
         console.log(req.body);
 
-        // Asegurar que especialidadId sea array
         if (!Array.isArray(especialidadId)) {
             especialidadId = [especialidadId];
         }
 
-        console.log("especialidadId procesado como array:", especialidadId);
-
-        // Convertir a ObjectId los campos necesarios
         especialidadId = especialidadId.map(id => new mongoose.Types.ObjectId(id));
-        sucursalId = new mongoose.Types.ObjectId(sucursalId); // <-- ✅ aquí estaba el problema
+        sucursalId = new mongoose.Types.ObjectId(sucursalId);
 
-        // Validar existencia de usuario
         const usuarioExistente = await Usuario.findOne({ email });
         if (usuarioExistente) {
             return res.redirect('/admin/doctores?error=usuario');
@@ -89,17 +84,6 @@ exports.crear = async (req, res) => {
             estado
         });
 
-        console.log("Nuevo Doctor a guardar:", {
-            nombre,
-            apellidos,
-            email,
-            telefono,
-            especialidadId,
-            sucursalId,
-            usuarioId: usuarioGuardado._id,
-            estado
-        });
-
         await nuevoDoctor.save();
 
         const bitacora = new BitacoraUso({
@@ -117,6 +101,47 @@ exports.crear = async (req, res) => {
     }
 };
 
+exports.actualizar = async (req, res) => {
+    try {
+        const { nombre, apellidos, email, telefono, sucursalId, estado, reinicioContraseña } = req.body;
+        let especialidadId = req.body['especialidadId[]'];
+
+        console.log('🔍 Datos recibidos en actualización:', req.body);
+
+        let especialidadesArray = Array.isArray(especialidadId) ? especialidadId : [especialidadId];
+        especialidadesArray = especialidadesArray.map(id => new mongoose.Types.ObjectId(id));
+
+        const doctorActualizado = await Doctor.findByIdAndUpdate(req.params.id, {
+            nombre,
+            apellidos,
+            email,
+            telefono,
+            especialidadId: especialidadesArray,
+            sucursalId: new mongoose.Types.ObjectId(sucursalId),
+            estado
+        }, { new: true });
+
+        if (doctorActualizado && doctorActualizado.usuarioId) {
+            await Usuario.findByIdAndUpdate(doctorActualizado.usuarioId, {
+                email,
+                reinicioContraseña: !!reinicioContraseña,
+                estado
+            });
+        }
+
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: `Actualizó al doctor: ${nombre} ${apellidos}`,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
+        res.redirect('/admin/doctores?editado=1');
+    } catch (error) {
+        console.error('Error al actualizar doctor:', error);
+        res.status(500).send('Error al actualizar doctor');
+    }
+};
 
 exports.eliminar = async (req, res) => {
     try {
@@ -143,7 +168,7 @@ exports.eliminar = async (req, res) => {
         });
         await bitacora.save();
 
-        res.redirect('/admin/doctores');
+        res.redirect('/admin/doctores?eliminado=1');
     } catch (error) {
         console.error('Error al eliminar doctor:', error);
         res.status(500).send('Error al eliminar');
