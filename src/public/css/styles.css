@@ -617,6 +617,139 @@ input:checked+.slider:before {
     display: none !important;
 }
 
+/* -------------------------------------------------------------  Calendario */
+
+.agenda-container {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+    background-color: #1e1e1e00;
+    color: white;
+  }
+
+
+.calendar-container {
+    background-color: var(--secondary-clr);
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .calendar-cell {
+    padding: 10px;
+    text-align: center;
+    border-radius: 6px;
+    background-color: #444;
+    cursor: pointer;
+  }
+
+  .calendar-cell:hover {
+    background-color: #666;
+  }
+
+  .calendar-cell.disabled {
+    background-color: #333;
+    cursor: not-allowed;
+    opacity: 0.3;
+  }
+
+  .calendar-cell.selected {
+    background-color: #00aaff;
+    color: white;
+  }
+
+  .time-slot-container {
+    background-color: var(--secondary-clr);
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  .time-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .time-slot-grid button {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    background-color: #fff;
+    color: black;
+    cursor: pointer;
+  }
+
+  .time-slot-grid button:disabled {
+    background-color: #888;
+    cursor: not-allowed;
+    color: white;
+  }
+  
+  .general-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+    margin: 2rem 0;
+  }
+  
+  /* Columna izquierda: info de la cita */
+  .info-container {
+    flex: 1;
+    background-color: var(--secondary-clr);
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .info-table {
+    width: 50%;
+    border-collapse: collapse;
+  }
+  
+  .info-table th {
+    text-align: left;
+    padding: 0.5rem;
+    color: #fff;
+    width: 30%;
+  }
+  
+  .info-table td {
+    padding: 0.5rem;
+  }
+  
+  .info-table input,
+  .info-table select {
+    width: 100%;
+    padding: 0.4rem;
+    border-radius: 4px;
+    border: none;
+  }
+  
+  /* Columna derecha: reutiliza tus estilos existentes */
+  .agenda-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 400px; /* ajusta según necesites */
+  }
+  
+  .calendar-container, .time-slot-container {
+    background-color: var(--secondary-clr);
+    padding: 1rem;
+    border-radius: 8px;
+  }
 
 
 

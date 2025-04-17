@@ -6,15 +6,13 @@ const authRoutes = require('./routes/authRoutes');
 const sucursalesRoutes = require('./routes/sucursalesRoutes');
 const bitacoraRoutes = require('./routes/bitacoraRoutes');
 const citasRoutes = require('./routes/citasRoutes');
-const { obtenerHorariosDisponibles } = require('./controllers/horariosController');
-const { generarHorarios } = require('./controllers/horariosController');
 const doctoresRoutes = require('./routes/doctoresRoutes');
-const especialidadesRoutes = require('./routes/especialidadRoutes');
 const medicamentosRoutes = require('./routes/medicamentosRoutes');
 const recetasRoutes = require('./routes/recetasRoutes');
 const administradoresRoutes = require('./routes/administradoresRoutes');
 const especialidadesRoutes = require('./routes/especialidadesRoutes');
 const historialRoutes = require('./routes/historialCitasRoutes');
+const horariosNoDisponiblesRoutes = require('./routes/horariosNoDisponiblesRoutes');
 
 // Local
 //const connectDB = require('./config/db');
@@ -28,19 +26,6 @@ connectDB();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public/pages'));
 
-//Crear los usuarios
-const run = require('./test/crearUsuario');
-
-const iniciarUsuarios = async () => {
-    try {
-        await run();
-        console.log('Usuarios verificados o creados correctamente.');
-    } catch (error) {
-        console.error('Error al crear usuarios:', error);
-    }
-};
-
-iniciarUsuarios();
 
 //Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -67,9 +52,6 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages/login.html'));
 });
 
-//Citas y horarios
-generarHorarios();
-app.get('/horarios', obtenerHorariosDisponibles);
 
 app.use(express.json());
 app.use((req, res, next) => {
@@ -87,6 +69,7 @@ app.use('/', especialidadesRoutes);
 app.use('/', medicamentosRoutes);
 app.use('/', recetasRoutes);
 app.use('/', historialRoutes);
+app.use('/', horariosNoDisponiblesRoutes);
 
 const PORT = process.env.PORT || 5010;
 app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));

@@ -1,147 +1,152 @@
 <div class="content">
     <div class="content__title">
-        <h1>Horarios Disponibles</h1>
+        <h1>Crear cita</h1>
     </div>
-
-    <section class="main__container">
-        <div class="container__header">
-            <label for="doctorSelect" class="label__doctor">Elige un Doctor:</label>
-            <select id="doctorSelect" class="select__doctor">
-                <option value="">Seleccionar Doctor</option>
-                <!-- Los doctores se agregan dinámicamente -->
-            </select>
-        </div>
-
-        <div class="table-container">
-            <table id="tablaHorarios" class="display compact nowrap" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Doctor</th>
-                        <th>Hora Inicio</th>
-                        <th>Hora Fin</th>
-                        <th>Motivo Consulta</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Aquí se llenan los horarios mediante JS -->
-                </tbody>
-            </table>
-        </div>
-    </section>
+    <div class="general-container">
+            <div class="info-container">
+                <div class="content__title">
+                  <h3>Datos de la cita</h3>
+                </div>
+                <table class="info-table">
+                  <tr>
+                    <th>Paciente</th>
+                    <td>
+                      <input type="text" name="paciente" placeholder="Nombre del paciente">
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Motivo</th>
+                    <td>
+                      <input type="text" name="motivo" placeholder="Motivo de la cita">
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>Estado</th>
+                    <td>
+                      <select name="estado">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="cancelada">Cancelada</option>
+                      </select>
+                    </td>
+                  </tr>  
+                </table>
+              </div>      
+          
+              <div class="agenda-container">                     
+                <div class="content__title">
+                    <h3>Seleccione la fecha y hora</h3>
+                </div>
+                <div class="calendar-container">
+                    <input type="hidden" id="doctorIdInput" value="68000a08774fcfc27226ad06">
+                    <div class="calendar-header">
+                      <button onclick="changeMonth(-1)"><i class="fa fa-chevron-left"></i></button>
+                      <h2 id="monthYear">Mes Año</h2>
+                      <button onclick="changeMonth(1)"><i class="fa fa-chevron-right"></i></button>
+                    </div>
+                    <div class="calendar-grid" id="calendarGrid">                    
+                    </div>
+                  </div>                
+                  <div class="time-slot-container">
+                    <h3>Seleccione una hora</h3>
+                    <div id="timeSlots" class="time-slot-grid">             
+                    </div>
+                  </div>
+            </div>
+          
+    </div>  
 </div>
 
-<!-- Modal para agendar cita -->
-<div id="modalAgendar" class="modal">
-    <div class="modal__content">
-        <span class="modal__close" onclick="cerrarModalAgendar()">&times;</span>
-        <h2>Agendar Cita</h2>
-        <form id="formAgendarCita" method="POST" class="modal__form">
-            <input type="text" name="motivo" id="motivo" placeholder="Motivo de la cita" required>
-            <button type="submit" class="btn__agendar-nueva">Agendar</button>
-        </form>
-    </div>
-</div>
-
-<!-- Script para gestionar los horarios -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Cargar la lista de doctores
-    fetch('/doctores/citas') 
-        .then(response => response.json())
-        .then(doctores => {
-            const doctorSelect = document.getElementById('doctorSelect');
-            doctores.forEach(doctor => {
-                const option = document.createElement('option');
-                option.value = doctor._id;
-                option.textContent = `${doctor.nombre} ${doctor.apellido}`;
-                doctorSelect.appendChild(option);
-            });
-        })
-        .catch(error => console.error('Error al obtener doctores:', error));
+    const horariosBase = [
+      "08:00", "09:00", "10:00","11:00","12:00", 
+      "13:00", "14:00","15:00","16:00","17:00","18:00"
+    ];
+  
+    let currentDate = new Date();
+    let selectedDate = null;
+  
+    function renderCalendar(date) {
+      const calendarGrid = document.getElementById("calendarGrid");
+      const monthYear = document.getElementById("monthYear");
+      calendarGrid.innerHTML = "";
+  
+      const year = date.getFullYear();
+      const month = date.getMonth();
+  
+      monthYear.textContent = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+  
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();  
 
-    // Cambio del doctor
-    document.getElementById('doctorSelect').addEventListener('change', function () {
-        const doctorId = this.value;
-        cargarHorarios(doctorId);
-    });
+      for (let i = 0; i < firstDay; i++) {
+        const emptyCell = document.createElement("div");
+        calendarGrid.appendChild(emptyCell);
+      }
+  
+      for (let day = 1; day <= daysInMonth; day++) {
+        const cell = document.createElement("div");
+        cell.className = "calendar-cell";
+        cell.textContent = day;
+  
+        const fullDate = new Date(year, month, day);
+        const isoDate = fullDate.toISOString().split('T')[0];
+  
+        cell.onclick = () => {
+        selectedDate = isoDate;
+        const doctorId = document.getElementById('doctorIdInput').value; 
 
-    // Función para cargar los horarios
-    function cargarHorarios(doctorId = '') {
-        fetch('/horarios')
-            .then(response => response.json())
-            .then(horarios => {
-                const tablaBody = document.querySelector('#tablaHorarios tbody');
-                tablaBody.innerHTML = ''; // Limpiar tabla
-
-                const horariosFiltrados = doctorId ? horarios.filter(h => h.doctorId._id === doctorId) : horarios;
-
-                if (horariosFiltrados.length > 0) {
-                    horariosFiltrados.forEach(horario => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${horario.doctorId.nombre}</td>
-                            <td>${new Date(horario.horaInicio).toISOString().replace('T', ' ').substring(0, 19)} UTC</td>
-                            <td>${new Date(horario.horaFin).toISOString().replace('T', ' ').substring(0, 19)} UTC</td>
-                            <td>
-                                <input type="text" placeholder="Motivo de la cita" id="motivo-${horario._id}" required>
-                            </td>
-                            <td>
-                                <button class="btn__agendar-nueva" data-doctor="${horario.doctorId._id}" data-horario="${horario.horaInicio}" data-id="${horario._id}">Agendar</button>
-                            </td>
-                        `;
-                        tablaBody.appendChild(row);
-                    });
-
-                    // Asignar eventos a los botones "Agendar"
-                    document.querySelectorAll('.btn__agendar-nueva').forEach(button => {
-                        button.addEventListener('click', async function () {
-                            const doctorId = this.getAttribute('data-doctor');
-                            const fechaHora = this.getAttribute('data-horario');
-                            const horarioId = this.getAttribute('data-id');
-                            const motivo = document.getElementById(`motivo-${horarioId}`).value;
-
-                            if (!motivo.trim()) {
-                                alert("Por favor ingrese el motivo de la cita.");
-                                return;
-                            }
-
-                            const body = {
-                                doctorId,
-                                fechaHora,
-                                motivo
-                            };
-
-                            const response = await fetch('/agendar', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(body)
-                            });
-
-                            const result = await response.json();
-
-                            if (response.ok) {
-                                alert("Cita agendada correctamente.");
-                                cargarHorarios(doctorId); // Volver a cargar horarios
-                            } else {
-                                alert("Error al agendar la cita: " + result.mensaje);
-                            }
-                        });
-                    });
-                } else {
-                    tablaBody.innerHTML = '<tr><td colspan="5">No hay horarios disponibles.</td></tr>';
-                }
-            })
-            .catch(error => {
-                console.error('Error al obtener horarios:', error);
-                document.querySelector('#tablaHorarios tbody').innerHTML = '<tr><td colspan="5">Error al cargar los horarios.</td></tr>';
-            });
+        document.querySelectorAll('.calendar-cell').forEach(c => c.classList.remove('selected'));
+        cell.classList.add('selected');
+        cargarHoras(isoDate, doctorId); 
+        };
+  
+        calendarGrid.appendChild(cell);
+      }
     }
-});
-</script>
+  
+    function changeMonth(offset) {
+      currentDate.setMonth(currentDate.getMonth() + offset);
+      renderCalendar(currentDate);
+    }
+  
 
+function cargarHoras(fecha, doctorId) {
+  fetch(`/admin/horariosNoDisponible?fecha=${fecha}&doctorId=${doctorId}`)
+    .then(res => res.json())
+    .then(data => {
+      console.log("Respuesta de la API:", data);
+      const bloqueados = [];
+
+      data.forEach(h => {
+        const inicio = parseInt(h.horaInicio.split(':')[0], 10);
+        const fin    = parseInt(h.horaFin.split(':')[0], 10);
+
+        for (let i = inicio; i < fin; i++) {
+          bloqueados.push(`${String(i).padStart(2, '0')}:00`);
+        }
+      });
+
+      console.log("Horarios bloqueados:", bloqueados);
+
+      const contenedor = document.getElementById('timeSlots');
+      contenedor.innerHTML = '';
+
+      horariosBase.forEach(hora => {
+        const btn = document.createElement('button');
+        btn.textContent = hora;
+        btn.disabled = bloqueados.includes(hora);
+        btn.onclick  = () => seleccionarHora(hora, fecha);
+        contenedor.appendChild(btn);
+      });
+    })
+    .catch(err => {
+      console.error('Error al cargar los horarios:', err);
+    });
+}
+
+renderCalendar(currentDate);
+  </script>
 
 
 
