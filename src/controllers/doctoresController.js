@@ -6,6 +6,9 @@ const BitacoraUso = require('../models/bitacoraUso');
 const Usuario = require('../models/usuarios');
 const bcrypt = require('bcrypt');
 
+
+// ------------------------------------------------ Controladores para rol de admin
+
 exports.listar = async (req, res) => {
     try {
         const doctores = await Doctor.find()
@@ -171,3 +174,36 @@ exports.eliminar = async (req, res) => {
         res.status(500).send('Error al eliminar');
     }
 };
+
+// ------------------------------------------------ Controladores para rol de doctor
+
+exports.vistaDashboard = async (req, res) => {
+    try {
+        const doctorId = req.session.usuario.idDoctor;
+        console.log('🔎 ID del doctor:', doctorId);
+
+        const fechaHoy = new Date().toISOString().slice(0, 10);
+        const inicioDiaUTC = new Date(`${fechaHoy}T00:00:00.000Z`);
+        const finDiaUTC = new Date(`${fechaHoy}T23:59:59.999Z`);
+
+        const Cita = require('../models/citas');
+        const citasHoy = await Cita.find({
+            doctorId: doctorId,
+            fechaHora: { $gte: inicioDiaUTC, $lte: finDiaUTC }
+        })
+        .populate('pacienteId', 'nombre apellido telefono')
+        .sort({ fechaHora: 1 });
+
+        res.render('index', {
+            usuario: req.session.usuario,
+            viewParcial: 'doctor/inicio',
+            citasHoy,
+            request: req
+        });
+    } catch (error) {
+        console.error('❌ Error al cargar dashboard del doctor:', error);
+        res.status(500).send('Error al cargar el dashboard');
+    }
+};
+
+
