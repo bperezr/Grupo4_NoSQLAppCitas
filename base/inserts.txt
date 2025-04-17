@@ -109,3 +109,17 @@ db.Sucursales.insertMany([
         estado: "activo"
     }
 ]);
+
+
+
+------------------------------------
+
+
+db.HorariosNodisponibles.insertOne({
+  doctorId: ObjectId("68000a08774fcfc27226ad06"),
+  fecha: "2025-04-20",
+  horaInicio: "08:00",
+  horaFin: "12:00",
+  detalle: null,
+  fechaCreacion: new Date()
+})

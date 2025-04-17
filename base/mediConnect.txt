@@ -93,11 +93,16 @@ db.createCollection("Pacientes", {
     validator: {
         $jsonSchema: {
             bsonType: "object",
-            required: ["nombre", "apellido", "email", "telefono"],
+            required: ["cedula", "nombre", "apellido", "email", "telefono"],
             properties: {
+                cedula: { bsonType: "string", description: "Debe ser una cédula válida" },
                 nombre: { bsonType: "string" },
                 apellido: { bsonType: "string" },
-                email: { bsonType: "string", pattern: "^.+@.+\..+$" },
+                email: {
+                    bsonType: "string",
+                    pattern: "^.+@.+\\..+$",
+                    description: "Debe ser un correo válido"
+                },
                 telefono: { bsonType: "string" },
                 direccion: { bsonType: "string" },
                 fechaNacimiento: { bsonType: "date" },
@@ -108,8 +113,10 @@ db.createCollection("Pacientes", {
     validationAction: "error"
 });
 
+
+db.Pacientes.createIndex({ cedula: 1 }, { unique: true });
 db.Pacientes.createIndex({ email: 1 }, { unique: true });
-db.Pacientes.createIndex({ telefono: 1 });
+db.Pacientes.createIndex({ telefono: 1 }); // No es único
 
 //----------------------------------------Crear colecion de Citas
 db.createCollection("Citas", {
@@ -177,25 +184,45 @@ db.HistorialCitas.createIndex({ citaId: 1 });
 db.HistorialCitas.createIndex({ modificadoPor: 1 });
 
 
-//----------------------------------------Crear colecion de Horarios Disponibles
-db.createCollection("HorariosDisponibles", {
-    validator: {
-        $jsonSchema: {
-            bsonType: "object",
-            required: ["doctorId", "fecha", "horaInicio", "horaFin", "disponible"],
-            properties: {
-                doctorId: { bsonType: "objectId" },
-                fecha: { bsonType: "date" },
-                horaInicio: { bsonType: "string" },
-                horaFin: { bsonType: "string" },
-                disponible: { bsonType: "bool" }
-            }
+//----------------------------------------Crear colecion de Horarios no Disponibles
+
+db.createCollection("HorariosNodisponibles", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["doctorId", "fecha", "horaInicio", "horaFin", "detalle", "fechaCreacion"],
+      properties: {
+        doctorId: {
+          bsonType: "objectId",
+          description: "Debe ser un ObjectId válido del doctor"
+        },
+        fecha: {
+          bsonType: "string",
+          description: "Fecha en formato YYYY-MM-DD"
+        },
+        horaInicio: {
+          bsonType: "string",
+          description: "Hora de inicio en formato HH:mm"
+        },
+        horaFin: {
+          bsonType: "string",
+          description: "Hora de fin en formato HH:mm"
+        },
+        detalle: {
+          bsonType: ["string", "null"],
+          description: "Motivo del bloqueo (opcional)"
+        },
+        fechaCreacion: {
+          bsonType: "date",
+          description: "Fecha de creación del registro"
         }
-    },
-    validationAction: "error"
+      }
+    }
+  }
 });
 
-db.HorariosDisponibles.createIndex({ doctorId: 1, fecha: 1 });
+
+db.HorariosNodisponibles.createIndex({ doctorId: 1, fecha: 1 });
 
 //----------------------------------------Crear colecion de Pagos
 db.createCollection("Pagos", {

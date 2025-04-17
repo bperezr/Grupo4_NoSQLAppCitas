@@ -52,12 +52,14 @@
                     </a>
                 </li>
 
-                <li class="list__item">
-                    <a class="item__area" href="/pacientes.html" title="Pacientes">
-                        <i class="fa-solid fa-user"></i>
-                        <span class="area__text">Pacientes</span>
+                <li class="list__item <%= request.originalUrl.includes('/pacientes') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/pacientes" title="Pacientes">
+                        <i class="fa-solid fa-users"></i>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/pacientes') ? 'area__text--active' : '' %>">Pacientes</span>
                     </a>
                 </li>
+
                 <li class="list__item <%= request.originalUrl.includes('/citas') ? 'list__item--active' : '' %>">
                     <a class="item__area" href="/admin/citas" title="Citas">
                         <i class="fa-solid fa-box"></i>
