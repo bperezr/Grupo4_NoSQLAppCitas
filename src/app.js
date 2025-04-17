@@ -6,8 +6,6 @@ const authRoutes = require('./routes/authRoutes');
 const sucursalesRoutes = require('./routes/sucursalesRoutes');
 const bitacoraRoutes = require('./routes/bitacoraRoutes');
 const citasRoutes = require('./routes/citasRoutes');
-const { obtenerHorariosDisponibles } = require('./controllers/horariosController');
-const { generarHorarios } = require('./controllers/horariosController');
 const doctoresRoutes = require('./routes/doctoresRoutes');
 const administradoresRoutes = require('./routes/administradoresRoutes');
 const especialidadesRoutes = require('./routes/especialidadesRoutes');
@@ -15,29 +13,14 @@ const historialRoutes = require('./routes/historialCitasRoutes');
 
 // Local
 //const connectDB = require('./config/db');
+
 // Atlas
 const connectDB = require('./config/dbAtlas');
-
 const app = express();
-
 connectDB();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public/pages'));
-
-//Crear los usuarios
-const run = require('./test/crearUsuario');
-
-const iniciarUsuarios = async () => {
-    try {
-        await run();
-        console.log('Usuarios verificados o creados correctamente.');
-    } catch (error) {
-        console.error('Error al crear usuarios:', error);
-    }
-};
-
-iniciarUsuarios();
 
 //Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -64,10 +47,6 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages/login.html'));
 });
 
-//Citas y horarios
-generarHorarios();
-app.get('/horarios', obtenerHorariosDisponibles);
-
 app.use(express.json());
 app.use((req, res, next) => {
     res.locals.request = req;
@@ -84,4 +63,8 @@ app.use('/', especialidadesRoutes);
 app.use('/', historialRoutes);
 
 const PORT = process.env.PORT || 5010;
-app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`\n✅ \x1b[32m[ÉXITO]\x1b[0m Servidor iniciado correctamente`);
+    console.log(`🌐 \x1b[36mURL:\x1b[0m http://localhost:${PORT}`);
+    console.log(`📡 Escuchando en el puerto: \x1b[33m${PORT}\x1b[0m\n`);
+});
