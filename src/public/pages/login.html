@@ -38,6 +38,7 @@
 <script>
     const params = new URLSearchParams(window.location.search);
     const error = params.get("error");
+    const cambio = params.get("cambio");
 
     if (error === "usuario") {
         Swal.fire({
@@ -68,4 +69,37 @@
             }
         });
     }
+
+    if (cambio === "1") {
+        Swal.fire({
+            icon: "success",
+            title: "Contraseña actualizada",
+            text: "Ya puedes iniciar sesión con tu nueva contraseña",
+            width: 500,
+            padding: '1.5em',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#3085d6',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'swal2-btn-fix'
+            }
+        });
+    }
+
+    if (error === "inactivo") {
+        Swal.fire({
+            icon: "warning",
+            title: "Cuenta inactiva",
+            text: "Tu cuenta está desactivada. Por favor contacta al administrador.",
+            width: 500,
+            padding: '1.5em',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#3085d6',
+            customClass: {
+                popup: 'swal2-border-radius',
+                confirmButton: 'swal2-btn-fix'
+            }
+        });
+    }
+
 </script>

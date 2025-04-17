@@ -4,6 +4,8 @@ const Horario = require("../models/horariosDisponibles");
 const Usuario = require("../models/usuarios"); 
 const Doctor = require("../models/doctores"); 
 const BitacoraUso = require('../models/bitacoraUso');
+const { crearHistorialCita } = require('../services/historialService');
+const HistorialCita = require('../models/historialCitas'); 
 
 // Agendar cita
 const agendarCita = async (req, res) => {
@@ -63,6 +65,13 @@ const agendarCita = async (req, res) => {
     // Guardar la cita
     await nuevaCita.save();
 
+    await crearHistorialCita({
+      citaId: nuevaCita._id,
+      pacienteId: pacienteIdObj,
+      estado: nuevaCita.estado,
+      pago: "pendiente", 
+    });
+
     // Marcar el horario como no disponible
     await Horario.updateOne({ _id: horario._id }, { disponible: false });
 
@@ -88,13 +97,28 @@ const cancelarCita = async (req, res) => {
     cita.estado = "cancelada";
     await cita.save();
 
+    // Actualizar historial de cita
+    await HistorialCita.findOneAndUpdate(
+      { citaId: cita._id },
+      { estado: "cancelada" },
+      { new: true }
+    );
+ 
+    const tipoAccion = `Canceló la cita: ${cita._id}`;
+
+    const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: tipoAccion,
+            fechaHora: new Date()
+        });
+    await bitacora.save();
+
     // Hacer el horario disponible nuevamente
     await Horario.updateOne(
       { doctorId: cita.doctorId, fecha: cita.fechaHora }, 
       { disponible: true }
     );
-
-    res.status(200).json({ mensaje: "Cita cancelada correctamente" });
+    res.redirect('/admin/historialcitas');
   } catch (error) {
     console.error(error);
     res.status(500).json({ mensaje: "Error al cancelar cita", error });

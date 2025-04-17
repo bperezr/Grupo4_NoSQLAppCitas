@@ -17,7 +17,7 @@ db.runCommand({
 });
 
 // Agregar un índice en estado
-db.Usuarios.createIndex({ estado: 1 });
+//db.Usuarios.createIndex({ estado: 1 });
 
 // 2. Mejorar la colección Doctores
 // Agregar índice compuesto en especialidad y sucursalId

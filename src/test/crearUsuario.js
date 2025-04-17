@@ -19,7 +19,8 @@ const run = async () => {
         email: 'admin@mediconnect.com',
         contraseña: hashedAdmin,
         rol: 'admin',
-        estado: 'activo'
+        estado: 'activo',
+        reinicioContraseña: false
     });
 
     // Doctor
@@ -29,6 +30,7 @@ const run = async () => {
         contraseña: hashedDoctor,
         rol: 'doctor',
         estado: 'activo',
+        reinicioContraseña: false
     });
 
     // Paciente
@@ -37,7 +39,8 @@ const run = async () => {
         email: 'paciente@mediconnect.com',
         contraseña: hashedPaciente,
         rol: 'paciente',
-        estado: 'activo'
+        estado: 'activo',
+        reinicioContraseña: false
     });
 
     await Usuario.insertMany([admin, doctor, paciente]);

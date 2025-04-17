@@ -22,7 +22,7 @@ router.get("/horarios", obtenerHorariosDisponibles);
 router.post("/agendar", agendarCita);
 
 // Ruta para cancelar una cita
-router.put("/cancelar/:citaId", cancelarCita);
+router.post("/admin/citas/cancelar/:citaId", cancelarCita);
 
 router.get("/admin/citas", async (req, res) => {
   try {

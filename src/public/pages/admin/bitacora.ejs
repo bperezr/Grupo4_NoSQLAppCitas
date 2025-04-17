@@ -20,13 +20,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% registros.forEach(registro => { %>
+                    <% registros.forEach(registro=> { %>
                         <tr>
-                            <td><%= registro.usuarioInfo.email %> (<%= registro.usuarioInfo.rol %>)</td>
-                            <td><%= registro.tipoAccion %></td>
-                            <td><%= registro.fechaHora.toLocaleString() %></td>
+                            <td>
+                                <%= registro.usuarioInfo.email %> (<%= registro.usuarioInfo.rol %>)
+                            </td>
+                            <td>
+                                <%= registro.tipoAccion %>
+                            </td>
+                            <td>
+                                <%= registro.fechaHora.toLocaleString() %>
+                            </td>
                         </tr>
-                    <% }) %>
+                        <% }) %>
                 </tbody>
             </table>
         </div>
@@ -42,7 +48,7 @@
 
         $('#tablaBitacora').DataTable({
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
             },
             responsive: true
         });

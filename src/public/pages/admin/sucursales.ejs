@@ -19,7 +19,6 @@
                         <th>Nombre</th>
                         <th>Dirección</th>
                         <th>Teléfono</th>
-                        <th>Horario</th>
                         <th>Estado</th>
                         <th class="text-center">Acciones</th>
                     </tr>
@@ -35,9 +34,6 @@
                             </td>
                             <td>
                                 <%= sucursal.telefono %>
-                            </td>
-                            <td>
-                                <%= sucursal.horarioAtencion %>
                             </td>
                             <td class="text-center">
                                 <% if (sucursal.estado==='activo' ) { %>
@@ -73,7 +69,6 @@
             <input type="text" name="nombre" placeholder="Nombre de la sucursal" required>
             <input type="text" name="direccion" placeholder="Dirección" required>
             <input type="text" name="telefono" placeholder="Teléfono" required>
-            <input type="text" name="horarioAtencion" placeholder="Horario de atención" required>
             <select name="estado" required>
                 <option value="">Seleccione estado</option>
                 <option value="activo">Activo</option>
@@ -93,7 +88,6 @@
             <input type="text" name="nombre" id="editarNombre" placeholder="Nombre de la sucursal" required>
             <input type="text" name="direccion" id="editarDireccion" placeholder="Dirección" required>
             <input type="text" name="telefono" id="editarTelefono" placeholder="Teléfono" required>
-            <input type="text" name="horarioAtencion" id="editarHorario" placeholder="Horario de atención" required>
             <select name="estado" id="editarEstado" required>
                 <option value="">Seleccione estado</option>
                 <option value="activo">Activo</option>
@@ -201,7 +195,6 @@
         document.getElementById("editarNombre").value = sucursal.nombre;
         document.getElementById("editarDireccion").value = sucursal.direccion;
         document.getElementById("editarTelefono").value = sucursal.telefono;
-        document.getElementById("editarHorario").value = sucursal.horarioAtencion;
         document.getElementById("editarEstado").value = sucursal.estado;
 
         const form = document.getElementById("formEditarSucursal");
