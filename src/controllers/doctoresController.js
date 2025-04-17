@@ -104,7 +104,9 @@ exports.actualizar = async (req, res) => {
         let especialidadId = req.body['especialidadId[]'];
 
         let especialidadesArray = Array.isArray(especialidadId) ? especialidadId : [especialidadId];
-        especialidadesArray = especialidadesArray.map(id => new mongoose.Types.ObjectId(id));
+
+        especialidadesArray = [...new Set(especialidadesArray.map(id => id.toString()))]
+            .map(id => new mongoose.Types.ObjectId(id));
 
         const doctorActualizado = await Doctor.findByIdAndUpdate(req.params.id, {
             nombre,
