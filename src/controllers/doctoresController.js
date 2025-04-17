@@ -41,9 +41,6 @@ exports.crear = async (req, res) => {
         let { nombre, apellidos, email, telefono, sucursalId, estado } = req.body;
         let especialidadId = req.body['especialidadId[]'];
 
-        console.log("Datos recibidos desde el formulario:");
-        console.log(req.body);
-
         if (!Array.isArray(especialidadId)) {
             especialidadId = [especialidadId];
         }
@@ -106,10 +103,10 @@ exports.actualizar = async (req, res) => {
         const { nombre, apellidos, email, telefono, sucursalId, estado, reinicioContraseña } = req.body;
         let especialidadId = req.body['especialidadId[]'];
 
-        console.log('🔍 Datos recibidos en actualización:', req.body);
-
         let especialidadesArray = Array.isArray(especialidadId) ? especialidadId : [especialidadId];
-        especialidadesArray = especialidadesArray.map(id => new mongoose.Types.ObjectId(id));
+
+        especialidadesArray = [...new Set(especialidadesArray.map(id => id.toString()))]
+            .map(id => new mongoose.Types.ObjectId(id));
 
         const doctorActualizado = await Doctor.findByIdAndUpdate(req.params.id, {
             nombre,

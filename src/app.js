@@ -13,19 +13,17 @@ const administradoresRoutes = require('./routes/administradoresRoutes');
 const especialidadesRoutes = require('./routes/especialidadesRoutes');
 const historialRoutes = require('./routes/historialCitasRoutes');
 const horariosNoDisponiblesRoutes = require('./routes/horariosNoDisponiblesRoutes');
-
+const pacientesRoutes = require('./routes/pacientesRoutes');
 // Local
 //const connectDB = require('./config/db');
+
 // Atlas
 const connectDB = require('./config/dbAtlas');
-
 const app = express();
-
 connectDB();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public/pages'));
-
 
 //Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -52,7 +50,6 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages/login.html'));
 });
 
-
 app.use(express.json());
 app.use((req, res, next) => {
     res.locals.request = req;
@@ -70,6 +67,11 @@ app.use('/', medicamentosRoutes);
 app.use('/', recetasRoutes);
 app.use('/', historialRoutes);
 app.use('/', horariosNoDisponiblesRoutes);
+app.use('/', pacientesRoutes);
 
 const PORT = process.env.PORT || 5010;
-app.listen(PORT, () => console.log(`Servidor corriendo en el puerto ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`\n✅ \x1b[32m[ÉXITO]\x1b[0m Servidor iniciado correctamente`);
+    console.log(`🌐 \x1b[36mURL:\x1b[0m http://localhost:${PORT}`);
+    console.log(`📡 Escuchando en el puerto: \x1b[33m${PORT}\x1b[0m\n`);
+});
