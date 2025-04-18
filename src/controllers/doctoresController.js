@@ -39,6 +39,29 @@ exports.listar = async (req, res) => {
     }
 };
 
+exports.listarDoctoresPorEspecialidad = async (req, res) => {
+    try {
+      const { especialidad } = req.params;  
+
+      if (!especialidad) {
+        return res.status(400).json({ error: 'Falta el parámetro especialidad' });
+      }  
+
+      if (!mongoose.Types.ObjectId.isValid(especialidad)) {
+        return res.status(400).json({ error: 'ID de especialidad inválido' });
+      } 
+
+      const docs = await Doctor.find({
+        especialidadId: new mongoose.Types.ObjectId(`${especialidad}`)
+      }); 
+
+      return res.json(docs);
+    } catch (error) {
+      console.error('Error al listar doctores por especialidad:', error);
+      return res.status(500).json({ error: 'Error interno al obtener doctores' });
+    }
+  };
+
 exports.crear = async (req, res) => {
     try {
         let { nombre, apellidos, email, telefono, sucursalId, estado } = req.body;

@@ -2,6 +2,7 @@
     <div class="content__title">
         <h1>Crear cita</h1>
     </div>
+  <form id="citaForm" >
     <div class="dashboard-grid">
         <!-- Citas del día -->
         <div class="card card--principal">
@@ -9,8 +10,7 @@
             <div class="info-container horaClass">
                 <div class="content__title">
                   <h3>Datos de la cita</h3>
-                </div>
-                <form id="citaForm" >
+                </div>               
                     <!-- Buscador de paciente -->
                     <div class="form-group">
                       <label for="Cedula">Cédula del Paciente</label>
@@ -30,22 +30,18 @@
               
                     <!-- Especialidad -->
                     <div class="form-group">
-                      <label for="especialidad">Especialidad</label>
-                      <select id="especialidad" name="especialidad" required>
-                        <option value="">Seleccione…</option>
-                        <option value="cardiologia">Cardiología</option>
-                        <option value="pediatria">Pediatría</option>
-                        <option value="dermatologia">Dermatología</option>
-                      </select>
+                        <label for="doctorSelect">Especialidad</label>
+                    <select id="especialidad" name="especialidadId" required>
+                        <option value="">Seleccione una especialidad</option>
+                    </select>
+                    </label>
                     </div>
+                    <input type="hidden" name="sucursalId" id="sucursalId" value="68000823468c4e7fbdb5101e">
               
                     <!-- Doctor -->
                     <div class="form-group">
                       <label for="doctorSelect">Doctor</label>
-                      <select id="doctorSelect" name="doctorId" required>
-                        <option value="">Seleccione…</option>
-                        <option value="68000a08774fcfc27226ad06">Dr. Pérez</option>
-                        <option value="68001b2f774fcfc27226ad07">Dra. Gómez</option>
+                      <select id="doctorSelect" name="doctorId" required>                        
                       </select>
                     </div>
               
@@ -86,11 +82,71 @@
               </div>
         </div>
 
+        <div style="text-align:center; margin-top:1rem;">
+            <button type="submit" class="btn btn--primary">Guardar cita</button>
+        </div>
+    </form>
     </div>
-</div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const selectEsp = document.getElementById('especialidad');
+
+  fetch('/admin/especialidades/listar')
+    .then(res => {
+      if (!res.ok) throw new Error('No fue posible cargar especialidades');
+      return res.json();
+    })
+    .then(especialidades => {
+      especialidades.forEach(e => {
+        const opt = document.createElement('option');
+        opt.value = e._id;    
+        opt.textContent = e.nombreEspecialidad;
+        selectEsp.appendChild(opt);
+      });
+    })
+    .catch(err => {
+      console.error(err);
+
+    });
+});
+
+document.getElementById('especialidad').addEventListener('change', function() {
+    const especialidadId = this.value;
+    const doctorSelect   = document.getElementById('doctorSelect');
+
+    doctorSelect.innerHTML = '<option value="">Cargando doctores…</option>';
+
+    if (!especialidadId) {
+      doctorSelect.innerHTML = '<option value="">Seleccione una especialidad </option>';
+      return;
+    }
+
+    fetch(`/admin/doctores/listar/${especialidadId}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Error al cargar doctores');
+        return res.json();
+      })
+      .then(doctores => {
+        if (!doctores || doctores.length === 0) {
+        doctorSelect.innerHTML = '<option value="">No hay doctores para esta especialidad</option>';
+        return;
+        }
+
+        let options = '<option value="">Seleccione un doctor</option>';
+        doctores.forEach(doc => {
+        options += `<option value="${doc._id}">${doc.nombre} ${doc.apellidos}</option>`;
+        });
+        doctorSelect.innerHTML = options;
+      })
+      .catch(err => {
+        console.error(err);
+        doctorSelect.innerHTML = '<option value="">No fue posible cargar doctores</option>';
+      });
+  });
+
  function ConsultarCedula() {
       const cedula = $("#Cedula").val().trim();
       if (!cedula) return alert('Ingrese una cédula');
@@ -114,9 +170,8 @@
               .join(" ");
             $("#Nombre").val(fullName);
 
-            // Luego obtén el pacienteId desde tu backend
             $.ajax({
-              url: `/admin/pacientes/consultar/:cedula=${cedula}`,
+              url: `/admin/pacientes/consultar/${cedula}`,
               method: "GET",              
               success(user) {          
                 if (!user) {         
@@ -127,7 +182,6 @@
                 $("#pacienteIdInput").val("");
                 return;
                 }
-                $("#pacienteInfo").text(`Paciente: ${user.nombre} ${user.apellido}`);
                 $("#pacienteIdInput").val(user._id);
                 $("#Nombre").val(`${user.nombre} ${user.apellido}`);
             },
@@ -178,64 +232,77 @@
     }
     function changeMonth(o){ currentDate.setMonth(currentDate.getMonth()+o); renderCalendar(currentDate); }
 
-    function cargarHoras(fecha, doctorId){
-      const cont = document.getElementById('timeSlots');
-      cont.innerHTML = '';
-      if (!fecha || !doctorId) return;
-      fetch(`/admin/horariosNoDisponible?fecha=${fecha}&doctorId=${doctorId}`)
-        .then(r=>r.json())
-        .then(data=>{
-          const bloqueados = [];
-          data.forEach(h=>{
-            const ini = parseInt(h.horaInicio.split(':')[0],10),
-                  fin = parseInt(h.horaFin.split(':')[0],10);
-            for(let i=ini;i<fin;i++){
-              bloqueados.push(`${String(i).padStart(2,'0')}:00`);
-            }
-          });
-          horariosBase.forEach(hora=>{
-            const btn = document.createElement('button');
-            btn.type="button"; btn.textContent=hora;
-            btn.disabled = bloqueados.includes(hora);
-            btn.onclick = ()=>{
-              selectedHour = hora;
-              document.querySelectorAll('#timeSlots button')
-                      .forEach(b=>b.classList.remove('selected'));
-              btn.classList.add('selected');
-            };
-            cont.appendChild(btn);
-          });
-        })
-        .catch(console.error);
-    }
+function cargarHoras(fecha, doctorId) {
+  const cont = document.getElementById('timeSlots');
+  cont.innerHTML = '';
+  if (!fecha || !doctorId) return;
 
-    renderCalendar(currentDate);
+  fetch(`/admin/horariosNoDisponible?fecha=${fecha}&doctorId=${doctorId}`)
+    .then(r => r.json())
+    .then(data => {
+      const bloqueados = [];
+
+      data.forEach(h => {
+        const ini = parseInt(h.horaInicio.split(':')[0], 10);
+        const fin = parseInt(h.horaFin.split(':')[0], 10);
+        for (let i = ini; i < fin; i++) {
+          bloqueados.push(`${String(i).padStart(2, '0')}:00`);
+        }
+      });
+
+      horariosBase.forEach(hora => {  
+        const btn = document.createElement('button');
+        btn.type = "button";
+        btn.textContent = hora;
+        btn.disabled = bloqueados.includes(hora);
+
+        btn.onclick = () => {
+          selectedHour = hora;
+          document
+            .querySelectorAll('#timeSlots button')
+            .forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        };
+        cont.appendChild(btn);
+      });
+    })
+    .catch(console.error);
+}
+
+ renderCalendar(currentDate);
 
     // Envío del formulario
-    $("#citaForm").on('submit', function(e){
-      e.preventDefault();
-      if (!selectedDate || !selectedHour) {
-        return alert('Seleccione fecha y hora');
-      }
-      const form = this;
-      const fechaHora = new Date(`${selectedDate}T${selectedHour}:00`);
-      const payload = {
-        pacienteId: form.pacienteId.value,
-        doctorId: form.doctorId.value,
-        sucursalId: form.sucursalId?.value,
-        fechaHora,
-        estado: form.estado.value,
-        motivo: form.motivo.value
-      };
-      fetch('/api/citas', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      })
-      .then(r=>r.json())
-      .then(res=> alert('Cita creada ID: '+res._id))
-      .catch(()=> alert('Error al crear cita'));
-    });
+    $("#citaForm").on('submit', function(e) {
+        e.preventDefault();
+        if (!selectedDate || !selectedHour) {
+            return alert('Seleccione fecha y hora');
+        }
+
+        const form = this;
+        const fechaHora = new Date(`${selectedDate}T${selectedHour}:00`);
+        const payload = {
+            pacienteId:      form.pacienteId.value,
+            especialidadId:  form.especialidadId.value,
+            doctorId:        form.doctorId.value,
+            sucursalId:      form.sucursalId?.value,
+            fechaHora,
+            estado:          form.estado.value,
+            motivo:          form.motivo.value
+        };
+
+        fetch('/admin/crearCitas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(r => {
+            if (!r.ok) throw new Error('Error al crear cita');
+            return r.json();
+        })
+        .then(res => alert('Cita creada ID: ' + res._id))
+        .catch(err => alert(err.message));
+        console.log(res)
+        });
   </script>
 
 

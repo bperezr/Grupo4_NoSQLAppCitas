@@ -5,7 +5,6 @@ class horarioNoDisponibleController  {
   async obtenerPorFechaYDoctor(req, res) {
     try {
       const { fecha, doctorId } = req.query;
-      console.log("Backend recibió:", fecha, doctorId);
       const horarios = await horarioNoDisponibleService.obtenerPorFechaYDoctor(fecha,doctorId);
       res.json(horarios);
     } catch (error) {

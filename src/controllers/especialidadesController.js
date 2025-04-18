@@ -24,6 +24,17 @@ exports.getEspecialidades = async (req, res) => {
     }
 };
 
+exports.listarEspecialidades = async (req, res) => {
+    try {        
+        const listaEspecialidad = await Especialidades.find();
+        res.json(listaEspecialidad);
+    } catch (error) {
+        console.error('Error al obtener las especialidades:', error);
+        res.status(500).send('Error al obtener las especialidades');
+    }
+
+}
+
 // Crear especialidad
 exports.crearEspecialidad = async (req, res) => {
     try {

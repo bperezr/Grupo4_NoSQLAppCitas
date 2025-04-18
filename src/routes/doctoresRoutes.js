@@ -9,7 +9,7 @@ router.get('/admin/doctores', verificarRol('admin'), doctoresController.listar);
 router.post('/admin/doctores', verificarRol('admin'), doctoresController.crear);
 router.post('/admin/doctores/editar/:id', verificarRol('admin'), doctoresController.actualizar);
 router.post('/admin/doctores/eliminar/:id', verificarRol('admin'), doctoresController.eliminar);
-
+router.get('/admin/doctores/listar/:especialidad',  doctoresController.listarDoctoresPorEspecialidad);
 
 // ------------------------------------------------ Rutas para rol el doctor
 
