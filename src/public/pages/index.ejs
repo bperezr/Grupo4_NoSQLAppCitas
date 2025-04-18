@@ -110,6 +110,13 @@
                             Citas</span>
                     </a>
                 </li>
+                <li class="list__item <%= request.originalUrl.includes('/pagos') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/pagos" title="Pagos">
+                        <i class="fa-solid fa-credit-card"></i>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/pagos') ? 'area__text--active' : '' %>">Pagos</span>
+                    </a>
+                </li>
                 <li class="list__item <%= request.originalUrl.includes('/sucursales') ? 'list__item--active' : '' %>">
                     <a class="item__area" href="/admin/sucursales" title="Sucursales">
                         <i class="fa-solid fa-hospital-user"></i>
@@ -151,22 +158,6 @@
                             <a class="item__area" href="/proveedores.html" title="Medicamentos">
                                 <i class="fa-solid fa-pills"></i>
                                 <span class="area__text">Medicamentos</span>
-                            </a>
-                        </li>
-                        <li
-                            class="list__item <%= request.originalUrl.includes('/pagos') ? 'list__item--active' : '' %>">
-                            <a class="item__area" href="/admin/pagos" title="Pagos">
-                                <i class="fa-solid fa-credit-card"></i>
-                                <span
-                                    class="area__text <%= request.originalUrl.includes('/pagos') ? 'area__text--active' : '' %>">Pagos</span>
-                            </a>
-                        </li>
-                        <li
-                            class="list__item <%= request.originalUrl.includes('/bitacora') ? 'list__item--active' : '' %>">
-                            <a class="item__area" href="/admin/bitacora" title="Bitácora">
-                                <i class="fa-solid fa-database"></i>
-                                <span
-                                    class="area__text <%= request.originalUrl.includes('/bitacora') ? 'area__text--active' : '' %>">Bitácora</span>
                             </a>
                         </li>
 
