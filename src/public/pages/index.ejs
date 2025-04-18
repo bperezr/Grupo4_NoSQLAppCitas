@@ -98,10 +98,12 @@
                                     class="area__text <%= request.originalUrl.includes('/sucursales') ? 'area__text--active' : '' %>">Sucursales</span>
                             </a>
                         </li>
-                        <li class="list__item">
-                            <a class="item__area" href="/calificaciones.html" title="Calificaciones">
-                                <i class="fa-solid fa-star-half-stroke"></i>
-                                <span class="area__text">Calificaciones</span>
+                        <li
+                            class="list__item <%= request.originalUrl.includes('/pagos') ? 'list__item--active' : '' %>">
+                            <a class="item__area" href="/admin/pagos" title="Pagos">
+                                <i class="fa-solid fa-credit-card"></i>
+                                <span
+                                    class="area__text <%= request.originalUrl.includes('/pagos') ? 'area__text--active' : '' %>">Pagos</span>
                             </a>
                         </li>
                         <li

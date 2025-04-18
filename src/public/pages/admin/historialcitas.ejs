@@ -11,11 +11,14 @@
                         <th>Email Paciente</th>
                         <th>Estado de la cita</th>
                         <th>Estado del pago</th>
+                        <th>Doctor</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% historialcitas.forEach(historial=> { %>
+                    <% historialcitas.forEach(historial => { %>
                         <tr>
                             <td>
                                 <%= historial.pacienteId.email %>
@@ -26,13 +29,25 @@
                             <td>
                                 <%= historial.pago %>
                             </td>
-                             <td class="text-center">
-                                <button class="btn__icon eliminar-btn" data-id="<%= historial.citaId %>" title="Eliminar">
+                            <td>
+                                <!-- Mostrar nombre del doctor -->
+                                <%= historial.citaId.doctorId.nombre %>
+                            </td>
+                            <td>
+                                <!-- Mostrar la fecha en formato UTC (sin la palabra UTC) -->
+                                <%= new Date(historial.citaId.fechaHora).toISOString().split('T')[0] %>
+                            </td>
+                            <td>
+                                <!-- Mostrar la hora en formato UTC (sin la palabra UTC) -->
+                                <%= new Date(historial.citaId.fechaHora).toISOString().split('T')[1].split('.')[0] %>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn__icon eliminar-btn" data-id="<%= historial.citaId._id %>" title="Eliminar">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
-                        <% }) %>
+                    <% }) %>
                 </tbody>
             </table>
         </div>

@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const pagoSchema = new mongoose.Schema({
-    citaId: { type: mongoose.Schema.Types.ObjectId },
-    pacienteId: { type: mongoose.Schema.Types.ObjectId },
+    citaId: { type: mongoose.Schema.Types.ObjectId, ref: 'Citas' },
+    pacienteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuarios' },
     monto: { type: Number },
     fechaPago: { type: Date },
     estado: { type: String }
