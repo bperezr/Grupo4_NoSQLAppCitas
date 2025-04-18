@@ -10,6 +10,7 @@ const doctoresRoutes = require('./routes/doctoresRoutes');
 const administradoresRoutes = require('./routes/administradoresRoutes');
 const especialidadesRoutes = require('./routes/especialidadesRoutes');
 const historialRoutes = require('./routes/historialCitasRoutes');
+const pagosRoutes = require('./routes/pagosRoutes');
 const pacientesRoutes = require('./routes/pacientesRoutes');
 
 // Local
@@ -62,6 +63,7 @@ app.use('/', doctoresRoutes);
 app.use('/', administradoresRoutes);
 app.use('/', especialidadesRoutes);
 app.use('/', historialRoutes);
+app.use('/', pagosRoutes);
 app.use('/', pacientesRoutes);
 
 const PORT = process.env.PORT || 5010;
