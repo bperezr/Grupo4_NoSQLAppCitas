@@ -91,7 +91,7 @@ body {
 }
 
 .logo__img {
-    width: 50px;
+    width: 130px;
 }
 
 .logo__text {
@@ -603,8 +603,7 @@ input:checked+.slider:before {
 
 
 .choices__inner {
-    display: flex !important
-;
+    display: flex !important;
     flex-wrap: wrap !important;
     align-items: center !important;
     border: 1px solid #ccc !important;
@@ -690,4 +689,105 @@ input:checked+.slider:before {
 
 .btn-consulta:hover {
     background-color: var(--primary-text-clr);
+}
+
+
+
+/*------------------------------------------------------------- Card Dashboard*/
+
+.card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.table th,
+.table td {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    /* estructura base */
+    grid-template-rows: auto auto;
+    gap: 16px;
+    margin-top: 20px;
+    align-items: start;
+}
+
+/* Responsividad */
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+
+    .card--principal {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+
+    .card--pos2 {
+        grid-column: 1 / -1;
+        grid-row: 2;
+    }
+
+    .card--pos3 {
+        grid-column: 1 / -1;
+        grid-row: 3;
+    }
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.card__title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.card--principal {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+}
+
+.card--pos2 {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.card--pos3 {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
 }

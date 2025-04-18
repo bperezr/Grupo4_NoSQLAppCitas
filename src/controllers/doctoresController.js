@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const Doctor = require('../models/doctores');
 const Sucursal = require('../models/sucursales');
 const Especialidad = require('../models/especialidades');
 const BitacoraUso = require('../models/bitacoraUso');
 const Usuario = require('../models/usuarios');
 const bcrypt = require('bcrypt');
+
+
+// ------------------------------------------------ Controladores para rol de admin
 
 exports.listar = async (req, res) => {
     try {
@@ -169,5 +173,87 @@ exports.eliminar = async (req, res) => {
     } catch (error) {
         console.error('Error al eliminar doctor:', error);
         res.status(500).send('Error al eliminar');
+    }
+};
+
+// ------------------------------------------------ Controladores para rol de doctor
+
+exports.vistaDashboard = async (req, res) => {
+    try {
+        const doctorId = req.session.usuario.idDoctor;
+
+        const ahoraCR = new Date().toLocaleString("en-US", { timeZone: "America/Costa_Rica" });
+        const hoyCR = new Date(ahoraCR);
+
+        const inicioDiaLocal = new Date(hoyCR.setHours(0, 0, 0, 0));
+        const finDiaLocal = new Date(hoyCR.setHours(23, 59, 59, 999));
+
+
+        const Cita = require('../models/citas');
+
+        // 1. Citas de hoy para el doctor
+        const citasHoy = await Cita.find({
+            doctorId: doctorId,
+            fechaHora: { $gte: inicioDiaLocal, $lte: finDiaLocal }
+        })
+            .populate('pacienteId', 'nombre apellidos telefono cedula')
+            .sort({ fechaHora: 1 });
+
+        const totalCompletada = citasHoy.filter(c => ['completada'].includes(c.estado)).length;
+        const totalCancelada = citasHoy.filter(c => ['cancelada'].includes(c.estado)).length;
+        const totalPendientes = citasHoy.filter(c => ['pendiente', 'confirmada'].includes(c.estado)).length;
+
+        // 2. Total por especialidad para hoy
+        const citasPorEspecialidad = await Cita.aggregate([
+            {
+                $match: {
+                    doctorId: new ObjectId(doctorId),
+                    fechaHora: { $gte: inicioDiaLocal, $lte: finDiaLocal }
+                }
+            }
+            ,
+            {
+                $group: {
+                    _id: "$especialidadId",
+                    total: { $sum: 1 }
+                }
+            },
+            {
+                $lookup: {
+                    from: "Especialidades",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "especialidad"
+                }
+            },
+            { $unwind: "$especialidad" },
+            {
+                $project: {
+                    _id: 0,
+                    especialidad: "$especialidad.nombreEspecialidad",
+                    total: 1
+                }
+            }
+        ]);
+
+        const labelsEspecialidades = citasPorEspecialidad.map(e => e.especialidad);
+        const datosEspecialidades = citasPorEspecialidad.map(e => e.total);
+
+        // Render
+        res.render('index', {
+            usuario: req.session.usuario,
+            viewParcial: 'doctor/inicio',
+            citasHoy,
+            labelsEspecialidades: JSON.stringify(labelsEspecialidades),
+            datosEspecialidades: JSON.stringify(datosEspecialidades),
+            totalPendientes,
+            totalCompletada,
+            totalCancelada,
+            request: req
+        });
+
+    } catch (error) {
+        console.error('❌ Error al cargar dashboard del doctor:', error);
+        res.status(500).send('Error al cargar el dashboard');
     }
 };

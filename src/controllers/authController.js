@@ -1,4 +1,5 @@
 const Usuario = require('../models/usuarios');
+const Doctor = require('../models/doctores');
 const bcrypt = require('bcrypt');
 const BitacoraUso = require('../models/bitacoraUso');
 
@@ -48,10 +49,19 @@ exports.login = async (req, res) => {
             return res.redirect('/cambiar-contrasena');
         }
 
+        let idDoctor = null;
+        if (usuario.rol === 'doctor') {
+            const doctorRelacionado = await Doctor.findOne({ usuarioId: usuario._id });
+            if (doctorRelacionado) {
+                idDoctor = doctorRelacionado._id;
+            }
+        }
+
         req.session.usuario = {
             id: usuario._id,
             email: usuario.email,
-            rol: usuario.rol
+            rol: usuario.rol,
+            idDoctor
         };
 
         await new BitacoraUso({
