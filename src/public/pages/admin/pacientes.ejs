@@ -1,0 +1,277 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Pacientes</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="abrirModal()" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-plus"></i> Agregar nuevo paciente
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaPacientes" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Nombre completo</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% pacientes.forEach(paciente=> { %>
+                        <tr>
+                            <td>
+                                <%= paciente.cedula %>
+                            </td>
+                            <td>
+                                <%= paciente.nombre %>
+                                    <%= paciente.apellido %>
+                            </td>
+                            <td>
+                                <%= paciente.telefono %>
+                            </td>
+                            <td>
+                                <%= paciente.email %>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn__icon" title="Editar" data-paciente='<%- JSON.stringify(paciente) %>'
+                                    onclick="cargarPacienteDesdeAtributo(this)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+
+                                <button class="btn__icon eliminar-btn" data-id="<%= paciente._id %>" title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para agregar nuevo paciente -->
+<div id="modalPaciente" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModal()">&times;</span>
+        <h2>Agregar nuevo paciente</h2>
+
+        <form action="/admin/pacientes" method="POST" class="modal__form">
+
+            <div class="grupo-input-consulta">
+                <input type="text" id="Cedula" name="cedula" placeholder="Cédula" required>
+                <button type="button" onclick="ConsultarCedula()" class="btn-consulta">Consultar</button>
+            </div>
+
+            <input type="text" id="Nombre" name="nombre" placeholder="Nombre" required>
+            <input type="text" id="Apellido" name="apellido" placeholder="Apellidos" required>
+
+            <input type="email" name="email" placeholder="Correo electrónico" required>
+            <input type="text" name="telefono" placeholder="Teléfono" required>
+            <input type="date" name="fechaNacimiento" placeholder="Fecha de nacimiento">
+            <input type="text" name="direccion" placeholder="Dirección">
+
+            <button type="submit" class="btn__agregar-nueva">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para editar paciente -->
+<div id="modalEditarPaciente" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModalEditar()">&times;</span>
+        <h2>Editar paciente</h2>
+
+        <form method="POST" id="formEditarPaciente" class="modal__form">
+            <input type="text" id="editarCedula" name="cedula" placeholder="Cédula" required readonly>
+            <input type="text" id="editarNombre" name="nombre" placeholder="Nombre" required>
+            <input type="text" id="editarApellido" name="apellido" placeholder="Apellidos" required>
+
+            <input type="email" id="editarEmail" name="email" placeholder="Correo electrónico" required>
+            <input type="text" id="editarTelefono" name="telefono" placeholder="Teléfono" required>
+            <input type="date" id="editarFechaNacimiento" name="fechaNacimiento" placeholder="Fecha de nacimiento">
+            <input type="text" id="editarDireccion" name="direccion" placeholder="Dirección">
+
+            <button type="submit" class="btn__agregar-nueva">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+
+<script src="/js/consultarCedula.js"></script>
+<script>
+    // -------------------------------------------- Modal Agregar Paciente
+    function abrirModal() {
+        const modal = document.getElementById("modalPaciente");
+        modal.style.display = "block";
+    }
+
+    function cerrarModal() {
+        document.getElementById("modalPaciente").style.display = "none";
+    }
+
+    // -------------------------------------------- Modal Editar Paciente
+    function cerrarModalEditar() {
+        document.getElementById("modalEditarPaciente").style.display = "none";
+    }
+
+    function cargarPacienteDesdeAtributo(btn) {
+        const paciente = JSON.parse(btn.getAttribute('data-paciente'));
+        console.log("Cargando paciente para editar:", paciente);
+
+        document.getElementById("editarCedula").value = paciente.cedula;
+        document.getElementById("editarNombre").value = paciente.nombre;
+        document.getElementById("editarApellido").value = paciente.apellido;
+        document.getElementById("editarEmail").value = paciente.email;
+        document.getElementById("editarTelefono").value = paciente.telefono || '';
+        document.getElementById("editarDireccion").value = paciente.direccion || '';
+        document.getElementById("editarFechaNacimiento").value = paciente.fechaNacimiento
+            ? new Date(paciente.fechaNacimiento).toISOString().split('T')[0]
+            : '';
+
+        document.getElementById("formEditarPaciente").action = `/admin/pacientes/editar/${paciente._id}`;
+        document.getElementById("modalEditarPaciente").style.display = "block";
+    }
+
+
+    // -------------------------------------------- Inicialización general
+    document.addEventListener('DOMContentLoaded', function () {
+        // Reiniciar tabla si ya existe
+        if ($.fn.DataTable.isDataTable('#tablaPacientes')) {
+            $('#tablaPacientes').DataTable().clear().destroy();
+        }
+
+        $('#tablaPacientes').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            },
+            responsive: true
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // ✅ Agregado
+        if (urlParams.get('agregado') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Paciente agregado!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        // ✅ Editado
+        if (urlParams.get('editado') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Paciente actualizado!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        // ✅ Eliminado
+        if (urlParams.get('eliminado') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Paciente eliminado!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        // ❌ Error: cédula duplicada
+        if (urlParams.get('error') === 'cedula') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ya existe un paciente con esta cédula.'
+            }).then(() => abrirModal());
+        }
+
+        // ❌ Error: correo duplicado
+        if (urlParams.get('error') === 'email') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ya existe un paciente con este correo.'
+            }).then(() => abrirModal());
+        }
+
+        // ❌ Error general
+        if (urlParams.get('error') === '1') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrió un error. Intenta de nuevo.'
+            });
+        }
+
+        // 🔄 Limpiar la URL
+        if (
+            urlParams.has('agregado') ||
+            urlParams.has('editado') ||
+            urlParams.has('eliminado') ||
+            urlParams.has('error')
+        ) {
+            const url = new URL(window.location);
+            ['agregado', 'editado', 'eliminado', 'error'].forEach(param => url.searchParams.delete(param));
+            window.history.replaceState({}, document.title, url);
+        }
+
+        // ✅ Confirmar edición
+        const formEditarPaciente = document.getElementById('formEditarPaciente');
+        if (formEditarPaciente) {
+            formEditarPaciente.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: '¿Guardar cambios?',
+                    text: 'Se actualizará la información del paciente.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formEditarPaciente.submit();
+                    }
+                });
+            });
+        }
+
+        // ✅ Confirmar eliminación
+        document.querySelectorAll('.eliminar-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const pacienteId = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Esta acción no se puede deshacer.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/admin/pacientes/eliminar/${pacienteId}`;
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>

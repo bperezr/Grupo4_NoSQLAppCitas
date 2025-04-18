@@ -501,4 +501,193 @@ td .btn__agendar-nueva {
     padding: 0.4rem 1rem;
     font-size: 0.9rem;
     border-radius: 6px;
+=======
+.modal__content--detalles {
+    max-width: 600px;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.modal__title {
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detalle__seccion {
+    margin-bottom: 1.5rem;
+    padding: 0.8rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.detalle__titulo {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    color: #444;
+}
+
+.modal__footer {
+    text-align: right;
+    margin-top: 1.2rem;
+}
+
+.btn__cerrar {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+}
+
+.btn__cerrar:hover {
+    background-color: #0056b3;
+}
+
+/* -------------------------------------------------------------  switch */
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: #ccc;
+    transition: .4s;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 4px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--c-success);
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+/* -------------------------------------------------------------  choices */
+
+
+.choices__inner {
+    display: flex !important
+;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    border: 1px solid #ccc !important;
+    border-radius: 6px !important;
+    background-color: #fff !important;
+    min-height: 41px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    gap: 0px !important;
+    transition: all 0.2s ease-in-out;
+}
+
+
+.choices__item--selectable {
+    background-color: var(--primary-clr) !important;
+    color: #fff !important;
+    border-radius: 50px !important;
+    padding: 4px 10px !important;
+    margin: 4px 6px 0 0 !important;
+    font-size: 13px !important;
+    font-weight: 500;
+    display: inline-flex !important;
+    align-items: center !important;
+    height: auto !important;
+}
+
+.choices__button {
+    color: var(--primary-text-clr) !important;
+    font-size: 15px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+    transition: opacity 0.2s ease;
+    border-radius: 50% !important;
+    padding: 0 4px !important;
+}
+
+.choices__button:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.choices__item--selectable .choices__button:before {
+    content: "×";
+    display: inline-block;
+}
+
+.choices__item--selectable[data-choice-selectable]::after {
+    display: none !important;
+}
+
+
+/*-------------------------------------------------------------  consulta cedula*/
+
+.grupo-input-consulta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.grupo-input-consulta input {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.btn-consulta {
+    height: 38px;
+    padding: 0 16px;
+    background-color: var(--primary-clr);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 0px !important;
+}
+
+.btn-consulta:hover {
+    background-color: var(--primary-text-clr);
 }

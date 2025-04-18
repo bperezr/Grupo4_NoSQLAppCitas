@@ -1,165 +1,173 @@
+const mongoose = require('mongoose');
 const Doctor = require('../models/doctores');
 const Sucursal = require('../models/sucursales');
-const BitacoraUso = require('../models/bitacoraUso');
 const Especialidad = require('../models/especialidades');
+const BitacoraUso = require('../models/bitacoraUso');
+const Usuario = require('../models/usuarios');
+const bcrypt = require('bcrypt');
 
-// Obtener todos los doctores
-exports.getDoctoresCitas = async (req, res) => {
+exports.listar = async (req, res) => {
     try {
-        const doctores = await Doctor.find({ estado: 'activo' }); 
-        res.status(200).json(doctores);
-    } catch (error) {
-        console.error('Error al obtener doctores:', error);
-        res.status(500).json({ message: 'Error al obtener doctores' });
-    }
-};
+        const doctores = await Doctor.find()
+            .populate('especialidadId')
+            .populate('sucursalId')
+            .populate('usuarioId');
 
-// Obtener todos los doctores
-exports.getDoctores = async (req, res) => {
-    try {
-        const doctores = await Doctor.find().populate('sucursalId', 'nombre');
         const sucursales = await Sucursal.find();
-        const especialidades = await Especialidad.find(); 
+        const especialidades = await Especialidad.find();
 
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
-            tipoAccion: 'Vio los doctores',
+            tipoAccion: 'Vio los Doctores',
             fechaHora: new Date()
         });
         await bitacora.save();
 
-        res.render("index", {
-          usuario: req.session.usuario,
-          doctores,
-          sucursales,
-          especialidades,
-          viewParcial: "admin/doctores",
+        res.render('index', {
+            usuario: req.session.usuario,
+            doctores,
+            sucursales,
+            especialidades,
+            viewParcial: 'admin/doctores'
         });
     } catch (error) {
-        console.error('Error al obtener doctores:', error);
-        res.status(500).send('Error al obtener doctores');
+        console.error('Error al listar doctores:', error);
+        res.status(500).send('Error al obtener los doctores');
     }
 };
 
-
-// Crear un nuevo doctor
-exports.crearDoctor = async (req, res) => {
+exports.crear = async (req, res) => {
     try {
-        const { nombre, apellido, email, especialidad, sucursalId, horarioAtencion } = req.body;
+        let { nombre, apellidos, email, telefono, sucursalId, estado } = req.body;
+        let especialidadId = req.body['especialidadId[]'];
+
+        if (!Array.isArray(especialidadId)) {
+            especialidadId = [especialidadId];
+        }
+
+        especialidadId = especialidadId.map(id => new mongoose.Types.ObjectId(id));
+        sucursalId = new mongoose.Types.ObjectId(sucursalId);
+
+        const usuarioExistente = await Usuario.findOne({ email });
+        if (usuarioExistente) {
+            return res.redirect('/admin/doctores?error=usuario');
+        }
+
+        const doctorExistente = await Doctor.findOne({ email });
+        if (doctorExistente) {
+            return res.redirect('/admin/doctores?error=doctor');
+        }
+
+        const hashedPassword = await bcrypt.hash('mediConnect01', 10);
+
+        const nuevoUsuario = new Usuario({
+            email,
+            contraseña: hashedPassword,
+            estado,
+            rol: 'doctor',
+            reinicioContraseña: true
+        });
+
+        const usuarioGuardado = await nuevoUsuario.save();
+
         const nuevoDoctor = new Doctor({
             nombre,
-            apellido,
+            apellidos,
             email,
-            especialidad,
+            telefono,
+            especialidadId,
             sucursalId,
-            horarioAtencion,
-            estado: 'activo'
+            usuarioId: usuarioGuardado._id,
+            estado
         });
-
-        const tipoAccion = `Agregó al doctor: ${nuevoDoctor.nombre}`;
-        const bitacora = new BitacoraUso({
-            usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
-            fechaHora: new Date()
-        });
-        await bitacora.save();
 
         await nuevoDoctor.save();
-        res.redirect('/doctores');
+
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: `Creó al doctor: ${nombre} ${apellidos} (${email})`,
+            fechaHora: new Date()
+        });
+
+        await bitacora.save();
+
+        res.redirect('/admin/doctores?agregado=1');
     } catch (error) {
-        console.error('Error al crear el doctor:', error);
+        console.error('Error al crear doctor:', error);
         res.status(500).send('Error al crear el doctor');
     }
 };
 
-// Activar un doctor
-exports.activarDoctor = async (req, res) => {
+exports.actualizar = async (req, res) => {
     try {
-        const { id } = req.params;
-        await Doctor.findByIdAndUpdate(id, { estado: 'activo' });
+        const { nombre, apellidos, email, telefono, sucursalId, estado, reinicioContraseña } = req.body;
+        let especialidadId = req.body['especialidadId[]'];
 
-        const doctor = await Doctor.findById(id);
-        const tipoAccion = `Activó al doctor: ${doctor.nombre} ${doctor.apellido}`;
-        const bitacora = new BitacoraUso({
-            usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
-            fechaHora: new Date()
-        });
-        await bitacora.save();
-        res.redirect('/doctores');
-    } catch (error) {
-        console.error('Error al activar el doctor:', error);
-        res.status(500).send('Error al activar el doctor');
-    }
-};
+        let especialidadesArray = Array.isArray(especialidadId) ? especialidadId : [especialidadId];
 
-// Desactivar un doctor
-exports.desactivarDoctor = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await Doctor.findByIdAndUpdate(id, { estado: 'inactivo' });
+        especialidadesArray = [...new Set(especialidadesArray.map(id => id.toString()))]
+            .map(id => new mongoose.Types.ObjectId(id));
 
-        const doctor = await Doctor.findById(id); 
-        const tipoAccion = `Desactivó al doctor: ${doctor.nombre} ${doctor.apellido}`;
-        const bitacora = new BitacoraUso({
-            usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
-            fechaHora: new Date()
-        });
-        await bitacora.save();
-        res.redirect('/doctores');
-    } catch (error) {
-        console.error('Error al desactivar el doctor:', error);
-        res.status(500).send('Error al desactivar el doctor');
-    }
-};
-
-// Editar un doctor
-exports.editarDoctor = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const doctor = await Doctor.findById(id);
-        const sucursales = await Sucursal.find();
-        const tipoAccion = `Entró a editar al doctor: ${doctor.nombre} ${doctor.apellido}`;
-        const bitacora = new BitacoraUso({
-            usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
-            fechaHora: new Date()
-        });
-        await bitacora.save();
-
-        res.render('admin/editarDoctor', { doctor, sucursales }); 
-    } catch (error) {
-        console.error('Error al obtener el doctor:', error);
-        res.status(500).send('Error al obtener el doctor');
-    }
-};
-
-// Actualizar los datos de un doctor
-exports.actualizarDoctor = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { nombre, apellido, email, especialidad, sucursalId, horarioAtencion } = req.body;
-        await Doctor.findByIdAndUpdate(id, {
+        const doctorActualizado = await Doctor.findByIdAndUpdate(req.params.id, {
             nombre,
-            apellido,
+            apellidos,
             email,
-            especialidad,
-            sucursalId,
-            horarioAtencion
-        });
+            telefono,
+            especialidadId: especialidadesArray,
+            sucursalId: new mongoose.Types.ObjectId(sucursalId),
+            estado
+        }, { new: true });
 
-        const doctorActualizado = await Doctor.findById(id);
-        const tipoAccion = `Editó al doctor: ${doctorActualizado.nombre} ${doctorActualizado.apellido}`;
+        if (doctorActualizado && doctorActualizado.usuarioId) {
+            await Usuario.findByIdAndUpdate(doctorActualizado.usuarioId, {
+                email,
+                reinicioContraseña: !!reinicioContraseña,
+                estado
+            });
+        }
+
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
+            tipoAccion: `Actualizó al doctor: ${nombre} ${apellidos}`,
             fechaHora: new Date()
         });
         await bitacora.save();
-        res.redirect('/doctores');
+
+        res.redirect('/admin/doctores?editado=1');
     } catch (error) {
-        console.error('Error al actualizar el doctor:', error);
-        res.status(500).send('Error al actualizar el doctor');
+        console.error('Error al actualizar doctor:', error);
+        res.status(500).send('Error al actualizar doctor');
+    }
+};
+
+exports.eliminar = async (req, res) => {
+    try {
+        const doctorId = req.params.id;
+
+        const doctor = await Doctor.findById(doctorId).populate('usuarioId');
+        if (!doctor) {
+            return res.status(404).send('Doctor no encontrado');
+        }
+
+        // Eliminar el usuario
+        if (doctor.usuarioId) {
+            await Usuario.findByIdAndDelete(doctor.usuarioId._id);
+        }
+
+        // Eliminar el doctor
+        await Doctor.findByIdAndDelete(doctorId);
+
+        // Registrar en bitácora
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: `Eliminó al doctor: ${doctor.nombre} ${doctor.apellidos}`,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
+        res.redirect('/admin/doctores?eliminado=1');
+    } catch (error) {
+        console.error('Error al eliminar doctor:', error);
+        res.status(500).send('Error al eliminar');
     }
 };
