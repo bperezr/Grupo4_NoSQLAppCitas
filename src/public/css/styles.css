@@ -628,6 +628,11 @@ input:checked+.slider:before {
   }
 
 
+.tituloAgenda{
+ color:var(--primary-clr) !important;
+ 
+}
+
 .calendar-container {
     background-color: var(--secondary-clr);
     padding: 1rem;
@@ -651,7 +656,7 @@ input:checked+.slider:before {
     padding: 10px;
     text-align: center;
     border-radius: 6px;
-    background-color: #444;
+    background-color:var(--primary-clr);
     cursor: pointer;
   }
 
@@ -707,9 +712,10 @@ input:checked+.slider:before {
   /* Columna izquierda: info de la cita */
   .info-container {
     flex: 1;
-    background-color: var(--secondary-clr);
+    background-color: var(--c-gray-100);
     padding: 1rem;
     border-radius: 8px;
+    justify-content: center;
   }
   
   .info-table {
@@ -720,7 +726,7 @@ input:checked+.slider:before {
   .info-table th {
     text-align: left;
     padding: 0.5rem;
-    color: #fff;
+    color: var(--primary-clr);
     width: 30%;
   }
   
@@ -745,7 +751,7 @@ input:checked+.slider:before {
   }
   
   .calendar-container, .time-slot-container {
-    background-color: var(--secondary-clr);
+    background-color: var(--c-gray-300);
     padding: 1rem;
     border-radius: 8px;
   }
@@ -783,7 +789,7 @@ input:checked+.slider:before {
 }
 
 .btn-consulta:hover {
-    background-color: var(--primary-text-clr);
+    background-color: var(--c-gray-500);
 }
 
 /*------------------------------------------------------------- Card Dashboard*/
@@ -799,6 +805,10 @@ input:checked+.slider:before {
     border-radius: 12px;
     padding: 16px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.horaClass{
+    margin-top: 2.5rem !important;
 }
  
 .card h3 {
@@ -821,12 +831,12 @@ input:checked+.slider:before {
  
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, 3fr);
     grid-template-rows: repeat(5, auto);
-    gap: 16px;
-    margin-top: 20px;
+    gap: 2px;
+    margin: 20px;
 }
- 
+
 .card {
     background: #ffffff;
     padding: 16px;
@@ -846,7 +856,7 @@ input:checked+.slider:before {
 }
  
 .card--small {
-    grid-row: span 2;
+    grid-row: span 4;
 }
  
 .card--pos2 {
@@ -883,3 +893,80 @@ input:checked+.slider:before {
 .text-center {
     text-align: center;
 }
+
+/*------------------------------------------------------------- Cita form*/
+
+.btnBuscar{
+background: var(--primary-clr) !important;
+color:var(--white-clr)
+}
+
+/* Centrar todo el form y sus elementos */
+#citaForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;     /* centra horizontalmente */
+    width: 80%;
+    max-width: 500px;        /* ajusta al ancho que quieras */
+    margin: 0 auto;          /* centra el form dentro del contenedor */
+    padding: 1rem;
+  }
+  
+  /* Cada grupo (label + control) ocupa todo el ancho disponible */
+  #citaForm .form-group {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    text-align: center;      /* centra el texto de los labels */
+  }
+  
+  /* Labels centrados y con espacio */
+  #citaForm .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  
+  /* Inputs, selects y textarea con border-radius y borde gris */
+  #citaForm input[type="text"],
+  #citaForm select,
+  #citaForm textarea {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: #333;
+  }
+  
+  /* Botón de búsqueda alineado y estilizado */
+  #citaForm .search-paciente {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  #citaForm .search-paciente input {
+    flex: 1;
+  }
+  
+  #citaForm .search-paciente button {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+  }
+  
+  /* Si quieres que el botón de submit también vaya igual */
+  #citaForm button[type="submit"] {
+    margin-top: 1rem;
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }

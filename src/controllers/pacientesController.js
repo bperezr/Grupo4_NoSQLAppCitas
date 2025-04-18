@@ -1,5 +1,6 @@
 const Paciente = require('../models/pacientes');
 const BitacoraUso = require('../models/bitacoraUso');
+const mongoose = require('mongoose');
 
 exports.listar = async (req, res) => {
     try {
@@ -20,6 +21,20 @@ exports.listar = async (req, res) => {
     } catch (error) {
         console.error('Error al listar pacientes:', error);
         res.status(500).send('Error al obtener los pacientes');
+    }
+};
+
+exports.consultarCedula = async (req, res) => {
+    try {
+        const { cedula } = req.params;
+
+        const paciente = await Paciente.findOne({cedula});
+        res.json(paciente);
+        
+
+    } catch (error) {
+        console.error('Error al consultar al paciente:', error);
+        res.status(500).send('Error al consultar paciente');
     }
 };
 
