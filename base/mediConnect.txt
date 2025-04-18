@@ -120,23 +120,28 @@ db.Pacientes.createIndex({ telefono: 1 }); // No es único
 
 //----------------------------------------Crear colecion de Citas
 db.createCollection("Citas", {
-    validator: {
-        $jsonSchema: {
-            bsonType: "object",
-            required: ["pacienteId", "doctorId", "fechaHora", "estado"],
-            properties: {
-                pacienteId: { bsonType: "objectId" },
-                doctorId: { bsonType: "objectId" },
-                fechaHora: { bsonType: "date" },
-                estado: { bsonType: "string", enum: ["pendiente", "confirmada", "cancelada"] },
-                motivo: { bsonType: "string" },
-                notas: { bsonType: "string" }
-            }
-        }
-    },
-    validationAction: "error"
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["pacienteId", "doctorId", "fechaHora", "estado", "especialidadId"],
+      properties: {
+        pacienteId: { bsonType: "objectId" },
+        doctorId: { bsonType: "objectId" },
+        especialidadId: { bsonType: "objectId" },
+        fechaHora: { bsonType: "date" },
+        estado: {
+          bsonType: "string",
+          enum: ["pendiente", "confirmada", "cancelada", "completada"]
+        },
+        motivo: { bsonType: "string" },
+        notas: { bsonType: "string" }
+      }
+    }
+  },
+  validationAction: "error"
 });
 
+db.Citas.createIndex({ especialidadId: 1 });
 db.Citas.createIndex({ pacienteId: 1 });
 db.Citas.createIndex({ doctorId: 1 });
 db.Citas.createIndex({ fechaHora: 1 });
