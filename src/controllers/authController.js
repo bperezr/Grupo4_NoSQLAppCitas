@@ -1,5 +1,6 @@
 const Usuario = require('../models/usuarios');
 const Doctor = require('../models/doctores');
+const Farmaceutico = require('../models/farmaceuticos');
 const bcrypt = require('bcrypt');
 const BitacoraUso = require('../models/bitacoraUso');
 
@@ -50,10 +51,20 @@ exports.login = async (req, res) => {
         }
 
         let idDoctor = null;
+        let idSucursal = null;
+
         if (usuario.rol === 'doctor') {
             const doctorRelacionado = await Doctor.findOne({ usuarioId: usuario._id });
             if (doctorRelacionado) {
                 idDoctor = doctorRelacionado._id;
+                idSucursal = doctorRelacionado.sucursalId;
+            }
+        }
+
+        if (usuario.rol === 'farmaceutico') {
+            const farmaceuticoRelacionado = await Farmaceutico.findOne({ usuarioId: usuario._id });
+            if (farmaceuticoRelacionado) {
+                idSucursal = farmaceuticoRelacionado.sucursalId;
             }
         }
 
@@ -61,7 +72,8 @@ exports.login = async (req, res) => {
             id: usuario._id,
             email: usuario.email,
             rol: usuario.rol,
-            idDoctor
+            idDoctor,
+            idSucursal
         };
 
         await new BitacoraUso({
@@ -75,8 +87,8 @@ exports.login = async (req, res) => {
                 return res.redirect('/admin');
             case 'doctor':
                 return res.redirect('/doctor');
-            case 'paciente':
-                return res.redirect('/paciente');
+            case 'farmaceutico':
+                return res.redirect('/farmaceutico');
             default:
                 return res.redirect('/login');
         }

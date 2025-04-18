@@ -289,3 +289,50 @@ db.createCollection("BitacoraUso", {
 
 db.BitacoraUso.createIndex({ usuarioId: 1 });
 db.BitacoraUso.createIndex({ fechaHora: -1 });
+
+//
+
+db.createCollection("Farmaceuticos", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["nombre", "apellidos", "email", "usuarioId", "sucursalId", "estado"],
+      properties: {
+        nombre: {
+          bsonType: "string",
+          description: "Nombre del farmacéutico, requerido"
+        },
+        apellidos: {
+          bsonType: "string",
+          description: "Apellidos del farmacéutico, requerido"
+        },
+        email: {
+          bsonType: "string",
+          pattern: "^.+@.+\\..+$",
+          description: "Correo electrónico válido, requerido"
+        },
+        telefono: {
+          bsonType: "string",
+          description: "Teléfono del farmacéutico (opcional)"
+        },
+        usuarioId: {
+          bsonType: "objectId",
+          description: "Referencia al usuario del sistema, requerido"
+        },
+        sucursalId: {
+          bsonType: "objectId",
+          description: "Referencia a la sucursal, requerido"
+        },
+        estado: {
+          enum: ["activo", "inactivo"],
+          description: "Estado del farmacéutico (activo/inactivo)"
+        }
+      }
+    }
+  }
+})
+
+db.Farmaceuticos.createIndex({ email: 1 }, { unique: true })
+db.Farmaceuticos.createIndex({ usuarioId: 1 })
+db.Farmaceuticos.createIndex({ sucursalId: 1 })
+

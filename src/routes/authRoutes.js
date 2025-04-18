@@ -50,10 +50,10 @@ router.get('/admin', verificarRol('admin'), (req, res) => {
     });
 });
 
-router.get('/paciente', verificarRol('paciente'), (req, res) => {
+router.get('/farmaceutico', verificarRol('farmaceutico'), (req, res) => {
     res.render('index', {
         usuario: req.session.usuario,
-        viewParcial: 'paciente/inicio',
+        viewParcial: 'farmaceutico/inicio',
         request: req
     });
 });

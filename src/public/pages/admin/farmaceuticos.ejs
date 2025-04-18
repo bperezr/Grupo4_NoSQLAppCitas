@@ -1,0 +1,398 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Farmacéuticos</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="abrirModal()" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-plus"></i> Agregar nuevo Farmacéutico
+                </button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="tablaFarmaceuticos" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Sucursal</th>
+                        <th>Contraseña</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% farmaceuticos.forEach(f=> { %>
+                        <tr>
+                            <td>
+                                <%= f.nombre %>
+                                    <%= f.apellidos %>
+                            </td>
+                            <td>
+                                <% if (f.sucursalId && f.sucursalId.nombre) { %>
+                                    <%= f.sucursalId.nombre %>
+                                        <% } else { %>
+                                            <em>No asignada</em>
+                                            <% } %>
+                            </td>
+                            <td>
+                                <% if (f.usuarioId?.reinicioContraseña===false) { %>
+                                    <i class="fa-solid fa-circle-check" style="color: green;"></i> No Requiere reinicio
+                                    <% } else if (f.usuarioId?.reinicioContraseña===true) { %>
+                                        <i class="fa-solid fa-circle-xmark" style="color: orange;"></i> Requiere
+                                        reinicio
+                                        <% } else { %>
+                                            ---
+                                            <% } %>
+                            </td>
+                            <td>
+                                <% if (f.estado==='activo' ) { %>
+                                    <i class="fa-solid fa-lock-open" style="color: green;"></i>
+                                    <% } else { %>
+                                        <i class="fa-solid fa-lock" style="color: orange;"></i>
+                                        <% } %>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn__icon" title="Ver detalles"
+                                    data-farmaceutico='<%- JSON.stringify(f) %>' onclick="abrirModalDetalles(this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button class="btn__icon" title="Editar" data-farmaceutico='<%- JSON.stringify(f) %>'
+                                    onclick="cargarFarmaceuticoDesdeAtributo(this)">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                                <button class="btn__icon eliminar-btn" data-id="<%= f._id %>" title="Eliminar">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para agregar nuevo farmacéutico -->
+<div id="modalUsuario" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModal()">&times;</span>
+        <h2>Agregar nuevo farmacéutico</h2>
+
+        <form action="/admin/farmaceuticos" method="POST" class="modal__form">
+
+            <input type="text" name="nombre" placeholder="Nombre" required>
+            <input type="text" name="apellidos" placeholder="Apellidos" required>
+            <input type="email" name="email" placeholder="Correo electrónico" required>
+            <input type="text" name="telefono" placeholder="Teléfono" required>
+
+            <select name="sucursalId" required>
+                <option value="">Seleccione Sucursal</option>
+                <% sucursales.forEach(s=> { %>
+                    <option value="<%= s._id %>">
+                        <%= s.nombre %>
+                    </option>
+                    <% }) %>
+            </select>
+
+            <select name="estado" required>
+                <option value="activo" selected>Activo</option>
+                <option value="inactivo">Inactivo</option>
+            </select>
+
+            <p class="nota-info">
+                La contraseña temporal será <strong>mediConnect01</strong>. El usuario deberá cambiarla al iniciar
+                sesión.
+            </p>
+
+            <button type="submit" class="btn__agregar-nueva">Guardar</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para editar farmacéutico -->
+<div id="modalEditarUsuario" class="modal">
+    <div class="modal__content">
+        <span class="modal__close" onclick="cerrarModalEditar()">&times;</span>
+        <h2>Editar farmacéutico</h2>
+
+        <form id="formEditarFarmaceutico" method="POST" class="modal__form">
+            <input type="text" name="nombre" id="editarNombre" placeholder="Nombre" required>
+            <input type="text" name="apellidos" id="editarApellidos" placeholder="Apellidos" required>
+            <input type="email" name="email" id="editarEmail" placeholder="Correo electrónico" required>
+            <input type="text" name="telefono" id="editarTelefono" placeholder="Teléfono" required>
+
+            <select name="sucursalId" id="editarSucursal" required>
+                <option value="">Seleccione Sucursal</option>
+                <% sucursales.forEach(s=> { %>
+                    <option value="<%= s._id %>">
+                        <%= s.nombre %>
+                    </option>
+                    <% }) %>
+            </select>
+
+            <select name="estado" id="editarEstado" required>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+            </select>
+
+            <div class="form__group">
+                <label for="editarReinicio" class="form__label">¿Reiniciar contraseña en el próximo inicio?</label>
+                <label class="switch">
+                    <input type="checkbox" name="reinicioContraseña" id="editarReinicio" value="true">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <p class="nota-info">
+                Si se activa, la contraseña temporal será <strong>mediConnect01</strong>. El usuario deberá cambiarla al
+                iniciar sesión.
+            </p>
+
+            <button type="submit" class="btn__agregar-nueva">Guardar cambios</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para ver detalles del farmacéutico -->
+<div id="modalDetallesFarmaceutico" class="modal">
+    <div class="modal__content modal__content--detalles">
+        <span class="modal__close" onclick="cerrarModalDetalles()">&times;</span>
+        <h2 class="modal__title">🧪 Detalles del Farmacéutico</h2>
+
+        <div class="modal__info">
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">🧍 Información Personal</h3>
+                <p><strong>Nombre:</strong> <span id="detalleNombre"></span></p>
+                <p><strong>Correo:</strong> <span id="detalleCorreo"></span></p>
+                <p><strong>Teléfono:</strong> <span id="detalleTelefono"></span></p>
+                <p><strong>Estado:</strong> <span id="detalleEstado"></span></p>
+                <p><strong>Contraseña:</strong> <span id="detalleReinicio"></span></p>
+            </section>
+
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">📌 Sucursal</h3>
+                <p><strong>Nombre:</strong> <span id="detalleSucursalNombre"></span></p>
+                <p><strong>Dirección:</strong> <span id="detalleSucursalDireccion"></span></p>
+                <p><strong>Teléfono:</strong> <span id="detalleSucursalTelefono"></span></p>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+    function abrirModal() {
+        const modal = document.getElementById("modalUsuario");
+        modal.style.display = "block";
+    }
+
+    function cerrarModal() {
+        document.getElementById("modalUsuario").style.display = "none";
+    }
+
+    function cerrarModalEditar() {
+        document.getElementById("modalEditarUsuario").style.display = "none";
+    }
+
+    // -------------------------------------------- Función Modal para ver detalles del farmacéutico
+
+    function abrirModalDetalles(btn) {
+        const farmaceutico = JSON.parse(btn.getAttribute('data-farmaceutico'));
+
+        console.log("Contenido usuarioId:", farmaceutico.usuarioId);
+
+        document.getElementById("detalleNombre").textContent = `${farmaceutico.nombre} ${farmaceutico.apellidos}`;
+        document.getElementById("detalleCorreo").textContent = farmaceutico.email;
+        document.getElementById("detalleTelefono").textContent = farmaceutico.telefono || '---';
+        document.getElementById("detalleEstado").textContent = farmaceutico.estado === 'activo' ? 'Activo' : 'Inactivo';
+        document.getElementById("detalleReinicio").textContent =
+            farmaceutico.usuarioId?.reinicioContraseña === false
+                ? 'No requiere reinicio'
+                : farmaceutico.usuarioId?.reinicioContraseña === true
+                    ? 'Requiere reinicio'
+                    : '---';
+
+        document.getElementById("detalleSucursalNombre").textContent = farmaceutico.sucursalId?.nombre || '---';
+        document.getElementById("detalleSucursalDireccion").textContent = farmaceutico.sucursalId?.direccion || '---';
+        document.getElementById("detalleSucursalTelefono").textContent = farmaceutico.sucursalId?.telefono || '---';
+
+        document.getElementById("modalDetallesFarmaceutico").style.display = "block";
+    }
+
+    function cerrarModalDetalles() {
+        document.getElementById("modalDetallesFarmaceutico").style.display = "none";
+    }
+
+    // -------------------------------------------- Función para cargar farmacéutico en el modal de edición
+
+    function cargarFarmaceuticoDesdeAtributo(btn) {
+        const farmaceutico = JSON.parse(btn.getAttribute('data-farmaceutico'));
+        console.log("Click en editar, cargando farmacéutico:", farmaceutico);
+
+        document.getElementById("editarNombre").value = farmaceutico.nombre;
+        document.getElementById("editarApellidos").value = farmaceutico.apellidos;
+        document.getElementById("editarEmail").value = farmaceutico.email;
+        document.getElementById("editarTelefono").value = farmaceutico.telefono || '';
+        document.getElementById("editarEstado").value = farmaceutico.estado || "activo";
+        document.getElementById("editarReinicio").checked = farmaceutico.usuarioId?.reinicioContraseña === true;
+
+        document.getElementById("modalEditarUsuario").style.display = "block";
+
+        // Selección de sucursal
+        setTimeout(() => {
+            const selectSucursal = document.getElementById("editarSucursal");
+            const idSucursal = String(farmaceutico.sucursalId?._id || '');
+
+            Array.from(selectSucursal.options).forEach(opt => {
+                opt.selected = opt.value === idSucursal;
+            });
+        }, 10);
+
+        // Definir acción del formulario
+        document.getElementById("formEditarFarmaceutico").action = `/admin/farmaceuticos/editar/${farmaceutico._id}`;
+    }
+
+    // -------------------------------------------- Función para inicializar DataTable y manejar mensajes de éxito/error
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Reiniciar tabla si ya existe
+        if ($.fn.DataTable.isDataTable('#tablaFarmaceuticos')) {
+            $('#tablaFarmaceuticos').DataTable().clear().destroy();
+        }
+
+        $('#tablaFarmaceuticos').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            },
+            responsive: true
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // ✅ Agregado
+        if (urlParams.get('agregado') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Farmacéutico agregado!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        // ✅ Editado
+        if (urlParams.get('editado') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Farmacéutico actualizado!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        // ✅ Eliminado
+        if (urlParams.get('eliminado') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Farmacéutico eliminado!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        // ❌ Usuario ya existe
+        if (urlParams.get('error') === 'usuario') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ya existe un usuario con ese correo electrónico.'
+            }).then(() => abrirModal());
+        }
+
+        // ❌ Farmacéutico ya existe
+        if (urlParams.get('error') === 'farmaceutico') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ya existe un farmacéutico registrado con ese correo.'
+            }).then(() => abrirModal());
+        }
+
+        // ❌ Error genérico
+        if (urlParams.get('error') === '1') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrió un error. Intenta de nuevo.'
+            });
+        }
+
+        // 🔄 Limpiar la URL
+        if (
+            urlParams.has('agregado') ||
+            urlParams.has('editado') ||
+            urlParams.has('eliminado') ||
+            urlParams.has('error')
+        ) {
+            const url = new URL(window.location);
+            url.searchParams.delete('agregado');
+            url.searchParams.delete('editado');
+            url.searchParams.delete('eliminado');
+            url.searchParams.delete('error');
+            window.history.replaceState({}, document.title, url);
+        }
+
+        // ✅ Confirmación de edición
+        const formEditarFarmaceutico = document.getElementById('formEditarFarmaceutico');
+        if (formEditarFarmaceutico) {
+            formEditarFarmaceutico.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: '¿Guardar cambios?',
+                    text: 'Se actualizará la información del farmacéutico.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        formEditarFarmaceutico.submit();
+                    }
+                });
+            });
+        }
+
+        // ✅ Confirmar eliminación
+        document.querySelectorAll('.eliminar-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const farmaceuticoId = this.getAttribute('data-id');
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Esta acción no se puede deshacer.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `/admin/farmaceuticos/eliminar/${farmaceuticoId}`;
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+
+</script>

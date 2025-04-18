@@ -12,6 +12,7 @@ const especialidadesRoutes = require('./routes/especialidadesRoutes');
 const historialRoutes = require('./routes/historialCitasRoutes');
 const pagosRoutes = require('./routes/pagosRoutes');
 const pacientesRoutes = require('./routes/pacientesRoutes');
+const farmaceuticosRoutes = require('./routes/farmaceuticosRoutes');
 
 // Local
 //const connectDB = require('./config/db');
@@ -65,6 +66,7 @@ app.use('/', especialidadesRoutes);
 app.use('/', historialRoutes);
 app.use('/', pagosRoutes);
 app.use('/', pacientesRoutes);
+app.use('/', farmaceuticosRoutes)
 
 const PORT = process.env.PORT || 5010;
 app.listen(PORT, () => {

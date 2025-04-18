@@ -52,6 +52,15 @@
                     </a>
                 </li>
 
+                <li
+                    class="list__item <%= request.originalUrl.includes('/farmaceuticos') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/farmaceuticos" title="Farmacéuticos">
+                        <i class="fa-solid fa-mortar-pestle"></i>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/farmaceuticos') ? 'area__text--active' : '' %>">Farmacéuticos</span>
+                    </a>
+                </li>
+
                 <li class="list__item <%= request.originalUrl.includes('/pacientes') ? 'list__item--active' : '' %>">
                     <a class="item__area" href="/admin/pacientes" title="Pacientes">
                         <i class="fa-solid fa-users"></i>
@@ -162,6 +171,23 @@
                         </li>
 
                         <% } %>
+
+                            <% if (usuario.rol==='farmaceutico' ) { %>
+
+                                <li class="list__item">
+                                    <a class="item__area" href="/proveedores.html" title="Medicamentos">
+                                        <i class="fa-solid fa-pills"></i>
+                                        <span class="area__text">Medicamentos</span>
+                                    </a>
+                                </li>
+                                <li class="list__item">
+                                    <a class="item__area" href="/recetas.html" title="Recetas">
+                                        <i class="fa-solid fa-prescription-bottle-medical"></i>
+                                        <span class="area__text">Recetas</span>
+                                    </a>
+                                </li>
+
+                                <% } %>
         </ul>
 
         <div class="sidebar__bottom">
