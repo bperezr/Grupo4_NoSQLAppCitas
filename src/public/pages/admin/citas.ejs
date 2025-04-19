@@ -2,7 +2,7 @@
     <div class="content__title">
         <h1>Crear cita</h1>
     </div>
-  <form id="citaForm" >
+  <form id="citaForm" action="/admin/crearCitas" method="POST">
     <div class="dashboard-grid">
         <!-- Citas del día -->
         <div class="card card--principal">
@@ -27,6 +27,20 @@
                       <label for="Nombre">Nombre del Paciente</label>
                       <input type="text" id="Nombre" readonly>
                     </div>
+
+                    <!-- Sucursal -->
+                    <div class="form-group">
+                        <label for="sucursalSelect">Sucursal</label>
+                        <select  id="sucursalId" name="sucursalId" required>
+                            <option value="">Seleccione una sucursal</option>
+                            <% sucursales.forEach(s=> { %>
+                                <option value="<%= s._id %>">
+                                    <%= s.nombre %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </label>
+                    </div>
               
                     <!-- Especialidad -->
                     <div class="form-group">
@@ -35,8 +49,7 @@
                         <option value="">Seleccione una especialidad</option>
                     </select>
                     </label>
-                    </div>
-                    <input type="hidden" name="sucursalId" id="sucursalId" value="68000823468c4e7fbdb5101e">
+                    </div>           
               
                     <!-- Doctor -->
                     <div class="form-group">
@@ -301,7 +314,6 @@ function cargarHoras(fecha, doctorId) {
         })
         .then(res => alert('Cita creada ID: ' + res._id))
         .catch(err => alert(err.message));
-        console.log(res)
         });
   </script>
 
