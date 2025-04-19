@@ -1,0 +1,213 @@
+<% const hoyCR=new Date().toLocaleDateString('es-CR', { timeZone: 'America/Costa_Rica' , year: 'numeric' , month: 'long'
+    , day: 'numeric' }); %>
+
+    <div class="content">
+        <div class="content__title">
+            <h1>Citas de Hoy – <%= hoyCR %>
+            </h1>
+        </div>
+
+        <section class="main__container">
+            <div class="table-container">
+                <table id="tablaCitasDoctor" class="display compact nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>PACIENTE</th>
+                            <th>CÉDULA</th>
+                            <th>HORA</th>
+                            <th>MOTIVO</th>
+                            <th>ESPECIALIDAD</th>
+                            <th>ESTADO</th>
+                            <th class="text-center">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% citas.forEach(cita=> { %>
+                            <tr>
+                                <td>
+                                    <strong>
+                                        <%= cita.pacienteId?.nombre %>
+                                            <%= cita.pacienteId?.apellido %>
+                                    </strong><br>
+                                    <i class="fa-solid fa-phone" style="margin-right: 5px;"></i>
+                                    <%= cita.pacienteId?.telefono %>
+                                </td>
+                                <td>
+                                    <%= cita.pacienteId?.cedula %>
+                                </td>
+                                <td>
+                                    <%= new Date(cita.fechaHora).toLocaleTimeString('es-CR', {
+                                        timeZone: 'America/Costa_Rica' , hour: '2-digit' , minute: '2-digit' }) %>
+                                </td>
+                                <td>
+                                    <%= cita.motivo || '---' %>
+                                </td>
+                                <td>
+                                    <%= cita.nombreEspecialidad || '---' %>
+                                </td>
+                                <td>
+                                    <% if (cita.estado==='pendiente' ) { %>
+                                        🟡 Pendiente
+                                        <% } else if (cita.estado==='confirmada' ) { %>
+                                            🔵 Confirmada
+                                            <% } else if (cita.estado==='cancelada' ) { %>
+                                                🔴 Cancelada
+                                                <% } else if (cita.estado==='completada' ) { %>
+                                                    🟢 Completada
+                                                    <% } %>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn__icon" title="Ver detalles"
+                                        data-cita='<%- JSON.stringify(cita) %>' onclick="abrirModalDetallesCita(this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                    <% if (cita.estado==='pendiente' || cita.estado==='confirmada' ) { %>
+                                        <a href="/doctor/citas/<%= cita._id %>/atender" class="btn__icon"
+                                            title="Atender cita">
+                                            <i class="fa-solid fa-stethoscope"></i>
+                                        </a>
+                                        <% } else { %>
+                                            <button class="btn__icon" title="Cita finalizada" disabled
+                                                style="opacity: 0.5; cursor: not-allowed;">
+                                                <i class="fa-solid fa-stethoscope"></i>
+                                            </button>
+                                            <% } %>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal para ver detalles de la cita -->
+    <div id="modalDetallesCita" class="modal">
+        <div class="modal__content modal__content--detalles">
+            <span class="modal__close" onclick="cerrarModalDetallesCita()">&times;</span>
+            <h2 class="modal__title">📋 Detalles de la Cita</h2>
+
+            <div class="modal__info">
+                <!-- 🧍 Paciente -->
+                <section class="detalle__seccion">
+                    <h3 class="detalle__titulo">🧍 Paciente</h3>
+                    <p><strong>Nombre:</strong> <span id="detallePacienteNombre"></span></p>
+                    <p><strong>Teléfono:</strong> <span id="detallePacienteTelefono"></span></p>
+                    <p><strong>Cédula:</strong> <span id="detallePacienteCedula"></span></p>
+                    <p><strong>Email:</strong> <span id="detallePacienteEmail"></span></p>
+                    <p><strong>Dirección:</strong> <span id="detallePacienteDireccion"></span></p>
+                    <p><strong>Fecha Nacimiento:</strong> <span id="detallePacienteNacimiento"></span></p>
+                </section>
+
+
+                <section class="detalle__seccion">
+                    <h3 class="detalle__titulo">🩺 Información de la Cita</h3>
+                    <p><strong>Hora:</strong> <span id="detalleCitaHora"></span></p>
+                    <p><strong>Motivo:</strong> <span id="detalleCitaMotivo"></span></p>
+                    <p><strong>Notas:</strong> <span id="detalleCitaNotas"></span></p>
+                    <p><strong>Estado:</strong> <span id="detalleCitaEstado"></span></p>
+                </section>
+
+                <section class="detalle__seccion">
+                    <h3 class="detalle__titulo">📌 Especialidad y Sucursal</h3>
+                    <p><strong>Especialidad:</strong> <span id="detalleCitaEspecialidad"></span></p>
+                    <p><strong>Sucursal:</strong> <span id="detalleCitaSucursal"></span></p>
+                </section>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if ($.fn.DataTable.isDataTable('#tablaCitasDoctor')) {
+                $('#tablaCitasDoctor').DataTable().clear().destroy();
+            }
+
+            $('#tablaCitasDoctor').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                },
+                responsive: true,
+                order: [[2, 'asc']] // ordena por hora
+            });
+        });
+    </script>
+
+    <script>
+        function abrirModalDetallesCita(btn) {
+            const cita = JSON.parse(btn.getAttribute('data-cita'));
+
+
+            //Paciente
+            document.getElementById("detallePacienteNombre").textContent =
+                `${cita.pacienteId?.nombre || '---'} ${cita.pacienteId?.apellido || ''}`;
+            document.getElementById("detallePacienteTelefono").textContent = cita.pacienteId?.telefono || '---';
+            document.getElementById("detallePacienteCedula").textContent = cita.pacienteId?.cedula || '---';
+            document.getElementById("detallePacienteEmail").textContent = cita.pacienteId?.email || '---';
+            document.getElementById("detallePacienteDireccion").textContent = cita.pacienteId?.direccion || '---';
+
+            if (cita.pacienteId?.fechaNacimiento) {
+                const nacimiento = new Date(cita.pacienteId.fechaNacimiento).toLocaleDateString('es-CR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    timeZone: 'America/Costa_Rica'
+                });
+                document.getElementById("detallePacienteNacimiento").textContent = nacimiento;
+            } else {
+                document.getElementById("detallePacienteNacimiento").textContent = '---';
+            }
+
+            //Cita
+            const horaLocal = new Date(cita.fechaHora).toLocaleTimeString('es-CR', {
+                timeZone: 'America/Costa_Rica',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById("detalleCitaHora").textContent = horaLocal;
+            document.getElementById("detalleCitaMotivo").textContent = cita.motivo || '---';
+            document.getElementById("detalleCitaNotas").textContent = cita.notas || '---';
+            document.getElementById("detalleCitaEstado").textContent = cita.estado || '---';
+
+            // Especialidad Sucursal
+            document.getElementById("detalleCitaEspecialidad").textContent = cita.nombreEspecialidad || '---';
+            document.getElementById("detalleCitaSucursal").textContent = cita.sucursalNombre || '---';
+
+
+            // modal
+            document.getElementById("modalDetallesCita").style.display = "block";
+        }
+
+        function cerrarModalDetallesCita() {
+            document.getElementById("modalDetallesCita").style.display = "none";
+        }
+
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // ✅ Cita atendida
+            if (urlParams.get('atendida') === '1') {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Cita completada!',
+                    text: 'La atención se ha guardado correctamente.',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+
+            // ✅ Cita cancelada
+            if (urlParams.get('cancelada') === '1') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Cita cancelada',
+                    text: 'La cita fue marcada como cancelada.',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        });
+    </script>

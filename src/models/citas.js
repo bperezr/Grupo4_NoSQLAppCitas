@@ -11,6 +11,11 @@ const citaSchema = new mongoose.Schema({
         ref: 'Doctores',
         required: true
     },
+    especialidadId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Especialidades',
+        required: true
+    },
     fechaHora: {
         type: Date,
         required: true

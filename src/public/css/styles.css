@@ -792,3 +792,109 @@ input:checked+.slider:before {
 .text-center {
     text-align: center;
 }
+
+/*------------------------------------------------------------- Vista cita doctor */
+.cita-doctor-content {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: auto;
+}
+
+.cita-doctor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.cita-doctor-header h1 {
+    font-size: 1.8rem;
+    color: var(--primary-clr);
+    flex: 1;
+    text-align: center;
+}
+
+.cita-doctor-btn {
+    display: inline-block;
+    background-color: var(--primary-text-clr);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+}
+
+.cita-doctor-btn:hover {
+    background-color: var(--primary-clr);
+}
+
+.cita-doctor-btn2 {
+    display: inline-block;
+    background-color: var(--c-teal);
+    color: var(--c-gray-100);
+    padding: 1rem 4rem;
+    font-weight: bold;
+    font-size: medium;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+}
+
+.cita-doctor-btn2:hover {
+    background-color: var(--c-success);
+}
+
+.cita-doctor-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+    margin-bottom: 1.5rem;
+}
+
+.cita-doctor-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: #333;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0.5rem;
+}
+
+.cita-doctor-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.cita-doctor-form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--primary-clr);
+    font-weight: bold;
+}
+
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-size: 1rem;
+}
+
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--primary-text-clr);
+    box-shadow: 0 0 0 2px rgba(109, 145, 184, 0.2);
+}
+
+.text-center {
+    text-align: center;
+}

@@ -145,11 +145,13 @@
                     <% if (usuario.rol==='doctor' ) { %>
 
                         <li
-                            class="list__item <%= request.originalUrl.includes('/citas') ? 'list__item--active' : '' %>">
-                            <a class="item__area" href="/admin/citas" title="Citas">
-                                <i class="fa-solid fa-box"></i>
+                            class="list__item <%= request.originalUrl.includes('/doctor/citas') ? 'list__item--active' : '' %>">
+                            <a class="item__area" href="/doctor/citas" title="Citas Pendientes">
+                                <i class="fa-solid fa-calendar-check"></i>
                                 <span
-                                    class="area__text <%= request.originalUrl.includes('/citas') ? 'area__text--active' : '' %>">Citas</span>
+                                    class="area__text <%= request.originalUrl.includes('/doctor/citas') ? 'area__text--active' : '' %>">
+                                    Citas Pendientes
+                                </span>
                             </a>
                         </li>
 

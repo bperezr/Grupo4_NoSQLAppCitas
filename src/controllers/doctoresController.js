@@ -257,3 +257,127 @@ exports.vistaDashboard = async (req, res) => {
         res.status(500).send('Error al cargar el dashboard');
     }
 };
+
+exports.vistaCitasPendientes = async (req, res) => {
+    try {
+        const doctorId = req.session.usuario.idDoctor;
+
+        const ahoraCR = new Date().toLocaleString("en-US", { timeZone: "America/Costa_Rica" });
+        const hoyCR = new Date(ahoraCR);
+        const inicioDia = new Date(hoyCR.setHours(0, 0, 0, 0));
+        const finDia = new Date(hoyCR.setHours(23, 59, 59, 999));
+
+        const Cita = require('../models/citas');
+        const Especialidad = require('../models/especialidades');
+
+        const citas = await Cita.find({
+            doctorId: doctorId,
+            fechaHora: { $gte: inicioDia, $lte: finDia }
+        })
+            .populate('pacienteId', 'nombre apellido cedula telefono email direccion fechaNacimiento')
+            .populate({
+                path: 'doctorId',
+                populate: {
+                    path: 'sucursalId',
+                    select: 'nombre direccion telefono'
+                }
+            })
+            .sort({ fechaHora: 1 });
+
+        const especialidades = await Especialidad.find({}, 'nombreEspecialidad');
+        const mapaEspecialidades = {};
+        especialidades.forEach(e => {
+            mapaEspecialidades[e._id.toString()] = e.nombreEspecialidad;
+        });
+
+        const citasConExtras = citas.map(cita => {
+            const citaObj = cita.toObject();
+            return {
+                ...citaObj,
+                nombreEspecialidad: mapaEspecialidades[citaObj.especialidadId?.toString()] || '---',
+                sucursalNombre: citaObj.doctorId?.sucursalId?.nombre || '---'
+            };
+        });
+
+        res.render('index', {
+            usuario: req.session.usuario,
+            viewParcial: 'doctor/citasPendientes',
+            citas: citasConExtras,
+            request: req
+        });
+
+    } catch (error) {
+        console.error('❌ Error al cargar vista de citas pendientes:', error);
+        res.status(500).send('Error al cargar las citas del día');
+    }
+};
+
+exports.vistaAtenderCita = async (req, res) => {
+    try {
+        const citaId = req.params.id;
+        const Cita = require('../models/citas');
+        const BitacoraUso = require('../models/bitacoraUso');
+
+        const cita = await Cita.findById(citaId)
+            .populate('pacienteId', 'nombre apellido cedula telefono email direccion fechaNacimiento')
+            .populate('especialidadId', 'nombreEspecialidad')
+            .populate({
+                path: 'doctorId',
+                populate: {
+                    path: 'sucursalId',
+                    select: 'nombre direccion telefono'
+                }
+            });
+
+        if (!cita) return res.status(404).send('Cita no encontrada');
+
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: `Ingresó a la cita (${cita._id}) del paciente: ${cita.pacienteId?.nombre} ${cita.pacienteId?.apellido}`,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
+        res.render('index', {
+            usuario: req.session.usuario,
+            cita,
+            viewParcial: 'doctor/atenderCita',
+            request: req
+        });
+
+    } catch (error) {
+        console.error('❌ Error al cargar vista para atender cita:', error);
+        res.status(500).send('Error al cargar la vista');
+    }
+};
+
+exports.procesarAtencionCita = async (req, res) => {
+    try {
+        const { notas, estado } = req.body;
+        const citaId = req.params.id;
+
+        const Cita = require('../models/citas');
+        const BitacoraUso = require('../models/bitacoraUso');
+
+        const citaActualizada = await Cita.findByIdAndUpdate(citaId, {
+            notas,
+            estado
+        }, { new: true }).populate('pacienteId', 'nombre apellido');
+
+        const bitacora = new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: `Atendió la cita (${citaActualizada._id}) de ${citaActualizada.pacienteId?.nombre} ${citaActualizada.pacienteId?.apellido} y la marcó como ${estado}`,
+            fechaHora: new Date()
+        });
+        await bitacora.save();
+
+        const redirectPath = estado === 'completada'
+            ? '/doctor/citas?atendida=1'
+            : '/doctor/citas?cancelada=1';
+
+        res.redirect(redirectPath);
+    } catch (error) {
+        console.error('❌ Error al guardar atención de la cita:', error);
+        res.status(500).send('Error al procesar la atención');
+    }
+};
