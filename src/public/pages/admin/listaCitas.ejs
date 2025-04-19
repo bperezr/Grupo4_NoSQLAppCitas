@@ -1,0 +1,30 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Citas registradas</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="table-container">
+            <table id="tablaHorarios" class="display compact nowrap" style="width:100%"> 
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Hora Inicio</th>
+                        <th>Hora Fin</th>
+                        <th>Motivo Consulta</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+new DataTable('#tablaHorarios', {
+    responsive: true
+});
+</script>
