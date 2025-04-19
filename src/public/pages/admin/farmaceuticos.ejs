@@ -7,15 +7,16 @@
         <div class="container__header">
             <div class="btn-agregar-wrapper">
                 <button onclick="abrirModal()" class="btn__agregar-nueva">
-                    <i class="fa-solid fa-plus"></i> Agregar nuevo Farmacéutico
+                    <i class="fa-solid fa-plus"></i> Agregar
                 </button>
             </div>
         </div>
 
-        <div class="table-container">
-            <table id="tablaFarmaceuticos" class="display compact nowrap" style="width:100%">
+        <div class="table-container table-responsive">
+            <table id="tablaFarmaceuticos" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Nombre</th>
                         <th>Sucursal</th>
                         <th>Contraseña</th>
@@ -26,6 +27,7 @@
                 <tbody>
                     <% farmaceuticos.forEach(f=> { %>
                         <tr>
+                            <td></td>
                             <td>
                                 <%= f.nombre %>
                                     <%= f.apellidos %>
@@ -185,6 +187,34 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        if ($.fn.DataTable.isDataTable('#tablaFarmaceuticos')) {
+            $('#tablaFarmaceuticos').DataTable().clear().destroy();
+        }
+
+        $('#tablaFarmaceuticos').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 0
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'control',
+                    orderable: false,
+                    targets: 0
+                }
+            ],
+            order: [3, 'desc'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            }
+        });
+
+    });
+
     function abrirModal() {
         const modal = document.getElementById("modalUsuario");
         modal.style.display = "block";
@@ -259,18 +289,6 @@
     // -------------------------------------------- Función para inicializar DataTable y manejar mensajes de éxito/error
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Reiniciar tabla si ya existe
-        if ($.fn.DataTable.isDataTable('#tablaFarmaceuticos')) {
-            $('#tablaFarmaceuticos').DataTable().clear().destroy();
-        }
-
-        $('#tablaFarmaceuticos').DataTable({
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-            },
-            responsive: true
-        });
-
         const urlParams = new URLSearchParams(window.location.search);
 
         // ✅ Agregado

@@ -8,10 +8,11 @@
         </div>
 
         <section class="main__container">
-            <div class="table-container">
+            <div class="table-container table-responsive">
                 <table id="tablaCitasDoctor" class="display compact nowrap" style="width:100%">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>PACIENTE</th>
                             <th>CÉDULA</th>
                             <th>HORA</th>
@@ -24,6 +25,7 @@
                     <tbody>
                         <% citas.forEach(cita=> { %>
                             <tr>
+                                <td></td>
                                 <td>
                                     <strong>
                                         <%= cita.pacienteId?.nombre %>
@@ -116,27 +118,38 @@
         </div>
     </div>
 
-
     <script>
+
+        // Inicializar el DataTable
         document.addEventListener('DOMContentLoaded', function () {
             if ($.fn.DataTable.isDataTable('#tablaCitasDoctor')) {
                 $('#tablaCitasDoctor').DataTable().clear().destroy();
             }
 
             $('#tablaCitasDoctor').DataTable({
+                responsive: {
+                    details: {
+                        type: 'column',
+                        target: 0
+                    }
+                },
+                columnDefs: [
+                    {
+                        className: 'control',
+                        orderable: false,
+                        targets: 0
+                    }
+                ],
+                order: [3, 'desc'],
                 language: {
                     url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-                },
-                responsive: true,
-                order: [[2, 'asc']] // ordena por hora
+                }
             });
-        });
-    </script>
 
-    <script>
+        });
+
         function abrirModalDetallesCita(btn) {
             const cita = JSON.parse(btn.getAttribute('data-cita'));
-
 
             //Paciente
             document.getElementById("detallePacienteNombre").textContent =
@@ -182,9 +195,6 @@
             document.getElementById("modalDetallesCita").style.display = "none";
         }
 
-    </script>
-
-    <script>
         document.addEventListener('DOMContentLoaded', function () {
             const urlParams = new URLSearchParams(window.location.search);
 

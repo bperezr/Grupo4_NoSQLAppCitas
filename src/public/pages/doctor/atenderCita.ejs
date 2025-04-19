@@ -2,13 +2,17 @@
     , day: 'numeric' }); %>
 
     <div class="content">
-        <div class="cita-doctor-header">
-            <a href="/doctor/citas" class="cita-doctor-btn">
-                <i class="fa-solid fa-arrow-left"></i> Atrás
-            </a>
+
+        <div class="content__title">
             <h1>Atender Cita – <%= hoyCR %>
-            </h1>
-            <div style="width: 100px;"></div>
+        </div>
+
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <a href="/doctor/citas" class="cita-doctor-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Atrás
+                </a>
+            </div>
         </div>
 
         <form action="/doctor/citas/<%= cita._id %>/atender" method="POST" class="cita-doctor-form"

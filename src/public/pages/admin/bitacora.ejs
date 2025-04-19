@@ -10,10 +10,11 @@
             </div>
         </div>
 
-        <div class="table-container">
-            <table id="tablaBitacora" class="display compact nowrap" style="width:100%">
+        <div class="table-container table-responsive">
+            <table id="tablaBitacora" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Usuario</th>
                         <th>Acción</th>
                         <th>Fecha y Hora</th>
@@ -22,6 +23,7 @@
                 <tbody>
                     <% registros.forEach(registro=> { %>
                         <tr>
+                            <td></td>
                             <td>
                                 <%= registro.usuarioInfo.email %> (<%= registro.usuarioInfo.rol %>)
                             </td>
@@ -36,6 +38,7 @@
                 </tbody>
             </table>
         </div>
+
     </section>
 </div>
 
@@ -47,11 +50,25 @@
         }
 
         $('#tablaBitacora').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 0
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'control',
+                    orderable: false,
+                    targets: 0
+                }
+            ],
+            order: [3, 'desc'],
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-            },
-            responsive: true
+            }
         });
+
     });
 
     // Función para eliminar todos los registros

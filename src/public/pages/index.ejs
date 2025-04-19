@@ -5,22 +5,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MediConnect</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="/css/styles.css" />
+
+    <!-- Fuente Rubik -->
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet" />
+
+    <!-- DataTables 1.13.6 -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+
+    <!-- Responsive para DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
+
+    <!-- Iconos FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Choices.js (para selects) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
 </head>
 
 <body>
     <header class="header">
         <div class="header__btn">
-            <button onclick="toggleSidebar()" class="close__btn">
+
+            <button class="menu-toggle-unificado" onclick="handleMenuToggle()">
                 <i class="fa-solid fa-bars"></i>
             </button>
+
         </div>
         <div class="header__logo">
             <img class="logo__img" src="/images/logo1-b.svg" alt="Logo MediConnect">
@@ -35,6 +50,14 @@
 
     <nav class="sidebar">
         <ul class="sidebar__list">
+
+            <li class="sidebar__usuario">
+                <p class="usuario__correo">
+                    <%= usuario.email %>
+                </p>
+                <i class="fa-solid fa-circle-user usuario__icono"></i>
+            </li>
+
             <li class="list__item <%= request.originalUrl === '/' + usuario.rol ? 'list__item--active' : '' %>">
                 <a class="item__area" href="/<%= usuario.rol %>" title="Inicio">
                     <i class="fa-solid fa-house"></i>
@@ -202,10 +225,6 @@
 
     <main class="main">
         <section class="main__container">
-            <div class="container__navegation">
-                <a class="navegation__text" href="#">INICIO</a>
-                <a class="navegation__text navegation__text--active" href="#">/</a>
-            </div>
 
             <div class="container__content">
                 <% if (typeof viewParcial !=='undefined' ) { %>
@@ -223,16 +242,27 @@
         </section>
     </main>
 
-
+    <!-- FontAwesome Kit -->
     <script src="https://kit.fontawesome.com/fa4744a987.js" crossorigin="anonymous"></script>
+
+    <!-- Lógica de la barra lateral -->
     <script src="/js/toggleSidebar.js" defer></script>
 
+    <!-- jQuery (debe cargarse antes que DataTables) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
+    <!-- DataTables 1.13.6 -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+    <!-- DataTables Responsive 2.4.1 -->
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Choices.js (para selects personalizados) -->
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
 
 </body>
 
