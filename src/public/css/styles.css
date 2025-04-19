@@ -167,7 +167,6 @@ body {
     gap: 10px;
     align-items: center;
     padding-bottom: 1rem;
-    /* espacio para que no quede cortado al final */
 }
 
 .list__item {
@@ -497,6 +496,12 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.control:before {
     width: 28px;
     height: 28px;
     font-size: 14px;
+}
+
+.table-drop{
+    position: relative;
+    display: inline-block;
+    margin: 1rem;
 }
 
 table.dataTable tbody td.child {
