@@ -52,6 +52,15 @@
       </div>
     </form>
   </div>
+
+  <!-- Modal de mensaje -->
+<div id="modalMensaje" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="cerrarModal()">&times;</span>
+    <p id="mensajeTexto"></p>
+  </div>
+</div>
+
 </div>
 
 <style>
@@ -154,6 +163,56 @@
   .btn--secondary:hover {
     background-color: #c82333;
   }
+
+  /* Modal */
+.modal {
+  display: none; 
+  position: fixed; 
+  z-index: 1000; 
+  padding-top: 100px; 
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%; 
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.4); 
+}
+
+/* Contenido del modal */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 30px;
+  border: 1px solid #888;
+  width: 60%;
+  max-width: 400px;
+  border-radius: 12px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animación suave */
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+/* Botón de cerrar */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  margin-top: -10px;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
+
 </style>
 
 <script>
@@ -167,7 +226,7 @@
 
         document.getElementById('accion').value = accion;
 
-        alert(mensaje);
+        mostrarModal(mensaje);
 
         // Realizar la solicitud Fetch para bloquear o desbloquear el horario sin redirigir
         fetch('/doctor/gestionar-horarios', {
@@ -181,7 +240,7 @@
             .then(data => {
                 console.log('Data recibida desde el backend:', data); 
                 if (data.mensaje) {
-                    alert(data.mensaje);
+                    mostrarModal(mensaje);
                     if (data.horarios) {
                         actualizarCalendario(data.horarios);
                     } else {
@@ -230,4 +289,22 @@
       }
     });
   });
+
+  function mostrarModal(mensaje) {
+  const modal = document.getElementById("modalMensaje");
+  const mensajeTexto = document.getElementById("mensajeTexto");
+
+  mensajeTexto.textContent = mensaje;
+  modal.style.display = "block";
+
+  // Cerrar automáticamente después de 2 segundos
+  setTimeout(() => {
+    cerrarModal();
+  }, 2000);
+}
+
+function cerrarModal() {
+  const modal = document.getElementById("modalMensaje");
+  modal.style.display = "none";
+}
 </script>

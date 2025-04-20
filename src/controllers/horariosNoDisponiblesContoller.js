@@ -9,17 +9,11 @@ const mostrarVistaHorariosNoDisponibles = async (req, res) => {
     const objectIdDoctor = new ObjectId(doctorId);
 
     const fechaSeleccionada = req.query.fecha ? new Date(req.query.fecha) : new Date();
+    const fechaSeleccionadaStr = fechaSeleccionada.toISOString().split('T')[0]; // "YYYY-MM-DD"
 
-    const startOfDay = new Date(fechaSeleccionada);
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const endOfDay = new Date(fechaSeleccionada);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    // Buscar horarios no disponibles para ese doctor en la fecha seleccionada
     const horariosBloqueados = await HorarioNoDisponible.find({
       doctorId: objectIdDoctor,
-      fecha: { $gte: startOfDay, $lte: endOfDay },
+      fecha: fechaSeleccionadaStr,
     });
 
     const horasBloqueadas = horariosBloqueados.map(h => h.horaInicio);
@@ -44,32 +38,29 @@ const mostrarVistaHorariosNoDisponibles = async (req, res) => {
   }
 };
 
+
 const bloquearHorario = async (req, res) => {
   try {
     const doctorId = req.session.usuario.id;
     const fecha = req.body.fecha;
-    let horas = req.body['horas[]'];  
-
+    let horas = req.body['horas[]'];
     const detalle = req.body.detalle;
 
-    // Convertir a arreglo si horas es una cadena
     if (!Array.isArray(horas)) {
       horas = [horas];
     }
 
-    // Validar que horas no esté vacío
     if (!fecha || !horas || horas.length === 0) {
       return res.status(400).json({ mensaje: "Debe seleccionar al menos una hora" });
     }
 
+    const fechaStr = new Date(fecha).toISOString().split('T')[0]; // Convertir a YYYY-MM-DD
     const bloqueos = [];
-    const fechaObj = new Date(fecha);
-    fechaObj.setUTCHours(0, 0, 0, 0); 
 
     for (const hora of horas) {
       const nuevoBloqueo = new HorarioNoDisponible({
         doctorId,
-        fecha: fechaObj,
+        fecha: fechaStr,
         horaInicio: hora,
         horaFin: hora,
         detalle: detalle || null,
@@ -80,10 +71,9 @@ const bloquearHorario = async (req, res) => {
       bloqueos.push(nuevoBloqueo);
     }
 
-    // Registrar en bitácora
     const bitacora = new BitacoraUso({
       usuarioId: doctorId,
-      tipoAccion: `Bloqueó ${horas.length} horario(s) el día ${fecha}`,
+      tipoAccion: `Bloqueó ${horas.length} horario(s) el día ${fechaStr}`,
       fechaHora: new Date(),
     });
     await bitacora.save();
@@ -99,44 +89,36 @@ const bloquearHorario = async (req, res) => {
   }
 };
 
+
 const desbloquearHorario = async (req, res) => {
   try {
     const doctorId = req.session.usuario.id;
     const fecha = req.body.fecha;
     let horas = req.body['horas[]'];
 
-    console.log("Horas recibidas en el backend:", req.body['horas[]']);
-
-    // Convertir a arreglo si horas es una cadena
     if (!Array.isArray(horas)) {
       horas = [horas];
     }
 
-    // Validar que horas no esté vacío
     if (!fecha || !horas || horas.length === 0) {
       return res.status(400).json({ mensaje: "Debe seleccionar al menos una hora" });
     }
 
-    const fechaObj = new Date(fecha);
-    fechaObj.setUTCHours(0, 0, 0, 0);
-    
+    const fechaStr = new Date(fecha).toISOString().split('T')[0]; // Convertir a YYYY-MM-DD
 
-    // Eliminar los bloqueos de horarios
     const horariosEliminados = await HorarioNoDisponible.deleteMany({
       doctorId,
-      fecha: fechaObj,
-      horaInicio: { $in: horas },  
+      fecha: fechaStr,
+      horaInicio: { $in: horas },
     });
 
-    // Si no se encontraron horarios para eliminar
     if (horariosEliminados.deletedCount === 0) {
       return res.status(404).json({ mensaje: "No se encontraron horarios bloqueados para eliminar" });
     }
 
-    // Registrar en bitácora
     const bitacora = new BitacoraUso({
       usuarioId: doctorId,
-      tipoAccion: `Desbloqueó ${horas.length} horario(s) el día ${fecha}`,
+      tipoAccion: `Desbloqueó ${horas.length} horario(s) el día ${fechaStr}`,
       fechaHora: new Date(),
     });
     await bitacora.save();
@@ -150,6 +132,7 @@ const desbloquearHorario = async (req, res) => {
     res.status(500).json({ mensaje: "Error al desbloquear horario", error });
   }
 };
+
 
 const gestionarHorarios = (req, res) => {
   const { accion } = req.body;
@@ -174,4 +157,3 @@ const gestionarHorarios = (req, res) => {
 };
 
 module.exports = { bloquearHorario, mostrarVistaHorariosNoDisponibles, desbloquearHorario, gestionarHorarios };
-
