@@ -11,7 +11,7 @@ class CitasController{
         especialidadId,
         sucursalId,
         motivo,
-        estado, 
+        estado,
         selectedDate,
         selectedHour
       } = req.body;
@@ -24,11 +24,33 @@ class CitasController{
       if (isNaN(fechaHora.getTime())) {
         return res.redirect('/admin/crearCita?error=Fecha u hora inválida');
       }
+
       const h = fechaHora.getHours();
       const m = fechaHora.getMinutes();
       if (m !== 0 || h < 8 || h > 18) {
         return res.redirect('/admin/crearCita?error=Hora fuera de horario (08–18)');
       }
+
+      // Convertidor de "08:00" => 8.0, "08:30" => 8.5
+      const convertirHoraADecimal = hora => {
+        const [horas, minutos] = hora.split(':').map(Number);
+        return horas + minutos / 60;
+      };
+
+      // Verificar si la hora seleccionada está ocupada
+      const bloqueos = await horarioNoDisponibleService.obtenerPorFechaYDoctor(selectedDate, doctorId);
+      const horaSeleccionadaDecimal = convertirHoraADecimal(selectedHour);
+
+      const horaOcupada = bloqueos.some(b => {
+        const inicio = convertirHoraADecimal(b.horaInicio);
+        const fin = convertirHoraADecimal(b.horaFin);
+        return horaSeleccionadaDecimal >= inicio && horaSeleccionadaDecimal < fin;
+      });
+
+      if (horaOcupada) {
+        return res.redirect('/admin/crearCita?error=La hora seleccionada ya está ocupada');
+      }
+
       const data = {
         pacienteId,
         doctorId,
@@ -41,6 +63,7 @@ class CitasController{
 
       await citasService.crearCita(data);
       return res.redirect('/admin/listaCitas?creada=1');
+
     } catch (err) {
       console.error('Error al crear cita:', err);
       return res.redirect('/admin/crearCita?error=' + encodeURIComponent(err.message));
