@@ -1,25 +1,32 @@
 const mongoose = require('mongoose');
 const HorarioNoDisponible = require('../models/horariosNoDisponibles');
 const BitacoraUso = require('../models/bitacoraUso');
+const Doctor = require('../models/doctores');
 const { ObjectId } = mongoose.Types;
+
+const obtenerDoctorIdPorUsuarioId = async (usuarioId) => {
+  const doctor = await Doctor.findOne({ usuarioId: new ObjectId(usuarioId) });
+  if (!doctor) throw new Error('Doctor no encontrado para el usuario logueado');
+  return doctor._id;
+};
 
 const mostrarVistaHorariosNoDisponibles = async (req, res) => {
   try {
-    const doctorId = req.session.usuario.id;
-    const objectIdDoctor = new ObjectId(doctorId);
+    const usuarioId = req.session.usuario.id;
+    const doctorId = await obtenerDoctorIdPorUsuarioId(usuarioId);
 
     const fechaSeleccionada = req.query.fecha ? new Date(req.query.fecha) : new Date();
     const fechaSeleccionadaStr = fechaSeleccionada.toISOString().split('T')[0]; // "YYYY-MM-DD"
 
     const horariosBloqueados = await HorarioNoDisponible.find({
-      doctorId: objectIdDoctor,
+      doctorId,
       fecha: fechaSeleccionadaStr,
     });
 
     const horasBloqueadas = horariosBloqueados.map(h => h.horaInicio);
 
     const bitacora = new BitacoraUso({
-      usuarioId: doctorId,
+      usuarioId,
       tipoAccion: `Ingresó a ver los horarios de consulta disponibles`,
       fechaHora: new Date(),
     });
@@ -38,10 +45,11 @@ const mostrarVistaHorariosNoDisponibles = async (req, res) => {
   }
 };
 
-
 const bloquearHorario = async (req, res) => {
   try {
-    const doctorId = req.session.usuario.id;
+    const usuarioId = req.session.usuario.id;
+    const doctorId = await obtenerDoctorIdPorUsuarioId(usuarioId);
+
     const fecha = req.body.fecha;
     let horas = req.body['horas[]'];
     const detalle = req.body.detalle;
@@ -54,15 +62,21 @@ const bloquearHorario = async (req, res) => {
       return res.status(400).json({ mensaje: "Debe seleccionar al menos una hora" });
     }
 
-    const fechaStr = new Date(fecha).toISOString().split('T')[0]; // Convertir a YYYY-MM-DD
+    const fechaStr = new Date(fecha).toISOString().split('T')[0];
     const bloqueos = [];
+
+    const sumarUnaHora = (horaStr) => {
+      const [hora, minuto] = horaStr.split(':').map(Number);
+      const nuevaHora = (hora + 1).toString().padStart(2, '0');
+      return `${nuevaHora}:${minuto.toString().padStart(2, '0')}`;
+    };
 
     for (const hora of horas) {
       const nuevoBloqueo = new HorarioNoDisponible({
         doctorId,
         fecha: fechaStr,
         horaInicio: hora,
-        horaFin: hora,
+        horaFin: sumarUnaHora(hora),
         detalle: detalle || null,
         fechaCreacion: new Date(),
       });
@@ -72,7 +86,7 @@ const bloquearHorario = async (req, res) => {
     }
 
     const bitacora = new BitacoraUso({
-      usuarioId: doctorId,
+      usuarioId,
       tipoAccion: `Bloqueó ${horas.length} horario(s) el día ${fechaStr}`,
       fechaHora: new Date(),
     });
@@ -89,10 +103,11 @@ const bloquearHorario = async (req, res) => {
   }
 };
 
-
 const desbloquearHorario = async (req, res) => {
   try {
-    const doctorId = req.session.usuario.id;
+    const usuarioId = req.session.usuario.id;
+    const doctorId = await obtenerDoctorIdPorUsuarioId(usuarioId);
+
     const fecha = req.body.fecha;
     let horas = req.body['horas[]'];
 
@@ -104,7 +119,7 @@ const desbloquearHorario = async (req, res) => {
       return res.status(400).json({ mensaje: "Debe seleccionar al menos una hora" });
     }
 
-    const fechaStr = new Date(fecha).toISOString().split('T')[0]; // Convertir a YYYY-MM-DD
+    const fechaStr = new Date(fecha).toISOString().split('T')[0];
 
     const horariosEliminados = await HorarioNoDisponible.deleteMany({
       doctorId,
@@ -117,7 +132,7 @@ const desbloquearHorario = async (req, res) => {
     }
 
     const bitacora = new BitacoraUso({
-      usuarioId: doctorId,
+      usuarioId,
       tipoAccion: `Desbloqueó ${horas.length} horario(s) el día ${fechaStr}`,
       fechaHora: new Date(),
     });
@@ -133,12 +148,10 @@ const desbloquearHorario = async (req, res) => {
   }
 };
 
-
 const gestionarHorarios = (req, res) => {
   const { accion } = req.body;
   let horas = req.body["horas[]"];
 
-  // Convertir a arreglo si horas es una cadena
   if (!Array.isArray(horas)) {
     horas = [horas];
   }
