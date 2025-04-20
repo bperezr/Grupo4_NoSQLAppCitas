@@ -17,6 +17,11 @@ const recetaSchema = new Schema({
     ref: 'Sucursales',
     required: true
   },
+  citaId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Citas',
+    required: true
+  },
   fechaEntrega: {
     type: Date,
     required: true,

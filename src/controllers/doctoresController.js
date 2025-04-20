@@ -5,6 +5,7 @@ const Sucursal = require('../models/sucursales');
 const Especialidad = require('../models/especialidades');
 const BitacoraUso = require('../models/bitacoraUso');
 const Usuario = require('../models/usuarios');
+const Receta = require('../models/recetas');
 const bcrypt = require('bcrypt');
 
 
@@ -42,26 +43,26 @@ exports.listar = async (req, res) => {
 
 exports.listarDoctoresPorEspecialidad = async (req, res) => {
     try {
-      const { especialidad } = req.params;  
+        const { especialidad } = req.params;
 
-      if (!especialidad) {
-        return res.status(400).json({ error: 'Falta el parámetro especialidad' });
-      }  
+        if (!especialidad) {
+            return res.status(400).json({ error: 'Falta el parámetro especialidad' });
+        }
 
-      if (!mongoose.Types.ObjectId.isValid(especialidad)) {
-        return res.status(400).json({ error: 'ID de especialidad inválido' });
-      } 
+        if (!mongoose.Types.ObjectId.isValid(especialidad)) {
+            return res.status(400).json({ error: 'ID de especialidad inválido' });
+        }
 
-      const docs = await Doctor.find({
-        especialidadId: new mongoose.Types.ObjectId(`${especialidad}`)
-      }); 
+        const docs = await Doctor.find({
+            especialidadId: new mongoose.Types.ObjectId(`${especialidad}`)
+        });
 
-      return res.json(docs);
+        return res.json(docs);
     } catch (error) {
-      console.error('Error al listar doctores por especialidad:', error);
-      return res.status(500).json({ error: 'Error interno al obtener doctores' });
+        console.error('Error al listar doctores por especialidad:', error);
+        return res.status(500).json({ error: 'Error interno al obtener doctores' });
     }
-  };
+};
 
 exports.crear = async (req, res) => {
     try {
@@ -340,6 +341,7 @@ exports.vistaAtenderCita = async (req, res) => {
         const citaId = req.params.id;
         const Cita = require('../models/citas');
         const BitacoraUso = require('../models/bitacoraUso');
+        const Receta = require('../models/recetas'); // Asegúrate de tener este modelo
 
         const cita = await Cita.findById(citaId)
             .populate('pacienteId', 'nombre apellido cedula telefono email direccion fechaNacimiento')
@@ -354,6 +356,11 @@ exports.vistaAtenderCita = async (req, res) => {
 
         if (!cita) return res.status(404).send('Cita no encontrada');
 
+        // 🔍 Buscar recetas asociadas directamente por citaId
+        const recetas = await Receta.find({ citaId: cita._id })
+            .populate('medicamentos.medicamentoId', 'nombre descripcion');
+
+        // 📝 Registrar bitácora
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
             tipoAccion: `Ingresó a la cita (${cita._id}) del paciente: ${cita.pacienteId?.nombre} ${cita.pacienteId?.apellido}`,
@@ -361,9 +368,11 @@ exports.vistaAtenderCita = async (req, res) => {
         });
         await bitacora.save();
 
+        // 🔄 Render con recetas asociadas
         res.render('index', {
             usuario: req.session.usuario,
             cita,
+            recetas,
             viewParcial: 'doctor/atenderCita',
             request: req
         });
@@ -402,5 +411,27 @@ exports.procesarAtencionCita = async (req, res) => {
     } catch (error) {
         console.error('❌ Error al guardar atención de la cita:', error);
         res.status(500).send('Error al procesar la atención');
+    }
+};
+
+exports.eliminarReceta = async (req, res) => {
+    try {
+        const recetaId = req.params.id;
+        console.log('Receta ID:', recetaId);
+
+        if (!mongoose.Types.ObjectId.isValid(recetaId)) {
+            return res.status(400).json({ error: 'ID de receta inválido' });
+        }
+
+        const receta = await Receta.findById(recetaId);
+        if (!receta) {
+            return res.status(404).json({ error: 'Receta no encontrada' });
+        }
+
+        await Receta.findByIdAndDelete(recetaId);
+        res.json({ mensaje: 'Receta eliminada correctamente' });
+    } catch (error) {
+        console.error('❌ Error al eliminar receta:', error);
+        res.status(500).json({ error: 'No se pudo eliminar la receta' });
     }
 };

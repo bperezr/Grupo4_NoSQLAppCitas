@@ -1367,3 +1367,18 @@ select:focus {
 .btn-eliminar:hover {
     color: #a00;
 }
+
+.btn-eliminar-receta {
+    background-color: var(--c-danger);
+    color: var(--white-clr);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-eliminar-receta:hover {
+    background-color: #e53935;
+}
