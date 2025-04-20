@@ -112,14 +112,120 @@ db.Sucursales.insertMany([
 
 
 
-------------------------------------
+------------------------------------------------
 
+db.Citas.insertMany([
+  // 🟢 Hoy - 2025-04-17
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51011"), // Medicina General
+    fechaHora: new Date("2025-04-17T08:00:00"),
+    estado: "pendiente",
+    motivo: "Revisión general",
+    notas: ""
+  },
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51012"), // Pediatría
+    fechaHora: new Date("2025-04-17T09:30:00"),
+    estado: "confirmada",
+    motivo: "Control de niño sano",
+    notas: ""
+  },
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51014"), // Dermatología
+    fechaHora: new Date("2025-04-17T11:00:00"),
+    estado: "cancelada",
+    motivo: "Consulta por erupción",
+    notas: "Paciente reprogramará"
+  },
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51016"), // Neurología
+    fechaHora: new Date("2025-04-17T13:00:00"),
+    estado: "completada",
+    motivo: "Dolores de cabeza",
+    notas: "Se solicitó tomografía"
+  },
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51018"), // Psiquiatría
+    fechaHora: new Date("2025-04-17T15:00:00"),
+    estado: "pendiente",
+    motivo: "Evaluación inicial",
+    notas: ""
+  },
 
-db.HorariosNodisponibles.insertOne({
-  doctorId: ObjectId("68000a08774fcfc27226ad06"),
-  fecha: "2025-04-20",
-  horaInicio: "08:00",
-  horaFin: "12:00",
-  detalle: null,
-  fechaCreacion: new Date()
-})
+  // 🔵 Mañana - 2025-04-18
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51017"), // Ortopedia
+    fechaHora: new Date("2025-04-18T08:00:00"),
+    estado: "pendiente",
+    motivo: "Dolor de rodilla",
+    notas: ""
+  },
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51015"), // Cardiología
+    fechaHora: new Date("2025-04-18T09:30:00"),
+    estado: "confirmada",
+    motivo: "Chequeo de presión",
+    notas: ""
+  },
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51019"), // Oftalmología
+    fechaHora: new Date("2025-04-18T11:00:00"),
+    estado: "pendiente",
+    motivo: "Evaluación visual",
+    notas: ""
+  },
+
+  // 🔴 Pasado mañana - 2025-04-19
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51013"), // Ginecología
+    fechaHora: new Date("2025-04-19T08:30:00"),
+    estado: "pendiente",
+    motivo: "Chequeo anual",
+    notas: ""
+  },
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb5101a"), // Odontología
+    fechaHora: new Date("2025-04-19T10:00:00"),
+    estado: "completada",
+    motivo: "Limpieza dental",
+    notas: "No se encontraron caries"
+  },
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51011"), // Medicina General
+    fechaHora: new Date("2025-04-19T11:30:00"),
+    estado: "cancelada",
+    motivo: "Control mensual",
+    notas: "Cancelada por motivos laborales"
+  },
+  {
+    pacienteId: ObjectId("6801511adb91ee08f4a28e77"),
+    doctorId: ObjectId("68000a08774fcfc27226ad06"),
+    especialidadId: ObjectId("68000819468c4e7fbdb51012"), // Pediatría
+    fechaHora: new Date("2025-04-19T14:00:00"),
+    estado: "confirmada",
+    motivo: "Seguimiento de vacunas",
+    notas: ""
+  }
+]);

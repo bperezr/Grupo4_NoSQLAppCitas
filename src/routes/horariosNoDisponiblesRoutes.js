@@ -7,5 +7,10 @@ router.get('/admin/horariosNoDisponible', horarioNoDisponibleController.obtenerP
 
 // Crear nuevo horario bloqueado
 router.post('/', horarioNoDisponibleController.crear);
+const { bloquearHorario, mostrarVistaHorariosNoDisponibles, desbloquearHorario, gestionarHorarios } = require('../controllers/horariosNoDisponiblesContoller');
+const { verificarRol } = require('../middleware/verificarRol');
+
+router.get('/doctor/horariosNoDisponibles', verificarRol('doctor'),  mostrarVistaHorariosNoDisponibles);
+router.post('/doctor/gestionar-horarios', verificarRol('doctor'), gestionarHorarios);
 
 module.exports = router;

@@ -7,15 +7,16 @@
         <div class="container__header">
             <div class="btn-agregar-wrapper">
                 <button onclick="abrirModal()" class="btn__agregar-nueva">
-                    <i class="fa-solid fa-plus"></i> Agregar nuevo Admin
+                    <i class="fa-solid fa-plus"></i> Agregar
                 </button>
             </div>
         </div>
 
-        <div class="table-container">
-            <table id="tablaUsuarios" class="display compact nowrap" style="width:100%">
+        <div class="table-container table-responsive">
+            <table id="tablaUsuarios" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th class="table-drop"></th>
                         <th>Correo</th>
                         <th>Rol</th>
                         <th>Reinicio de Contraseña</th>
@@ -26,6 +27,7 @@
                 <tbody>
                     <% administradores.forEach(admin=> { %>
                         <tr>
+                            <td></td>
                             <td>
                                 <%= admin.email %>
                             </td>
@@ -118,20 +120,35 @@
 </div>
 
 <script>
+    // Inicializar el DataTable
     document.addEventListener('DOMContentLoaded', function () {
-
         if ($.fn.DataTable.isDataTable('#tablaUsuarios')) {
             $('#tablaUsuarios').DataTable().clear().destroy();
         }
 
         $('#tablaUsuarios').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 0
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'control',
+                    orderable: false,
+                    targets: 0
+                }
+            ],
+            order: [3, 'desc'],
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
             }
-            ,
-            responsive: true
         });
 
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
         // Confirmar eliminación
         document.querySelectorAll(".eliminar-btn").forEach(boton => {
             boton.addEventListener("click", function () {

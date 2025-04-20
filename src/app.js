@@ -15,6 +15,11 @@ const especialidadesRoutes = require('./routes/especialidadesRoutes');
 const historialRoutes = require('./routes/historialCitasRoutes');
 const horariosNoDisponiblesRoutes = require('./routes/horariosNoDisponiblesRoutes');
 const pacientesRoutes = require('./routes/pacientesRoutes');
+const pagosRoutes = require('./routes/pagosRoutes');
+const pacientesRoutes = require('./routes/pacientesRoutes');
+const farmaceuticosRoutes = require('./routes/farmaceuticosRoutes');
+const horariosNoDisponiblesRoutes = require('./routes/horariosNoDisponiblesRoutes');
+
 // Local
 //const connectDB = require('./config/db');
 
@@ -51,11 +56,13 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/pages/login.html'));
 });
 
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use((req, res, next) => {
     res.locals.request = req;
     next();
 });
+
 
 app.use('/', authRoutes);
 app.use('/', sucursalesRoutes);
@@ -69,7 +76,10 @@ app.use('/', medicamentosRoutes);
 app.use('/', recetasRoutes);
 app.use('/', historialRoutes);
 app.use('/', horariosNoDisponiblesRoutes);
+app.use('/', pagosRoutes);
 app.use('/', pacientesRoutes);
+app.use('/', farmaceuticosRoutes)
+app.use('/', horariosNoDisponiblesRoutes)
 
 const PORT = process.env.PORT || 5010;
 app.listen(PORT, () => {

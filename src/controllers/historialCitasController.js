@@ -3,10 +3,18 @@ const BitacoraUso = require('../models/bitacoraUso');
 
 exports.listar = async (req, res) => {
     try {
-      const historialcitas = await Historial.find().populate({
-        path: "pacienteId",
-        select: "email", 
-      });
+      const historialcitas = await Historial.find()
+            .populate({
+                path: "pacienteId",
+                select: "email", 
+            })
+            .populate({
+                path: "citaId",  
+                populate: {
+                    path: "doctorId",  
+                    select: "nombre"   
+                }
+            });
 
       const bitacora = new BitacoraUso({
         usuarioId: req.session.usuario.id,

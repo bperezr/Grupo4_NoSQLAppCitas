@@ -14,5 +14,8 @@ router.get('/admin/doctores/listar/:especialidad',  doctoresController.listarDoc
 // ------------------------------------------------ Rutas para rol el doctor
 
 router.get('/doctor', verificarRol('doctor'), doctoresController.vistaDashboard);
+router.get('/doctor/citas', verificarRol('doctor'), doctoresController.vistaCitasPendientes);
+router.get('/doctor/citas/:id/atender', verificarRol('doctor'), doctoresController.vistaAtenderCita);
+router.post('/doctor/citas/:id/atender', verificarRol('doctor'), doctoresController.procesarAtencionCita);
 
 module.exports = router;

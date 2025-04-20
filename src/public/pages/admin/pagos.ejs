@@ -1,0 +1,67 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Historial de Pagos</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="table-container">
+            <table id="tablaPagos" class="display compact nowrap" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Email Paciente</th>
+                        <th>Monto</th>
+                        <th>Estado del Pago</th>
+                        <th>Doctor</th>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% pagos.forEach(pago=> { %>
+                        <tr>
+                            <td>
+                                <%= pago.pacienteId.email %>
+                            </td>
+                            <td>₡<%= pago.monto.toFixed(2) %>
+                            </td>
+                            <td>
+                                <form action="/admin/pagos/estado/<%= pago._id %>" method="POST">
+                                    <select name="estado" onchange="this.form.submit()">
+                                        <option value="pendiente" <%=pago.estado==='pendiente' ? 'selected' : '' %>
+                                            >pendiente</option>
+                                        <option value="pagado" <%=pago.estado==='pagado' ? 'selected' : '' %>>pagado
+                                        </option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td>
+                                <%= pago.citaId.doctorId.nombre %>
+                            </td>
+                            <td>
+                                <%= new Date(pago.citaId.fechaHora).toISOString().split('T')[0] %>
+                            </td>
+                            <td>
+                                <%= new Date(pago.citaId.fechaHora).toISOString().split('T')[1].split('.')[0] %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tablaPagos')) {
+            $('#tablaPagos').DataTable().clear().destroy();
+        }
+
+        $('#tablaPagos').DataTable({
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            },
+            responsive: true
+        });
+    });
+</script>

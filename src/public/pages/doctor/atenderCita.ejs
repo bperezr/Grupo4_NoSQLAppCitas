@@ -1,0 +1,129 @@
+<% const hoyCR=new Date().toLocaleDateString('es-CR', { timeZone: 'America/Costa_Rica' , year: 'numeric' , month: 'long'
+    , day: 'numeric' }); %>
+
+    <div class="content">
+
+        <div class="content__title">
+            <h1>Atender Cita – <%= hoyCR %>
+        </div>
+
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <a href="/doctor/citas" class="cita-doctor-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Atrás
+                </a>
+            </div>
+        </div>
+
+        <form action="/doctor/citas/<%= cita._id %>/atender" method="POST" class="cita-doctor-form"
+            style="display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center;">
+            <!-- 📌 Columna izquierda -->
+            <div style="flex: 1 1 450px;">
+                <div class="cita-doctor-card">
+                    <h3 class="cita-doctor-title">🧍 Paciente</h3>
+                    <p><strong>Nombre:</strong>
+                        <%= cita.pacienteId?.nombre %>
+                            <%= cita.pacienteId?.apellido %>
+                    </p>
+                    <p><strong>Teléfono:</strong>
+                        <%= cita.pacienteId?.telefono %>
+                    </p>
+                    <p><strong>Cédula:</strong>
+                        <%= cita.pacienteId?.cedula %>
+                    </p>
+                    <p><strong>Email:</strong>
+                        <%= cita.pacienteId?.email %>
+                    </p>
+                    <p><strong>Dirección:</strong>
+                        <%= cita.pacienteId?.direccion %>
+                    </p>
+                    <p><strong>Fecha Nacimiento:</strong>
+                        <%= new Date(cita.pacienteId?.fechaNacimiento).toLocaleDateString('es-CR', { year: 'numeric' ,
+                            month: 'long' , day: 'numeric' , timeZone: 'America/Costa_Rica' }) %>
+                    </p>
+                </div>
+
+                <div class="cita-doctor-card">
+                    <h3 class="cita-doctor-title">📋 Información de la Cita</h3>
+                    <p><strong>Hora:</strong>
+                        <%= new Date(cita.fechaHora).toLocaleTimeString('es-CR', { timeZone: 'America/Costa_Rica' ,
+                            hour: '2-digit' , minute: '2-digit' }) %>
+                    </p>
+                    <p><strong>Motivo:</strong>
+                        <%= cita.motivo || '---' %>
+                    </p>
+                    <p><strong>Notas:</strong>
+                        <%= cita.notas || '---' %>
+                    </p>
+                    <p><strong>Estado:</strong>
+                        <%= cita.estado || '---' %>
+                    </p>
+                    <p><strong>Especialidad:</strong>
+                        <%= cita.especialidadId?.nombreEspecialidad || '---' %>
+                    </p>
+                    <p><strong>Sucursal:</strong>
+                        <%= cita.doctorId?.sucursalId?.nombre || '---' %>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 📝 Columna derecha -->
+            <div style="flex: 1 1 450px;">
+                <div class="cita-doctor-card">
+                    <div class="cita-doctor-form-group">
+                        <label for="notas">📝 <strong>Notas de Atención:</strong></label>
+                        <textarea id="notas" name="notas" rows="7" required><%= cita.notas || '' %></textarea>
+                    </div>
+
+                    <div class="cita-doctor-form-group">
+                        <label for="estado">📌 <strong>Estado de la Cita:</strong></label>
+                        <select id="estado" name="estado" required>
+                            <option value="completada" <%=cita.estado==='completada' ? 'selected' : '' %>>✅ Completada
+                            </option>
+                            <option value="cancelada" <%=cita.estado==='cancelada' ? 'selected' : '' %>>❌ Cancelada
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="cita-doctor-form-group text-center">
+                        <a href="#" class="cita-doctor-btn">
+                            <i class="fa-solid fa-prescription-bottle-medical"></i> Receta
+                        </a>
+                    </div>
+
+                    <div class="cita-doctor-form-group text-center">
+                        <button type="submit" class="cita-doctor-btn2">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('.cita-doctor-form');
+            const btnGuardar = form.querySelector('.cita-doctor-btn2');
+
+            // Evitar el envío por defecto
+            btnGuardar.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: '¿Guardar atención?',
+                    text: 'Se actualizará la información de la cita.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
