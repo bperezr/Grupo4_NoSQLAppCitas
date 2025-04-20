@@ -99,20 +99,18 @@
                             class="area__text <%= request.originalUrl.includes('/listaCitas') ? 'area__text--active' : '' %>">Citas</span>
                     </a>
                 </li>
-                <li
-                class="list__item <%= request.originalUrl.includes('/medicamentos') ? 'list__item--active' : '' %>">
-                <a class="item__area" href="/admin/medicamentos" title="Medicamentos">
-                    <i class="fa-solid fa-prescription-bottle-medical"></i>
-                    <span
-                    class="area__text <%= request.originalUrl.includes('/medicamentos') ? 'area__text--active' : '' %>">Medicamentos</span>
+                <li class="list__item <%= request.originalUrl.includes('/medicamentos') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/medicamentos" title="Medicamentos">
+                        <i class="fa-solid fa-prescription-bottle-medical"></i>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/medicamentos') ? 'area__text--active' : '' %>">Medicamentos</span>
                     </a>
                 </li>
-                <li
-                class="list__item <%= request.originalUrl.includes('/recetas') ? 'list__item--active' : '' %>">
-                <a class="item__area" href="/admin/recetas" title="Recetas">
-                    <i class="fa-solid fa-hospital-user"></i>
-                    <span
-                    class="area__text <%= request.originalUrl.includes('/recetas') ? 'area__text--active' : '' %>">Recetas</span>
+                <li class="list__item <%= request.originalUrl.includes('/recetas') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/recetas" title="Recetas">
+                        <i class="fa-solid fa-hospital-user"></i>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/recetas') ? 'area__text--active' : '' %>">Recetas</span>
                     </a>
                 </li>
 
@@ -187,7 +185,8 @@
                             <a class="item__area" href="/doctor/horariosNoDisponibles" title="horariosNoDisponibles">
                                 <i class="fa-solid fa-clock"></i>
                                 <span
-                                    class="area__text <%= request.originalUrl.includes('/horariosNoDisponibles') ? 'area__text--active' : '' %>">Horarios no disponibles</span>
+                                    class="area__text <%= request.originalUrl.includes('/horariosNoDisponibles') ? 'area__text--active' : '' %>">Horarios
+                                    no disponibles</span>
                             </a>
                         </li>
 
@@ -203,15 +202,16 @@
                             <% if (usuario.rol==='farmaceutico' ) { %>
 
                                 <li class="list__item">
+                                    <a class="item__area" href="/recetas.html" title="Recetas">
+                                        <i class="fa-solid fa-hospital-user"></i>
+                                        <span class="area__text">Recetas</span>
+                                    </a>
+                                </li>
+
+                                <li class="list__item">
                                     <a class="item__area" href="/proveedores.html" title="Medicamentos">
                                         <i class="fa-solid fa-prescription-bottle-medical"></i>
                                         <span class="area__text">Medicamentos</span>
-                                    </a>
-                                </li>
-                                <li class="list__item">
-                                    <a class="item__area" href="/recetas.html" title="Recetas">
-                                        <i class="fa-solid fa-prescription-bottle-medical"></i>
-                                        <span class="area__text">Recetas</span>
                                     </a>
                                 </li>
 

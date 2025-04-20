@@ -7,8 +7,6 @@ exports.crear = async (req, res) => {
     const { pacienteId, doctorId, sucursalId, notas, citaId } = req.body;
     let medicamentosRaw = req.body.medicamentos;
 
-    console.log('📥 req.body:', req.body);
-
     if (!medicamentosRaw) {
       return res.status(400).json({ error: 'Debe incluir al menos un medicamento.' });
     }

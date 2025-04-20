@@ -215,7 +215,6 @@ exports.vistaDashboard = async (req, res) => {
 
         const Cita = require('../models/citas');
 
-        // 1. Citas de hoy para el doctor
         const citasHoy = await Cita.find({
             doctorId: doctorId,
             fechaHora: { $gte: inicioDiaLocal, $lte: finDiaLocal }
@@ -227,7 +226,6 @@ exports.vistaDashboard = async (req, res) => {
         const totalCancelada = citasHoy.filter(c => ['cancelada'].includes(c.estado)).length;
         const totalPendientes = citasHoy.filter(c => ['pendiente', 'confirmada'].includes(c.estado)).length;
 
-        // 2. Total por especialidad para hoy
         const citasPorEspecialidad = await Cita.aggregate([
             {
                 $match: {
@@ -263,7 +261,6 @@ exports.vistaDashboard = async (req, res) => {
         const labelsEspecialidades = citasPorEspecialidad.map(e => e.especialidad);
         const datosEspecialidades = citasPorEspecialidad.map(e => e.total);
 
-        // Render
         res.render('index', {
             usuario: req.session.usuario,
             viewParcial: 'doctor/inicio',
@@ -293,6 +290,7 @@ exports.vistaCitasPendientes = async (req, res) => {
 
         const Cita = require('../models/citas');
         const Especialidad = require('../models/especialidades');
+        const Receta = require('../models/recetas');
 
         const citas = await Cita.find({
             doctorId: doctorId,
@@ -314,12 +312,24 @@ exports.vistaCitasPendientes = async (req, res) => {
             mapaEspecialidades[e._id.toString()] = e.nombreEspecialidad;
         });
 
+        const recetaPorCita = {};
+        const recetas = await Receta.find({
+            citaId: { $in: citas.map(c => c._id) }
+        }).populate('medicamentos.medicamentoId', 'nombre');
+
+        recetas.forEach(receta => {
+            const key = receta.citaId.toString();
+            if (!recetaPorCita[key]) recetaPorCita[key] = [];
+            recetaPorCita[key].push(receta.toObject());
+        });
+
         const citasConExtras = citas.map(cita => {
             const citaObj = cita.toObject();
             return {
                 ...citaObj,
                 nombreEspecialidad: mapaEspecialidades[citaObj.especialidadId?.toString()] || '---',
-                sucursalNombre: citaObj.doctorId?.sucursalId?.nombre || '---'
+                sucursalNombre: citaObj.doctorId?.sucursalId?.nombre || '---',
+                recetas: recetaPorCita[citaObj._id.toString()] || []
             };
         });
 
@@ -336,12 +346,13 @@ exports.vistaCitasPendientes = async (req, res) => {
     }
 };
 
+
 exports.vistaAtenderCita = async (req, res) => {
     try {
         const citaId = req.params.id;
         const Cita = require('../models/citas');
         const BitacoraUso = require('../models/bitacoraUso');
-        const Receta = require('../models/recetas'); // Asegúrate de tener este modelo
+        const Receta = require('../models/recetas');
 
         const cita = await Cita.findById(citaId)
             .populate('pacienteId', 'nombre apellido cedula telefono email direccion fechaNacimiento')
@@ -356,11 +367,9 @@ exports.vistaAtenderCita = async (req, res) => {
 
         if (!cita) return res.status(404).send('Cita no encontrada');
 
-        // 🔍 Buscar recetas asociadas directamente por citaId
         const recetas = await Receta.find({ citaId: cita._id })
             .populate('medicamentos.medicamentoId', 'nombre descripcion');
 
-        // 📝 Registrar bitácora
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
             tipoAccion: `Ingresó a la cita (${cita._id}) del paciente: ${cita.pacienteId?.nombre} ${cita.pacienteId?.apellido}`,
@@ -368,7 +377,6 @@ exports.vistaAtenderCita = async (req, res) => {
         });
         await bitacora.save();
 
-        // 🔄 Render con recetas asociadas
         res.render('index', {
             usuario: req.session.usuario,
             cita,
@@ -417,7 +425,6 @@ exports.procesarAtencionCita = async (req, res) => {
 exports.eliminarReceta = async (req, res) => {
     try {
         const recetaId = req.params.id;
-        console.log('Receta ID:', recetaId);
 
         if (!mongoose.Types.ObjectId.isValid(recetaId)) {
             return res.status(400).json({ error: 'ID de receta inválido' });
