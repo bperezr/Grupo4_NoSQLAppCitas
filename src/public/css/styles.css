@@ -786,21 +786,26 @@ input:checked+.slider:before {
 /* -------------------------------------------------------------  Calendario */
 
 .agenda-container {
-    display: flex;
-    justify-content: center;
+    display: block;
+    align-items: center;
     gap: 2rem;
-    padding: 2rem;
+    padding-top: 2rem;
     background-color: #1e1e1e00;
     color: white;
   }
 
+  .borderCalendario{
+  border-left: 2px solid var(--c-gray-200);
+  }
 
 .tituloAgenda{
  color:var(--primary-clr) !important;
  
 }
 
-.calendar-container {
+.calendar-container { 
+    display: block;
+    align-items: center;
     background-color: var(--secondary-clr);
     padding: 1rem;
     border-radius: 10px;
@@ -814,9 +819,10 @@ input:checked+.slider:before {
 
   .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    margin-top: 10px;
+    grid-template-columns: repeat(7, 50px);   /* 7 columnas de 60px cada una */
+    grid-auto-rows: 60px;                     /* cada fila de 60px de alto */
+    gap: 6px;                                 /* espacio entre celdas */
+    margin: 0 auto;                           /* centra el grid */
   }
 
   .calendar-cell {
@@ -825,10 +831,18 @@ input:checked+.slider:before {
     border-radius: 6px;
     background-color:var(--primary-clr);
     cursor: pointer;
+    line-height: 60px;       
+    font-size: 1.1rem;
+    text-align: center;
+    border-radius: 6px;
+    cursor: pointer;
+  user-select: none;
+  transition: background .2s, transform .1s;
   }
 
   .calendar-cell:hover {
-    background-color: #666;
+    background: #666;
+    transform: translateY(-2px);
   }
 
   .calendar-cell.disabled {
@@ -886,7 +900,6 @@ input:checked+.slider:before {
     flex: 1;
     background-color: var(--c-gray-100);
     padding: 1rem;
-    border-radius: 8px;
     justify-content: center;
   }
   
@@ -919,7 +932,6 @@ input:checked+.slider:before {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    width: 400px; /* ajusta según necesites */
   }
   
   .calendar-container, .time-slot-container {
@@ -1047,6 +1059,12 @@ input:checked+.slider:before {
 }
 
 /*------------------------------------------------------------- Cita form*/
+
+.containerCitas{
+display: flex;
+margin-right: 0.5rem;  
+}
+
 
 .btnBuscar{
 background: var(--primary-clr) !important;

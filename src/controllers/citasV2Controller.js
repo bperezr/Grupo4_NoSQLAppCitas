@@ -1,4 +1,5 @@
 const citasService = require('../services/citasService');
+const BitacoraUso = require('../models/bitacoraUso');
 const mongoose = require('mongoose');
 
 class CitasController{
@@ -38,19 +39,25 @@ class CitasController{
         motivo,
         estado
       };
-
       await citasService.crearCita(data);
+
+       const bitacora = new BitacoraUso({
+                  usuarioId: req.session.usuario.id,
+                  tipoAccion: `Creación de cita para paciente ID: ${pacienteId}`,
+                  fechaHora: new Date()
+              });
+              await bitacora.save();
+
       return res.redirect('/admin/listaCitas?creada=1');
     } catch (err) {
       console.error('Error al crear cita:', err);
       return res.redirect('/admin/crearCita?error=' + encodeURIComponent(err.message));
     }
-  }
+  } 
 
-
-  async getlistaCitas(req, res) {
+  async getlistaCitasPendientesConfirmadas(req, res) {
         try {
-          const item = await citasService.getlistaCitas();
+          const item = await citasService.getlistaCitasPendientesConfirmadas();
           if (!item) {
             return res.status(404).json({ error: 'Citas no registradas' });
           } else {
@@ -66,7 +73,24 @@ class CitasController{
         }
   }
 
-  
+  async getlistaCitasHistorial(req, res) {
+    try {
+      const item = await citasService.getlistaCitasHistorial();
+      if (!item) {
+        return res.status(404).json({ error: 'Citas no registradas' });
+      } else {
+
+        res.render("index", {
+          usuario: req.session.usuario,
+          item,
+          viewParcial: "admin/historialCitas",
+        }); 
+      }    
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+}
+
 
 }
 

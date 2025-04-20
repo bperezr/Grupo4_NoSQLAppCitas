@@ -42,7 +42,11 @@
                                             <% } %>
                         </td>
                           <td> 
-                            <button class="btn__icon" title="Editar">
+                            <button class="btn__icon" title="Ver detalles" data-Cita='<%- JSON.stringify(citas) %>'
+                                onclick="abrirModalDetalles(this)">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="window.location.href = '/admin/editarCita'" class="btn__icon" title="Editar">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>                     
                           </td>
@@ -54,8 +58,38 @@
     </section>
 </div>
 
-<script>
+<!-- Modal para ver detalles del doctor -->
+<div id="modalDetalleCita" class="modal">
+    <div class="modal__content modal__content--detalles">
+        <span class="modal__close" onclick="cerrarModalDetalles()">&times;</span>
+        <h2 class="modal__title">🕛 Detalles de la cita</h2>
+        <div class="modal__info">
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">🧑‍⚕️ Información del doctor</h3>
+                <p><strong>Nombre:</strong> <span id="detalleNombreDoc"></span></p>
+            </section>
+            <section class="detalle__seccion">
+                
+                <h3 class="detalle__titulo">🧍 Información del paciente</h3>
+                <p><strong>Cédula:</strong> <span id="detalleCedula"></span></p>
+                <p><strong>Nombre:</strong> <span id="detalleNombre"></span></p>
+                <p><strong>Teléfono:</strong> <span id="detalleTelefono"></span></p>
+                <p><strong>Correo electrónico:</strong> <span id="detalleCorreo"></span></p>
+            </section>  
+            
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">🏥 Especialidad</h3>
+                <p><strong>Nombre:</strong> <span id="detalleNombreEspecialidad"></span></p>
+                <p><strong>Precio consulta:</strong>¢<span id="detallePrecio"></span></p>
+            </section>
+        </div>     
 
+    </div>
+</div>
+
+
+
+<script>
 document.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable('#tblCitas')) {
             $('#tblCitas').DataTable().clear().destroy();
@@ -105,6 +139,27 @@ document.addEventListener('DOMContentLoaded', function () {
         timer: 2000
       });
     }
-})
+});
+
+    // -------------------------------------------- Función Modal para ver detalles del doctor
+
+    function abrirModalDetalles(btn) {
+        const infoCita = JSON.parse(btn.getAttribute('data-Cita'));
+
+        console.log("Contenido usuarioId:", infoCita.usuarioId);
+        document.getElementById("detalleNombreDoc").textContent = infoCita.doctor;
+        document.getElementById("detalleCedula").textContent = infoCita.cedula;
+        document.getElementById("detalleNombre").textContent = infoCita.paciente;
+        document.getElementById("detalleTelefono").textContent = infoCita.telefono;
+        document.getElementById("detalleCorreo").textContent = infoCita.email;
+        document.getElementById("detalleNombreEspecialidad").textContent = infoCita.nombreEspecialidad;
+        document.getElementById("detallePrecio").textContent = infoCita.precioConsulta;
+        
+        document.getElementById("modalDetalleCita").style.display = "block";
+    }
+
+    function cerrarModalDetalles() {
+        document.getElementById("modalDetalleCita").style.display = "none";
+    }
 
 </script>
