@@ -9,73 +9,69 @@
         <!-- Citas del día -->
         <div class="card card--principal">
             <h3 class="card__title">Citas para el día de hoy</h3>
-            <table class="dashboard-table">
-                <thead>
-                    <tr>
-                        <th>PACIENTE</th>
-                        <th>CEDULA</th>
-                        <th>MOTIVO</th>
-                        <th>HORA DE INICIO</th>
-                        <th>ESTADO</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% if (!citasHoy || citasHoy.length===0) { %>
+            <div class="dashboard-table-wrapper">
+                <table class="dashboard-table">
+                    <thead>
                         <tr>
-                            <td colspan="3" class="text-center">No hay citas programadas para hoy</td>
+                            <th>PACIENTE</th>
+                            <th>CEDULA</th>
+                            <th>HORA DE INICIO</th>
+                            <th>ESTADO</th>
                         </tr>
-                        <% } else { %>
-                            <% citasHoy.forEach(cita=> { %>
-                                <tr>
-                                    <td>
-                                        <% if (cita.pacienteId) { %>
-                                            <strong>
-                                                <%= cita.pacienteId.nombre %>
-                                                    <%= cita.pacienteId.apellido %>
-                                            </strong><br>
-                                            <small>
-                                                <i class="fa fa-phone"></i>
-                                                <%= cita.pacienteId.telefono %>
-                                            </small>
-                                            <% } else { %>
-                                                <em>Paciente sin datos</em>
-                                                <% } %>
-                                    </td>
-
-                                    <td>
-                                        <% if (cita.pacienteId) { %>
-                                            <%= cita.pacienteId.cedula %>
+                    </thead>
+                    <tbody>
+                        <% if (!citasHoy || citasHoy.length===0) { %>
+                            <tr>
+                                <td colspan="3" class="text-center">No hay citas programadas para hoy</td>
+                            </tr>
+                            <% } else { %>
+                                <% citasHoy.forEach(cita=> { %>
+                                    <tr>
+                                        <td>
+                                            <% if (cita.pacienteId) { %>
+                                                <strong>
+                                                    <%= cita.pacienteId.nombre %>
+                                                        <%= cita.pacienteId.apellido %>
+                                                </strong><br>
+                                                <small>
+                                                    <i class="fa fa-phone"></i>
+                                                    <%= cita.pacienteId.telefono %>
+                                                </small>
                                                 <% } else { %>
                                                     <em>Paciente sin datos</em>
                                                     <% } %>
-                                    </td>
+                                        </td>
 
-                                    <td>
-                                        <%= cita.motivo %>
-                                    </td>
-
-                                    <td>
-                                        <%= new Date(cita.fechaHora).toLocaleTimeString('es-CR', { hour: '2-digit' ,
-                                            minute: '2-digit' }) %>
-                                    </td>
-
-                                    <td>
-                                        <% if (cita.estado==='pendiente' ) { %>
-                                            🟡 Pendiente
-                                            <% } else if (cita.estado==='confirmada' ) { %>
-                                                🔵Confirmada
-                                                <% } else if (cita.estado==='cancelada' ) { %>
-                                                    🔴 Cancelada
-                                                    <% } else if (cita.estado==='completada' ) { %>
-                                                        🟢 Completada
+                                        <td>
+                                            <% if (cita.pacienteId) { %>
+                                                <%= cita.pacienteId.cedula %>
+                                                    <% } else { %>
+                                                        <em>Paciente sin datos</em>
                                                         <% } %>
-                                    </td>
-                                </tr>
-                                <% }) %>
-                                    <% } %>
-                </tbody>
-            </table>
+                                        </td>
 
+                                        <td>
+                                            <%= new Date(cita.fechaHora).toLocaleTimeString('es-CR', { hour: '2-digit' ,
+                                                minute: '2-digit' }) %>
+                                        </td>
+
+                                        <td>
+                                            <% if (cita.estado==='pendiente' ) { %>
+                                                🟡 Pendiente
+                                                <% } else if (cita.estado==='confirmada' ) { %>
+                                                    🔵Confirmada
+                                                    <% } else if (cita.estado==='cancelada' ) { %>
+                                                        🔴 Cancelada
+                                                        <% } else if (cita.estado==='completada' ) { %>
+                                                            🟢 Completada
+                                                            <% } %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                        <% } %>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Numeros -->

@@ -1,3 +1,4 @@
+/* ===================== VARIABLES GLOBALES ===================== */
 :root {
     --primary-clr: #204b73;
     --secondary-clr: #457091;
@@ -38,6 +39,7 @@
     --c-dark: #111936;
 }
 
+/* ===================== RESET ===================== */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -52,76 +54,322 @@ html {
 }
 
 body {
+    background: url("/images/background.jpg") no-repeat center center fixed;
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: "Rubik", serif;
     min-height: 100vh;
-    background-color: var(--base-clr);
-    color: var(--text-clr);
-
     display: grid;
     grid-template:
         "header header" 10vh
-        "sidebar main" 1fr/
-        auto 1fr;
+        "sidebar main" 1fr / auto 1fr;
 }
 
+
+/* ===================== HEADER ===================== */
 .header {
     grid-area: header;
-    min-width: 100%;
+    width: 100%;
     background-color: var(--primary-clr);
-
-    display: grid;
-    grid-template-columns: 80px auto auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .header__btn {
     display: flex;
     align-items: center;
-    justify-content: center;
+}
 
-    i {
-        color: var(--primary-clr);
-        font-size: 24px;
-    }
+.menu-toggle-unificado {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    background: none;
+    border: none;
+    color: var(--white-clr);
+    cursor: pointer;
+    z-index: 10001;
 }
 
 .header__logo {
     display: flex;
-    align-items: center;
-    gap: 15px;
-    padding-left: 10px;
+    flex: 1;
+    justify-content: center;
 }
 
 .logo__img {
     width: 130px;
 }
 
-.logo__text {
-    font-size: 18px;
-    font-weight: bold;
+.header__profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
     color: var(--white-smoke-clr);
 }
 
-.header__profile {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 15px;
-    padding-right: 30px;
+.header__profile i {
+    font-size: 26px;
+}
 
-    i {
-        font-size: 34px;
-        color: var(--white-smoke-clr);
+@media (max-width: 768px) {
+    .header__profile {
+        display: none;
+    }
+
+    .header__logo {
+        justify-content: flex-end;
+        flex: 1;
     }
 }
 
-.profile__text {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--white-smoke-clr);
+@media (min-width: 769px) {
+    .header__profile {
+        display: flex;
+    }
 }
 
+/* ===================== SIDEBAR ===================== */
+.sidebar {
+    grid-area: sidebar;
+    top: 10vh;
+    height: 90vh;
+    width: 280px;
+    padding: 0 10px;
+    background-color: var(--primary-clr);
+    transition: 300ms ease-in-out;
+    box-shadow: 2px 0 6px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.sidebar i {
+    font-size: 20px;
+    color: var(--white-clr);
+}
+
+/* ---------------------- Lista principal ---------------------- */
+.sidebar__list {
+    list-style: none;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    padding-bottom: 1rem;
+}
+
+.list__item {
+    border-radius: 0.5em;
+    height: 55px;
+    width: 100%;
+    display: flex;
+    padding-inline: 20px;
+}
+
+.list__item--active {
+    background-color: var(--c-danger);
+}
+
+.item__area {
+    text-decoration: none;
+    color: var(--text-clr);
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    font-weight: 500;
+}
+
+.area__text,
+.area__text--active {
+    color: var(--white-clr);
+}
+
+.list__divider {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--primary-text-clr);
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* ---------------------- Footer / Cierre sesión ---------------------- */
+.sidebar__bottom {
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bottom__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 55px;
+    width: 120px;
+    border: none;
+    border-radius: 0.5em;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: "Rubik", serif;
+    background-color: var(--primary-text-clr);
+    color: white;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+
+/* ---------------------- Sidebar colapsado (modo escritorio) ---------------------- */
+.sidebar.close {
+    width: 80px;
+}
+
+.sidebar.close .area__text,
+.sidebar.close .btn__text {
+    display: none;
+}
+
+.sidebar.close .list__item {
+    padding: 0;
+    justify-content: center;
+}
+
+.sidebar.close .bottom__btn i {
+    display: block;
+    color: white;
+}
+
+.sidebar.close .bottom__btn .btn__text {
+    display: none;
+}
+
+/* ===================== PERFIL EN SIDEBAR (solo móviles) ===================== */
+.sidebar__usuario,
+.sidebar__profile {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 0 10px;
+    text-align: center;
+    border-bottom: 1px solid var(--primary-text-clr);
+    margin-bottom: 10px;
+}
+
+.usuario__correo,
+.profile__email {
+    font-size: 14px;
+    color: var(--white-clr);
+    word-break: break-word;
+    padding: 0 12px;
+}
+
+.usuario__icono,
+.profile__circle i {
+    font-size: 26px;
+    color: var(--white-clr);
+}
+
+.profile__circle {
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-text-clr);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===================== BOTÓN MENÚ HAMBURGUESA ===================== */
+.menu-toggle-unificado {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    background: none;
+    border: none;
+    color: var(--white-clr);
+    cursor: pointer;
+    z-index: 10001;
+}
+
+/* ===================== MEDIA QUERIES: SOLO MÓVILES ===================== */
+@media (max-width: 768px) {
+    body {
+        grid-template:
+            "header" 10vh
+            "main" 1fr /
+            1fr;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 280px;
+        height: 100vh;
+        background-color: var(--secondary-clr);
+        z-index: 9999;
+        transition: left 0.3s ease;
+        padding-top: 20px;
+    }
+
+    .sidebar.abierta {
+        left: 0;
+    }
+
+    .sidebar__usuario,
+    .sidebar__profile {
+        display: flex;
+    }
+
+    .header__profile {
+        display: none !important;
+    }
+
+    .header__logo {
+        justify-content: flex-end;
+        flex: 1;
+    }
+
+    .main {
+        padding-left: 0 !important;
+        padding: 10px;
+    }
+
+    .close__btn {
+        display: none !important;
+    }
+}
+
+
+/* ===================== MAIN ===================== */
 .main {
     grid-area: main;
-    padding: 1px 1px 1px 5px;
+    padding: 20px;
+    position: relative;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    overflow-x: hidden;
+    max-height: calc(100vh - 10vh);
+    padding-right: 10px;
 }
 
 .main__container {
@@ -136,12 +384,9 @@ body {
     grid-area: "navigation";
 }
 
-.navegation__text {
-    text-decoration: none;
-    color: var(--white-clr);
-}
-
+.navegation__text,
 .navegation__text--active {
+    text-decoration: none;
     color: var(--white-clr);
 }
 
@@ -153,7 +398,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 50px;
-    overflow: hidden;
 }
 
 .container__content::before {
@@ -163,7 +407,6 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: url("/images/background.jpg") no-repeat center/cover;
     filter: blur(8px);
     opacity: 0.9;
     z-index: -1;
@@ -172,7 +415,6 @@ body {
 .content {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 20px;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -180,8 +422,6 @@ body {
 }
 
 .content__title {
-    position: relative;
-    z-index: 1;
     text-align: center;
     font-size: 15px;
     font-weight: bold;
@@ -189,165 +429,8 @@ body {
     margin-bottom: 20px;
 }
 
+/* ===================== TABLE ===================== */
 
-.container__text {
-    color: var(--secondary-text-clr);
-    margin-top: 5px;
-    margin-bottom: 15px;
-}
-
-.sidebar {
-    grid-area: sidebar;
-    top: 10vh;
-    height: 90vh;
-    width: 280px;
-    padding: 0px 10px;
-    background-color: var(--base-clr);
-
-    transition: 300ms ease-in-out;
-}
-
-.sidebar i {
-    font-size: 20px;
-    color: var(--white-clr);
-}
-
-.close__btn {
-    padding: 16px;
-    border: none;
-    border-radius: .5em;
-    cursor: pointer;
-    background-color: var(--primary-text-clr);
-    color: var(--white-clr);
-}
-
-.rotate .close__btn i {
-    color: var(--white-clr);
-}
-
-.sidebar__list {
-    list-style: none;
-    height: 70vh;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-top: 50px;
-    align-items: center;
-}
-
-.list__item {
-    border-radius: .5em;
-    height: 55px;
-    width: 100%;
-    display: flex;
-    padding-inline: 20px;
-}
-
-.list__item--active {
-    background-color: var(--c-danger);
-
-    i {
-        color: white;
-    }
-}
-
-.item__area {
-    text-decoration: none;
-    color: var(--text-clr);
-    display: flex;
-    align-items: center;
-    gap: 1em;
-
-    font-weight: 500;
-}
-
-.area__text {
-    color: var(--white-clr);
-}
-
-.area__text--active {
-    color: white;
-}
-
-.top__logo {
-    font-weight: 600;
-}
-
-.sidebar__bottom {
-    height: 20vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.bottom__btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    height: 55px;
-    width: 120px;
-    border: none;
-    border-radius: .5em;
-    cursor: pointer;
-    font-size: 16px;
-    font-family: "Rubik", serif;
-    text-decoration: none;
-
-    background-color: var(--primary-text-clr);
-    color: white;
-    font-weight: 500;
-}
-
-
-.bottom__btn i {
-    display: none;
-}
-
-.sidebar.close {
-    width: 80px;
-
-    .sidebar__top {
-        grid-template:
-            "btn" /
-            1fr;
-    }
-
-    .area__text {
-        display: none;
-    }
-
-    .sidebar__list {
-        align-items: center;
-    }
-
-    .list__item {
-        padding: 0px;
-        justify-content: center;
-    }
-
-    .btn__text {
-        display: none;
-    }
-
-    .bottom__btn i {
-        color: white;
-        display: block;
-    }
-}
-
-.list__divider {
-    width: 100%;
-    padding: 10px 20px;
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--primary-text-clr);
-    text-transform: uppercase;
-    opacity: 0.8;
-}
-
-
-/* ------------------------------------------------------------- tabla */
 .btn__icon {
     background: none;
     border: none;
@@ -395,7 +478,53 @@ body {
     background-color: var(--secondary-clr);
 }
 
-/* ------------------------------------------------------------- modal */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.control:before {
+    background-color: var(--primary-text-clr);
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 6px;
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+}
+
+.table-drop{
+    position: relative;
+    display: inline-block;
+    margin: 1rem;
+}
+
+table.dataTable tbody td.child {
+    background-color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    padding: 1rem;
+    border-left: 3px solid var(--primary-text-clr);
+}
+
+table.dataTable tbody td.child table {
+    width: 100%;
+}
+
+table.dataTable tbody td.child table td:first-child {
+    font-weight: bold;
+    padding-right: 1rem;
+    color: var(--primary-clr);
+    white-space: nowrap;
+}
+
+
+
+/* ===================== MODAL ===================== */
 
 .modal {
     display: none;
@@ -553,7 +682,7 @@ td .btn__agendar-nueva {
     background-color: #0056b3;
 }
 
-/* -------------------------------------------------------------  switch */
+/* ===================== SWITCH ===================== */
 
 .switch {
     position: relative;
@@ -600,8 +729,7 @@ input:checked+.slider:before {
     transform: translateX(26px);
 }
 
-/* -------------------------------------------------------------  choices */
-
+/* ===================== COICES ===================== */
 
 .choices__inner {
     display: flex !important;
@@ -655,8 +783,7 @@ input:checked+.slider:before {
     display: none !important;
 }
 
-
-/*-------------------------------------------------------------  consulta cedula*/
+/* ===================== CONSULTA CEDULA ===================== */
 
 .grupo-input-consulta {
     display: flex;
@@ -692,9 +819,7 @@ input:checked+.slider:before {
     background-color: var(--primary-text-clr);
 }
 
-
-
-/*------------------------------------------------------------- Card Dashboard*/
+/* ===================== CARD DASHBOARD ===================== */
 
 .card h3 {
     font-size: 1.1rem;
@@ -712,39 +837,15 @@ input:checked+.slider:before {
 .table td {
     padding: 8px;
     border-bottom: 1px solid #eee;
+    text-align: left;
 }
 
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    /* estructura base */
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-wrap: wrap;
     gap: 16px;
     margin-top: 20px;
-    align-items: start;
-}
-
-/* Responsividad */
-@media (max-width: 1024px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto;
-    }
-
-    .card--principal {
-        grid-column: 1 / -1;
-        grid-row: 1;
-    }
-
-    .card--pos2 {
-        grid-column: 1 / -1;
-        grid-row: 2;
-    }
-
-    .card--pos3 {
-        grid-column: 1 / -1;
-        grid-row: 3;
-    }
+    width: 100%;
 }
 
 .card {
@@ -752,7 +853,20 @@ input:checked+.slider:before {
     border-radius: 12px;
     padding: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
+    flex: 1 1 100%;
+    min-width: 280px;
+}
+
+.card--principal {
+    order: 1;
+}
+
+.card--pos2 {
+    order: 2;
+}
+
+.card--pos3 {
+    order: 3;
 }
 
 .card__title {
@@ -761,19 +875,9 @@ input:checked+.slider:before {
     margin-bottom: 12px;
 }
 
-.card--principal {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-}
-
-.card--pos2 {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-.card--pos3 {
-    grid-column: 2;
-    grid-row: 2;
+.dashboard-table-wrapper {
+    overflow-x: auto;
+    width: 100%;
 }
 
 .dashboard-table {
@@ -793,7 +897,62 @@ input:checked+.slider:before {
     text-align: center;
 }
 
-/*------------------------------------------------------------- Vista cita doctor */
+/* Responsividad */
+@media (max-width: 768px) {
+    .card {
+        padding: 14px;
+    }
+
+    .card__title,
+    .card h3 {
+        font-size: 1rem;
+    }
+
+    .dashboard-table th,
+    .dashboard-table td {
+        font-size: 0.85rem;
+        padding: 6px;
+    }
+
+    #graficoEspecialidades {
+        height: 200px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 12px;
+    }
+
+    .card__title,
+    .card h3 {
+        font-size: 0.95rem;
+    }
+
+    .dashboard-table th,
+    .dashboard-table td {
+        font-size: 0.75rem;
+        padding: 5px;
+    }
+
+    #graficoEspecialidades {
+        height: 180px !important;
+    }
+}
+
+/* Asegura el scroll horizontal en tablas si es necesario */
+.dashboard-table-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+.dashboard-table-wrapper::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+
+
+/* ===================== CITA DOCTOR ===================== */
+
 .cita-doctor-content {
     padding: 2rem;
     max-width: 1400px;

@@ -7,15 +7,16 @@
         <div class="container__header">
             <div class="btn-agregar-wrapper">
                 <button onclick="abrirModalEspecialidades()" class="btn__agregar-nueva">
-                    <i class="fa-solid fa-plus"></i> Agregar nueva especialidad
+                    <i class="fa-solid fa-plus"></i> Agregar
                 </button>
             </div>
         </div>
 
-        <div class="table-container">
-            <table id="tablaEspecialidades" class="display compact nowrap" style="width:100%">
+        <div class="table-container table-responsive">
+            <table id="tablaEspecialidades" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th class="table-drop"></th>
                         <th>Nombre especialidad</th>
                         <th>Precio consulta</th>
                         <th class="text-center">Acciones</th>
@@ -24,6 +25,7 @@
                 <tbody>
                     <% especialidades.forEach(especialidad=> { %>
                         <tr>
+                            <td></td>
                             <td>
                                 <%= especialidad.nombreEspecialidad %>
                             </td>
@@ -78,6 +80,34 @@
 </div>
 
 <script>
+    // Inicializar el DataTable
+    document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tablaEspecialidades')) {
+            $('#tablaEspecialidades').DataTable().clear().destroy();
+        }
+
+        $('#tablaEspecialidades').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 0
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'control',
+                    orderable: false,
+                    targets: 0
+                }
+            ],
+            order: [3, 'desc'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            }
+        });
+
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
 
@@ -119,18 +149,6 @@
                 text: 'Ocurrió un error. Intenta de nuevo.'
             });
         }
-
-        // Inicializar DataTable
-        if ($.fn.DataTable.isDataTable('#tablaEspecialidades')) {
-            $('#tablaEspecialidades').DataTable().clear().destroy();
-        }
-
-        $('#tablaEspecialidades').DataTable({
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-            },
-            responsive: true
-        });
 
         // Confirmar actualización
         const formEditar = document.getElementById('formEditarEspecialidad');
