@@ -819,9 +819,9 @@ input:checked+.slider:before {
 
   .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 50px);   /* 7 columnas de 60px cada una */
-    grid-auto-rows: 60px;                     /* cada fila de 60px de alto */
-    gap: 6px;                                 /* espacio entre celdas */
+    grid-template-columns: repeat(7, 50px);   
+    grid-auto-rows: 60px;                     
+    gap: 6px;                               
     margin: 0 auto;                           /* centra el grid */
   }
 

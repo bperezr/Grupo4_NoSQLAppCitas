@@ -1,7 +1,22 @@
 const CitasModel = require('../models/citas'); 
+const Especialidad = require('../models/especialidades');
+const Sucursal     = require('../models/sucursales');
+const Doctor   = require('../models/doctores');
 const mongoose = require('mongoose');
 
 class Citas{
+
+    async cargarFormulario() {
+      const especialidades = await Especialidad
+        .find()
+        .sort({ nombreEspecialidad: 1 });
+
+      const sucursales = await Sucursal
+        .find()
+        .sort({ nombre: 1 });
+
+      return { especialidades, sucursales };
+    }
 
     async crearCita(data) {        
         ['pacienteId','doctorId','especialidadId','sucursalId'].forEach(f => {
@@ -149,6 +164,34 @@ class Citas{
         }
       ]);
     }  
+
+    async editarCita(id, data) {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new Error('ID de cita inválido');
+      }
+      delete data._id;
+      delete data.pacienteId;      
+
+      return await CitasModel.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    }  
+
+    async getCitaPorId(id) {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        throw new Error('ID de cita inválido');
+      }
+      return await CitasModel.findById(id)
+        .populate('pacienteId',   'nombre apellido cedula')          
+        .populate('doctorId',     'nombre apellidos')                
+        .populate('especialidadId','nombreEspecialidad precioConsulta') 
+        .populate('sucursalId',   'nombre direccion');        
+    }
+
+    async listarDoctorPorEspecialidad(especialidadId) {
+      if (!mongoose.Types.ObjectId.isValid(especialidadId)) {
+        throw new Error('ID de especialidad inválido');
+      }
+      return await Doctor.find({ especialidadId });
+    }
 
 }
 

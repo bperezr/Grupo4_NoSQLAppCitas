@@ -9,6 +9,8 @@ const medicamentoSchema = new Schema({
   unidad: { type: String, required: true },
   fechaIngreso: { type: Date, default: Date.now },
   activo: { type: Boolean, default: true }
+}, {
+  collection: 'Medicamentos'  
 });
 
 module.exports = mongoose.model('Medicamento', medicamentoSchema);

@@ -6,7 +6,7 @@
     <section class="main__container">
         <div class="container__header">
             <div class="btn-agregar-wrapper">
-                <button onclick="window.location.href = '/admin/citas'" class="btn__agregar-nueva">
+                <button onclick="window.location.href = '/admin/crearCitas'" class="btn__agregar-nueva">
                     <i class="fa-solid fa-plus"></i> Registrar citas
                 </button>
             </div>
@@ -46,7 +46,7 @@
                                 onclick="abrirModalDetalles(this)">
                                 <i class="fa-solid fa-eye"></i>
                             </button>
-                            <button onclick="window.location.href = '/admin/editarCita'" class="btn__icon" title="Editar">
+                            <button onclick="window.location.href = '/admin/citas/editar/<%= citas._id %>'" class="btn__icon" title="Editar">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>                     
                           </td>
@@ -137,7 +137,15 @@ document.addEventListener('DOMContentLoaded', function () {
         title: '¡Cita registrada correctamente!',
         showConfirmButton: false,
         timer: 2000
-      });
+      });      
+    }
+    if (params.get('editada') === '1') {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Cita editada correctamente!',
+        showConfirmButton: false,
+        timer: 2000
+      });      
     }
 });
 
