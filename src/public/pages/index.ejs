@@ -40,23 +40,23 @@
         <div class="header__logo">
             <img class="logo__img" src="/images/logo1-b.svg" alt="Logo MediConnect">
         </div>
-        <div class="header__profile">
+<!--         <div class="header__profile">
             <a class="profile__text">
                 <%= usuario.email %>
             </a>
             <i class="fa-solid fa-circle-user"></i>
-        </div>
+        </div> -->
     </header>
 
     <nav class="sidebar">
         <ul class="sidebar__list">
 
-            <li class="sidebar__usuario">
+<!--             <li class="sidebar__usuario">
                 <p class="usuario__correo">
                     <%= usuario.email %>
                 </p>
                 <i class="fa-solid fa-circle-user usuario__icono"></i>
-            </li>
+            </li> -->
 
             <li class="list__item <%= request.originalUrl === '/' + usuario.rol ? 'list__item--active' : '' %>">
                 <a class="item__area" href="/<%= usuario.rol %>" title="Inicio">

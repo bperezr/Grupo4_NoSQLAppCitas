@@ -24,6 +24,7 @@ router.post("/agendar", agendarCita);
 // Ruta para cancelar una cita
 router.post("/admin/citas/cancelar/:citaId", cancelarCita);
 
+/* 
 router.get("/admin/citas", async (req, res) => {
   try {
     const doctores = await Doctor.find();
@@ -40,6 +41,6 @@ router.get("/admin/citas", async (req, res) => {
     console.error("Error al cargar citas:", error);
     res.status(500).send("Error al cargar la vista de citas");
   }
-});
+}); */
 
 module.exports = router;

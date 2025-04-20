@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar cita</title>
+  <!-- Tus CSS y font‑awesome aquí -->
+</head>
+<body>
+  <div class="content">
+    <div class="content__title">
+      <h1>Editar cita</h1>
+    </div>  
+
+    <form id="citaForm" action="/admin/citas/editar/<%= cita._id %>" method="POST">
+      <div class="containerCitas">
+        <!-- ▶ Información de la cita -->
+        <div class="info-container">
+          <h3 class="card__title">📝 Información de la cita</h3>
+          <div class="horaClass">
+            <!-- Cédula (busca de nuevo si quieres cambiar paciente) -->
+            <div class="form-group">
+              <label for="Cedula">Cédula del Paciente</label>
+              <div class="search-paciente">
+                <input
+                  type="text"
+                  id="Cedula"
+                  placeholder="Ingrese cédula"
+                  value="<%= cita.pacienteId.cedula || '' %>"
+                >
+                <button class="btnBuscar" type="button" onclick="ConsultarCedula()">Buscar</button>
+              </div>
+              <div id="pacienteInfo" class="paciente-info">
+                Paciente: <%= cita.pacienteId.nombre %> <%= cita.pacienteId.apellido %>
+              </div>
+              <input 
+                type="hidden"
+                name="pacienteId"
+                id="pacienteIdInput"
+                value="<%= cita.pacienteId %>"
+              >
+            </div>
+
+            <!-- Nombre del Paciente -->
+            <div class="form-group">
+              <label for="Nombre">Nombre del Paciente</label>
+              <input
+                type="text"
+                id="Nombre"
+                readonly
+                value="<%= cita.pacienteId.nombre %> <%= cita.pacienteId.apellido %>"
+              >
+            </div>
+
+            <!-- Sucursal -->
+            <div class="form-group">
+              <label for="sucursalId">Sucursal</label>
+              <select id="sucursalId" name="sucursalId" required>
+                <option value="">Seleccione una sucursal</option>
+                <% sucursales.forEach(s => { %>
+                  <option
+                    value="<%= s._id %>"
+                    <%= s._id.toString() === cita.sucursalId._id.toString() ? 'selected' : '' %>
+                  ><%= s.nombre %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <!-- Especialidad -->
+            <div class="form-group">
+              <label for="especialidad">Especialidad</label>
+              <select id="especialidad" name="especialidadId" required>
+                <option value="">Seleccione una especialidad</option>
+                <% especialidades.forEach(e => { %>
+                  <option
+                    value="<%= e._id %>"
+                    <%= e._id.toString() === cita.especialidadId._id.toString() ? 'selected' : '' %>
+                  ><%= e.nombreEspecialidad %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <!-- Doctor -->
+            <div class="form-group">
+              <label for="doctorSelect">Doctor</label>
+              <select id="doctorSelect" name="doctorId" required>
+                <option value="">Seleccione un doctor</option>
+                <% (doctores || []).forEach(d => { %>
+                  <option
+                    value="<%= d._id %>"
+                    <%= d._id.toString() === cita.doctorId._id.toString() ? 'selected' : '' %>
+                  ><%= d.nombre %> <%= d.apellidos %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <!-- Motivo -->
+            <div class="form-group">
+              <label for="motivo">Motivo de la consulta</label>
+              <textarea id="motivo" name="motivo" rows="2" required><%= cita.motivo %></textarea>
+            </div>
+
+            <!-- Estado oculta (podrías permitir cambiar) -->
+            <input type="hidden" name="estado" value="<%= cita.estado %>">
+          </div>
+        </div>
+
+        <!-- ▶ Calendario -->
+        <div class="info-container borderCalendario">          
+          <div class="form-group">
+            <label for="motivo">📆 Fecha actual de la cita:</label>
+            <textarea id="infoFecha" name="infoFecha" rows="1" required><%= cita.fechaHora.toISOString().split('T')[0] %></textarea>
+          </div>
+          <h3 class="card__title">Seleccione la fecha</h3>
+          <div class="agenda-container">
+            <div class="calendar-container">
+              <div class="calendar-header tituloAgenda">
+                <button type="button" onclick="changeMonth(-1)">‹</button>
+                <h2 id="monthYear">Mes Año</h2>
+                <button type="button" onclick="changeMonth(1)">›</button>
+              </div>
+              <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ▶ Horas -->
+        <div class="info-container borderCalendario">
+          <div class="form-group">
+            <label for="motivo">🕛 Hora actual de la cita:</label>
+            <textarea id="infoHora" name="infoHora" rows="1" required><%= cita.fechaHora.toTimeString().substring(0,5) %></textarea>
+          </div>
+          <h3 class="card__title">Seleccione la hora</h3>
+          <div class="time-slot-container horaClass">
+            <h3>Horas disponibles</h3>
+            <div id="timeSlots" class="time-slot-grid"></div>
+          </div>
+        </div>
+
+        <!-- Hidden para pasar fecha y hora seleccionadas -->
+        <input type="hidden" id="fechaHoraInput" name="fechaHora" value="<%= cita.fechaHora.toISOString() %>">
+        <input type="hidden" name="selectedDate"  id="selectedDateInput"  value="<%= cita.fechaHora.toISOString().split('T')[0] %>">
+        <input type="hidden" name="selectedHour"  id="selectedHourInput"  value="<%= cita.fechaHora.toTimeString().substring(0,5) %>">
+      </div>
+
+      <!-- Botón enviar -->
+      <div style="display:flex;justify-content:center;margin-top:1rem;">
+        <button type="submit" class="btnBuscar">Actualizar cita</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+<script>
+
+const fechaHoraInput = document.getElementById('fechaHoraInput');
+
+function actualizarFechaHora() {
+  const date = document.getElementById('selectedDateInput').value;   
+  const hour = document.getElementById('selectedHourInput').value; 
+  if (date && hour) {
+    fechaHoraInput.value = `${date}T${hour}:00`;
+  }
+}
+
+
+
+  const horariosBase = [];
+    for (let h = 8; h <= 18; h++) {
+      horariosBase.push(`${String(h).padStart(2,'0')}:00`);
+    }
+
+    let currentDate = new Date(),
+        selectedDate = null,
+        selectedHour = null;
+
+        function renderCalendar(date) {
+  const grid   = document.getElementById("calendarGrid"),
+        header = document.getElementById("monthYear");
+  grid.innerHTML = "";
+
+  const today      = new Date();
+  today.setHours(0,0,0,0);        // solo fecha, sin hora
+  const y          = date.getFullYear(),
+        m          = date.getMonth(),
+        firstDay   = new Date(y, m, 1).getDay(),
+        daysInMonth= new Date(y, m+1, 0).getDate();
+
+  header.textContent = date.toLocaleDateString('es-ES',{ month:'long', year:'numeric' });
+
+  // espacios en blanco
+  for (let i = 0; i < firstDay; i++) {
+    grid.appendChild(document.createElement("div"));
+  }
+
+  // días del mes
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cell = document.createElement("div");
+    cell.className = "calendar-cell";
+    cell.textContent = d;
+
+    // construye fecha del día
+    const cellDate = new Date(y, m, d);
+    const iso      = cellDate.toISOString().split('T')[0];
+
+    // si es pasada, no asignamos onclick y añadimos clase .disabled
+    if (cellDate < today) {
+      cell.classList.add("disabled");
+    } else {
+      cell.onclick = () => {
+        selectedDate = iso;        
+        document.getElementById('selectedDateInput').value = iso;
+        actualizarFechaHora();
+        document.querySelectorAll('.calendar-cell')
+                .forEach(c=>c.classList.remove('selected'));
+        cell.classList.add('selected');
+        selectedHour = null;
+        cargarHoras(iso, document.getElementById('doctorSelect').value);
+      };
+    }
+
+    grid.appendChild(cell);
+  }
+}
+    function changeMonth(o){ currentDate.setMonth(currentDate.getMonth()+o); renderCalendar(currentDate); }
+
+function cargarHoras(fecha, doctorId) {
+  const cont = document.getElementById('timeSlots');
+  cont.innerHTML = '';
+  if (!fecha || !doctorId) return;
+
+  fetch(`/admin/horariosNoDisponible?fecha=${fecha}&doctorId=${doctorId}`)
+    .then(r => r.json())
+    .then(data => {
+      const bloqueados = [];
+
+      data.forEach(h => {
+        const ini = parseInt(h.horaInicio.split(':')[0], 10);
+        const fin = parseInt(h.horaFin.split(':')[0], 10);
+        for (let i = ini; i < fin; i++) {
+          bloqueados.push(`${String(i).padStart(2, '0')}:00`);
+        }
+      });
+
+      horariosBase.forEach(hora => {  
+        const btn = document.createElement('button');
+        btn.type = "button";
+        btn.textContent = hora;
+        btn.disabled = bloqueados.includes(hora);
+
+        btn.onclick = () => {
+          selectedHour = hora;
+          document.getElementById('selectedHourInput').value = hora;
+          actualizarFechaHora();
+          document
+            .querySelectorAll('#timeSlots button')
+            .forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+        };
+        cont.appendChild(btn);
+      });
+    })
+    .catch(console.error);
+}
+
+ renderCalendar(currentDate);
+
+</script>
+</body>
+</html>

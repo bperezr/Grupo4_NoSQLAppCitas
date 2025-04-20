@@ -1,53 +1,46 @@
 <div class="content">
     <div class="content__title">
-        <h1>Historial Citas</h1>
+        <h1>Historial citas</h1>
     </div>
 
     <section class="main__container">
         <div class="table-container">
-            <table id="tablahistorialcitas" class="display compact nowrap" style="width:100%">
+            <table id="tblCitas" class="display compact nowrap" style="width:100%"> 
                 <thead>
                     <tr>
-                        <th>Email Paciente</th>
-                        <th>Estado de la cita</th>
-                        <th>Estado del pago</th>
                         <th>Doctor</th>
-                        <th>Fecha</th>
-                        <th>Hora</th>
-                        <th class="text-center">Acciones</th>
+                        <th>Paciente</th>
+                        <th>Sucursal</th>
+                        <th>Fecha y hora</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% historialcitas.forEach(historial => { %>
+                    <% item.forEach(citas => { %>
                         <tr>
-                            <td>
-                                <%= historial.pacienteId.email %>
-                            </td>
-                            <td>
-                                <%= historial.estado %>
-                            </td>
-                            <td>
-                                <%= historial.pago %>
-                            </td>
-                            <td>
-                                <!-- Mostrar nombre del doctor -->
-                                <%= historial.citaId.doctorId.nombre %>
-                            </td>
-                            <td>
-                                <!-- Mostrar la fecha en formato UTC (sin la palabra UTC) -->
-                                <%= new Date(historial.citaId.fechaHora).toISOString().split('T')[0] %>
-                            </td>
-                            <td>
-                                <!-- Mostrar la hora en formato UTC (sin la palabra UTC) -->
-                                <%= new Date(historial.citaId.fechaHora).toISOString().split('T')[1].split('.')[0] %>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn__icon eliminar-btn" data-id="<%= historial.citaId._id %>" title="Eliminar">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
+                          <td><%= citas.doctor %></td>
+                          <td><%= citas.paciente %></td>
+                          <td><%= citas.sucursal %></td>
+                          <td><%= citas.fechaHora %></td>
+                          <td>
+                            <% if (citas.estado==='pendiente' ) { %>
+                                🟡 Pendiente
+                                <% } else if (citas.estado==='confirmada' ) { %>
+                                    🔵Confirmada
+                                    <% } else if (citas.estado==='cancelada' ) { %>
+                                        🔴 Cancelada
+                                        <% } else if (citas.estado==='completada' ) { %>
+                                            🟢 Completada
+                                            <% } %>
+                        </td>
+                          <td> 
+                            <button class="btn__icon" title="Editar">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>                     
+                          </td>
                         </tr>
-                    <% }) %>
+                      <% }) %>
                 </tbody>
             </table>
         </div>
@@ -55,44 +48,56 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
 
-        // Inicializar DataTable
-        if ($.fn.DataTable.isDataTable('#tablahistorialcitas')) {
-            $('#tablahistorialcitas').DataTable().clear().destroy();
+document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tblCitas')) {
+            $('#tblCitas').DataTable().clear().destroy();
         }
 
-        $('#tablahistorialcitas').DataTable({
-            language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-            },
-            responsive: true
+    $(document).ready(function () {
+      $('#tblCitas').DataTable({
+        responsive: true,
+        scrollX: true,  
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+        },
+        columns: [
+    { data: 'doctor'    },
+    { data: 'paciente'  },
+    { data: 'sucursal'  },
+    {
+      data: 'fechaHora',
+      render: function (val) {
+        if (!val) return '';
+        const d = new Date(val);
+        const fecha = d.toLocaleDateString('es-ES', {
+          weekday: 'long',
+          year:    'numeric',
+          month:   'long',
+          day:     'numeric'
         });
-
-        // Confirmar eliminación
-        document.querySelectorAll(".eliminar-btn").forEach(boton => {
-            boton.addEventListener("click", function () {
-                const id = this.dataset.id;
-
-                Swal.fire({
-                    title: "¿Estás seguro?",
-                    text: "Esta acción no se puede deshacer.",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Sí, cancelar cita",
-                    cancelButtonText: "Cancelar"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = `/admin/citas/cancelar/${id}`;
-                        document.body.appendChild(form);
-                        form.submit();
-                    }
-                });
-            });
-        });
+        const hora  = d.toLocaleTimeString('es-ES', {
+          hour:   '2-digit',
+          minute: '2-digit'
+        }); 
+        return fecha.charAt(0).toUpperCase() + fecha.slice(1) + ', ' + hora;
+      }
+    },
+    { data: 'estado'  },
+    { data: 'accion'  },
+    ]
+      });
     });
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('creada') === '1') {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Cita registrada correctamente!',
+        showConfirmButton: false,
+        timer: 2000
+      });
+    }
+})
+
 </script>

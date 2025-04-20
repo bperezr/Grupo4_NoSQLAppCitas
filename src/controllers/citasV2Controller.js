@@ -1,7 +1,25 @@
 const citasService = require('../services/citasService');
+const BitacoraUso = require('../models/bitacoraUso');
 const mongoose = require('mongoose');
 
 class CitasController{
+
+  async cargarFormulario(req, res) {
+    try {
+      const { especialidades, sucursales } = await citasService.cargarFormulario();
+      
+      res.render("index", {
+        usuario: req.session.usuario,
+        especialidades,
+        sucursales,
+        viewParcial: "admin/citas",
+      }); 
+      return res.render('crearCita', { especialidades, sucursales });
+    } catch (err) {
+      console.error('Error al cargar formulario de cita:', err);
+      return res.status(500).send('Error interno al cargar el formulario');
+    }
+  }
 
   async crearCita(req, res) {
     try {
@@ -60,20 +78,26 @@ class CitasController{
         motivo,
         estado
       };
-
       await citasService.crearCita(data);
+
+       const bitacora = new BitacoraUso({
+                  usuarioId: req.session.usuario.id,
+                  tipoAccion: `Creación de cita para paciente ID: ${pacienteId}`,
+                  fechaHora: new Date()
+              });
+              await bitacora.save();
+
       return res.redirect('/admin/listaCitas?creada=1');
 
     } catch (err) {
       console.error('Error al crear cita:', err);
       return res.redirect('/admin/crearCita?error=' + encodeURIComponent(err.message));
     }
-  }
+  } 
 
-
-  async getlistaCitas(req, res) {
+  async getlistaCitasPendientesConfirmadas(req, res) {
         try {
-          const item = await citasService.getlistaCitas();
+          const item = await citasService.getlistaCitasPendientesConfirmadas();
           if (!item) {
             return res.status(404).json({ error: 'Citas no registradas' });
           } else {
@@ -89,7 +113,63 @@ class CitasController{
         }
   }
 
-  
+  async getlistaCitasHistorial(req, res) {
+    try {
+      const item = await citasService.getlistaCitasHistorial();
+      if (!item) {
+        return res.status(404).json({ error: 'Citas no registradas' });
+      } else {
+
+        res.render("index", {
+          usuario: req.session.usuario,
+          item,
+          viewParcial: "admin/historialCitas",
+        }); 
+      }    
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+}
+
+async formEditarCita(req, res) {
+  try {
+    const { id } = req.params;
+
+    const cita = await citasService.getCitaPorId(id);
+    
+    if (!cita) return res.status(404).send('Cita no encontrada');
+
+    const { especialidades, sucursales } = await citasService.cargarFormulario();
+
+    const doctores = await citasService.listarDoctorPorEspecialidad(cita.especialidadId._id); 
+    return res.render('index', {
+      usuario: req.session.usuario,
+      cita,
+      especialidades,
+      sucursales,
+      doctores,
+      viewParcial: "admin/editarCita",
+    });
+  } catch (err) {
+    console.error('Error al cargar edición de cita:', err);
+    return res.status(500).send('Error interno al cargar formulario');
+  }
+}
+
+
+async editarCita(req, res) {
+  try {
+    const { id } = req.params;
+    const data   = req.body;
+    await citasService.editarCita(id, data);
+
+    return res.redirect('/admin/listaCitas?editada=1');
+  } catch (err) {
+    console.error('Error al editar cita:', err);
+    return res.status(400).send('No se pudo actualizar la cita: ' + err.message);
+  }
+}
+
 
 }
 
