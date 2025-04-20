@@ -40,24 +40,10 @@
         <div class="header__logo">
             <img class="logo__img" src="/images/logo1-b.svg" alt="Logo MediConnect">
         </div>
-<!--         <div class="header__profile">
-            <a class="profile__text">
-                <%= usuario.email %>
-            </a>
-            <i class="fa-solid fa-circle-user"></i>
-        </div> -->
     </header>
 
     <nav class="sidebar">
         <ul class="sidebar__list">
-
-<!--             <li class="sidebar__usuario">
-                <p class="usuario__correo">
-                    <%= usuario.email %>
-                </p>
-                <i class="fa-solid fa-circle-user usuario__icono"></i>
-            </li> -->
-
             <li class="list__item <%= request.originalUrl === '/' + usuario.rol ? 'list__item--active' : '' %>">
                 <a class="item__area" href="/<%= usuario.rol %>" title="Inicio">
                     <i class="fa-solid fa-house"></i>
@@ -65,7 +51,6 @@
                         class="area__text <%= request.originalUrl === '/' + usuario.rol ? 'area__text--active' : '' %>">Inicio</span>
                 </a>
             </li>
-
             <% if (usuario.rol==='admin' ) { %>
                 <li class="list__item <%= request.originalUrl.includes('/doctores') ? 'list__item--active' : '' %>">
                     <a class="item__area" href="/admin/doctores" title="Doctores">
@@ -179,6 +164,17 @@
                                 </span>
                             </a>
                         </li>
+
+                        <li
+                        class="list__item <%= request.originalUrl.includes('/doctor/historial') ? 'list__item--active' : '' %>">
+                        <a class="item__area" href="/doctor/historial" title="Historial Citas">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <span
+                                class="area__text <%= request.originalUrl.includes('/doctor/historial') ? 'area__text--active' : '' %>">
+                                Historial citas
+                            </span>
+                        </a>
+                    </li>
 
                         <li
                             class="list__item <%= request.originalUrl.includes('/horariosNoDisponibles') ? 'list__item--active' : '' %>">
