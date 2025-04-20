@@ -1,4 +1,4 @@
-const MedicamentoModel = require('../models/medicamentos'); 
+const MedicamentoModel = require('../models/medicamentos');
 
 class Medicamentos {
 
@@ -9,13 +9,13 @@ class Medicamentos {
   }
 
   async getMedicamento() {
-    return await MedicamentoModel.find(); 
+    return await MedicamentoModel.find().populate({ path: 'sucursalId', model: 'Sucursales' });
   }
 
   async actualizarMedicamento(id, data) {
     return await MedicamentoModel.findByIdAndUpdate(id, data, { new: true });
   }
-  
+
   async eliminarMedicamento(id) {
     return await MedicamentoModel.findByIdAndDelete(id);
   }

@@ -8,7 +8,16 @@ const medicamentoSchema = new Schema({
   stock: { type: Number, required: true, min: 0 },
   unidad: { type: String, required: true },
   fechaIngreso: { type: Date, default: Date.now },
-  activo: { type: Boolean, default: true }
+  activo: { type: Boolean, default: true },
+  sucursalId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Sucursal',
+    required: true
+  }
 });
 
-module.exports = mongoose.model('Medicamento', medicamentoSchema);
+medicamentoSchema.index({ sucursalId: 1 });
+medicamentoSchema.index({ nombre: 1 });
+medicamentoSchema.index({ activo: 1, tipo: 1 });
+
+module.exports = mongoose.model('Medicamento', medicamentoSchema, 'Medicamentos');

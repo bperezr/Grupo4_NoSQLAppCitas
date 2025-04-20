@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const Medicamento  = require('../controllers/medicamentosController');
+const medicamentosController = require('../controllers/medicamentosController');
+const { verificarRol } = require('../middleware/verificarRol');
 
-router.get('/admin/medicamentos', Medicamento.getMedicamento);
+router.get('/admin/medicamentos', verificarRol('admin'), medicamentosController.listar);
+router.post('/medicamento/crear', verificarRol('admin'), medicamentosController.crear);
+router.post('/medicamento/actualizar/:id', verificarRol('admin'), medicamentosController.actualizar);
+router.post('/medicamento/eliminar/:id', verificarRol('admin'), medicamentosController.eliminar);
 
-// Crear medicamento
-router.post('/medicamento/crear', Medicamento.crearMedicamento);
-router.post('/medicamento/actualizar/:id', Medicamento.actualizarMedicamento);
-router.post('/medicamento/eliminar/:id', Medicamento.eliminarMedicamento);
+// ruta API para obtener medicamentos por sucursal
+router.get('/api/medicamentos', verificarRol(['admin', 'doctor', 'farmaceutico']), medicamentosController.obtenerPorSucursal);
 
 module.exports = router;
