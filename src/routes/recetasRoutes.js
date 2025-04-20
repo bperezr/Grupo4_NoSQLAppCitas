@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const RecetaController  = require('../controllers/recetasController');
+const recetasController = require('../controllers/recetasController');
+const { verificarRol } = require('../middleware/verificarRol');
 
-router.get('/admin/recetas', RecetaController.getRecetas);
-router.post('/recetas/crear', RecetaController.crearReceta);
-router.post('/recetas/actualizar/:id', RecetaController.actualizarReceta);
-router.post('/recetas/eliminar/:id', RecetaController.eliminarReceta);
+router.post('/recetas/crear-json', verificarRol('doctor'), recetasController.crear);
+
 
 module.exports = router;

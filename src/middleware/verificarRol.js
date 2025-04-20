@@ -7,7 +7,7 @@ function getRedirectURL(rol) {
     }
 }
 
-exports.verificarRol = (rolRequerido) => {
+exports.verificarRol = (rolesPermitidos) => {
     return (req, res, next) => {
         const usuario = req.session.usuario;
 
@@ -15,7 +15,9 @@ exports.verificarRol = (rolRequerido) => {
             return res.redirect('/login');
         }
 
-        if (usuario.rol !== rolRequerido) {
+        const roles = Array.isArray(rolesPermitidos) ? rolesPermitidos : [rolesPermitidos];
+
+        if (!roles.includes(usuario.rol)) {
             return res.status(403).render('denegado', {
                 usuario,
                 getRedirectURL

@@ -498,7 +498,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.control:before {
     font-size: 14px;
 }
 
-.table-drop{
+.table-drop {
     position: relative;
     display: inline-block;
     margin: 1rem;
@@ -521,8 +521,6 @@ table.dataTable tbody td.child table td:first-child {
     color: var(--primary-clr);
     white-space: nowrap;
 }
-
-
 
 /* ===================== MODAL ===================== */
 
@@ -792,141 +790,143 @@ input:checked+.slider:before {
     padding: 2rem;
     background-color: #1e1e1e00;
     color: white;
-  }
+}
 
 
-.tituloAgenda{
- color:var(--primary-clr) !important;
- 
+.tituloAgenda {
+    color: var(--primary-clr) !important;
+
 }
 
 .calendar-container {
     background-color: var(--secondary-clr);
     padding: 1rem;
     border-radius: 10px;
-  }
+}
 
-  .calendar-header {
+.calendar-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
+}
 
-  .calendar-grid {
+.calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
     margin-top: 10px;
-  }
+}
 
-  .calendar-cell {
+.calendar-cell {
     padding: 10px;
     text-align: center;
     border-radius: 6px;
-    background-color:var(--primary-clr);
+    background-color: var(--primary-clr);
     cursor: pointer;
-  }
+}
 
-  .calendar-cell:hover {
+.calendar-cell:hover {
     background-color: #666;
-  }
+}
 
-  .calendar-cell.disabled {
+.calendar-cell.disabled {
     background-color: #333;
     cursor: not-allowed;
     opacity: 0.3;
-  }
+}
 
-  .calendar-cell.selected {
+.calendar-cell.selected {
     background-color: #00aaff;
     color: white;
-  }
+}
 
-  .time-slot-container {
+.time-slot-container {
     background-color: var(--secondary-clr);
     padding: 1rem;
     border-radius: 10px;
-  }
+}
 
-  .time-slot-grid button.selected {
+.time-slot-grid button.selected {
     background-color: #007bff;
     color: #fff;
-  }
+}
 
-  .time-slot-grid {
+.time-slot-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-  }
+}
 
-  .time-slot-grid button {
+.time-slot-grid button {
     padding: 10px;
     border: none;
     border-radius: 6px;
     background-color: #fff;
     color: black;
     cursor: pointer;
-  }
+}
 
-  .time-slot-grid button:disabled {
+.time-slot-grid button:disabled {
     background-color: #888;
     cursor: not-allowed;
     color: white;
-  }
-  
-  .general-container {
+}
+
+.general-container {
     display: flex;
     gap: 2rem;
     align-items: flex-start;
     margin: 2rem 0;
-  }
-  
-  /* Columna izquierda: info de la cita */
-  .info-container {
+}
+
+/* Columna izquierda: info de la cita */
+.info-container {
     flex: 1;
     background-color: var(--c-gray-100);
     padding: 1rem;
     border-radius: 8px;
     justify-content: center;
-  }
-  
-  .info-table {
+}
+
+.info-table {
     width: 50%;
     border-collapse: collapse;
-  }
-  
-  .info-table th {
+}
+
+.info-table th {
     text-align: left;
     padding: 0.5rem;
     color: var(--primary-clr);
     width: 30%;
-  }
-  
-  .info-table td {
+}
+
+.info-table td {
     padding: 0.5rem;
-  }
-  
-  .info-table input,
-  .info-table select {
+}
+
+.info-table input,
+.info-table select {
     width: 100%;
     padding: 0.4rem;
     border-radius: 4px;
     border: none;
-  }
-  
-  /* Columna derecha: reutiliza tus estilos existentes */
-  .agenda-container {
+}
+
+/* Columna derecha: reutiliza tus estilos existentes */
+.agenda-container {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    width: 400px; /* ajusta según necesites */
-  }
-  
-  .calendar-container, .time-slot-container {
+    width: 400px;
+    /* ajusta según necesites */
+}
+
+.calendar-container,
+.time-slot-container {
     background-color: var(--c-gray-300);
     padding: 1rem;
     border-radius: 8px;
-  }
+}
 
 /*-------------------------------------------------------------  consulta cedula*/
 
@@ -966,29 +966,29 @@ input:checked+.slider:before {
 
 /* ===================== CARD DASHBOARD ===================== */
 
-.horaClass{
+.horaClass {
     margin-top: 2.5rem !important;
 }
- 
+
 .card h3 {
     font-size: 1.1rem;
     margin-bottom: 10px;
     color: #333;
 }
- 
+
 .table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
 }
- 
+
 .table th,
 .table td {
     padding: 8px;
     border-bottom: 1px solid #eee;
     text-align: left;
 }
- 
+
 .dashboard-grid {
     display: flex;
     flex-wrap: wrap;
@@ -1017,7 +1017,7 @@ input:checked+.slider:before {
 .card--pos3 {
     order: 3;
 }
- 
+
 .card__title {
     font-size: 1.1rem;
     font-weight: 600;
@@ -1028,50 +1028,51 @@ input:checked+.slider:before {
     overflow-x: auto;
     width: 100%;
 }
- 
+
 .dashboard-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.9rem;
 }
- 
+
 .dashboard-table th,
 .dashboard-table td {
     padding: 8px;
     border-bottom: 1px solid #ddd;
     text-align: left;
 }
- 
+
 .text-center {
     text-align: center;
 }
 
 /*------------------------------------------------------------- Cita form*/
 
-.btnBuscar{
-background: var(--primary-clr) !important;
-color:var(--white-clr)
+.btnBuscar {
+    background: var(--primary-clr) !important;
+    color: var(--white-clr)
 }
 
-  
-  /* Cada grupo (label + control) ocupa todo el ancho disponible */
-  #citaForm .form-group {
+
+/* Cada grupo (label + control) ocupa todo el ancho disponible */
+#citaForm .form-group {
     width: 100%;
     margin-bottom: 1.5rem;
-    text-align: center;      /* centra el texto de los labels */
-  }
-  
-  /* Labels centrados y con espacio */
-  #citaForm .form-group label {
+    text-align: center;
+    /* centra el texto de los labels */
+}
+
+/* Labels centrados y con espacio */
+#citaForm .form-group label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: bold;
-  }
-  
-  /* Inputs, selects y textarea con border-radius y borde gris */
-  #citaForm input[type="text"],
-  #citaForm select,
-  #citaForm textarea {
+}
+
+/* Inputs, selects y textarea con border-radius y borde gris */
+#citaForm input[type="text"],
+#citaForm select,
+#citaForm textarea {
     width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
@@ -1079,30 +1080,30 @@ color:var(--white-clr)
     border-radius: 8px;
     box-sizing: border-box;
     color: #333;
-  }
-  
-  /* Botón de búsqueda alineado y estilizado */
-  #citaForm .search-paciente {
+}
+
+/* Botón de búsqueda alineado y estilizado */
+#citaForm .search-paciente {
     display: flex;
     justify-content: center;
     gap: 0.5rem;
-  }
-  
-  #citaForm .search-paciente input {
+}
+
+#citaForm .search-paciente input {
     flex: 1;
-  }
-  
-  #citaForm .search-paciente button {
+}
+
+#citaForm .search-paciente button {
     padding: 0.75rem 1.25rem;
     font-size: 1rem;
     border-radius: 8px;
     border: 1px solid #ccc;
     background: #fff;
     cursor: pointer;
-  }
-  
-  /* Si quieres que el botón de submit también vaya igual */
-  #citaForm button[type="submit"] {
+}
+
+/* Si quieres que el botón de submit también vaya igual */
+#citaForm button[type="submit"] {
     margin-top: 1rem;
     padding: 0.75rem 2rem;
     font-size: 1rem;
@@ -1111,7 +1112,8 @@ color:var(--white-clr)
     background: #007bff;
     color: #fff;
     cursor: pointer;
-  }
+}
+
 /* Responsividad */
 @media (max-width: 768px) {
     .card {
@@ -1159,6 +1161,7 @@ color:var(--white-clr)
 .dashboard-table-wrapper::-webkit-scrollbar {
     height: 6px;
 }
+
 .dashboard-table-wrapper::-webkit-scrollbar-thumb {
     background-color: rgba(0, 0, 0, 0.2);
     border-radius: 3px;
@@ -1271,4 +1274,111 @@ select:focus {
 
 .text-center {
     text-align: center;
+}
+
+/* ===================== ESTILOS DE STOCK ===================== */
+.stock-bajo {
+    color: red;
+    font-weight: bold;
+}
+
+.stock-medio {
+    color: orange;
+    font-weight: bold;
+}
+
+.stock-alto {
+    color: green;
+    font-weight: bold;
+}
+
+/* ===================== ESTILOS DE receta ===================== */
+.receta__header {
+    margin-bottom: 3rem;
+}
+
+.tabla-receta {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+
+.tabla-receta th,
+.tabla-receta td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+.tabla-receta th {
+    text-align: left;
+    color: #444;
+}
+
+.tabla-receta td input[type="number"] {
+    width: 80px;
+    padding: 4px;
+}
+
+.stock-color {
+    font-weight: bold;
+}
+
+.stock-verde {
+    color: green;
+}
+
+.stock-naranja {
+    color: orange;
+}
+
+.stock-rojo {
+    color: red;
+}
+
+.btn-agregar {
+    background-color: transparent;
+    color: #3085d6;
+    border: 1px solid #3085d6;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.btn-agregar:hover {
+    background-color: #e7f0fb;
+}
+
+.btn-eliminar {
+    background-color: transparent;
+    border: none;
+    color: #d33;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.btn-eliminar:hover {
+    color: #a00;
+}
+
+.btn-eliminar-receta {
+    background-color: var(--c-danger);
+    color: var(--white-clr);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-eliminar-receta:hover {
+    background-color: #e53935;
 }
