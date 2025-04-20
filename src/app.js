@@ -13,10 +13,8 @@ const recetasRoutes = require('./routes/recetasRoutes');
 const administradoresRoutes = require('./routes/administradoresRoutes');
 const especialidadesRoutes = require('./routes/especialidadesRoutes');
 const historialRoutes = require('./routes/historialCitasRoutes');
-const horariosNoDisponiblesRoutes = require('./routes/horariosNoDisponiblesRoutes');
 const pacientesRoutes = require('./routes/pacientesRoutes');
 const pagosRoutes = require('./routes/pagosRoutes');
-const pacientesRoutes = require('./routes/pacientesRoutes');
 const farmaceuticosRoutes = require('./routes/farmaceuticosRoutes');
 const horariosNoDisponiblesRoutes = require('./routes/horariosNoDisponiblesRoutes');
 
