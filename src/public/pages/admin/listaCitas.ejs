@@ -1,22 +1,53 @@
 <div class="content">
     <div class="content__title">
-        <h1>Citas registradas</h1>
+        <h1>Citas</h1>
     </div>
 
     <section class="main__container">
+        <div class="container__header">
+            <div class="btn-agregar-wrapper">
+                <button onclick="window.location.href = '/admin/citas'" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-plus"></i> Registrar citas
+                </button>
+            </div>
+        </div>
         <div class="table-container">
-            <table id="tablaHorarios" class="display compact nowrap" style="width:100%"> 
+            <table id="tblCitas" class="display compact nowrap" style="width:100%"> 
                 <thead>
                     <tr>
                         <th>Doctor</th>
-                        <th>Hora Inicio</th>
-                        <th>Hora Fin</th>
-                        <th>Motivo Consulta</th>
+                        <th>Paciente</th>
+                        <th>Sucursal</th>
+                        <th>Fecha y hora</th>
+                        <th>Estado</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
                 <tbody>
-
+                    <% item.forEach(citas => { %>
+                        <tr>
+                          <td><%= citas.doctor %></td>
+                          <td><%= citas.paciente %></td>
+                          <td><%= citas.sucursal %></td>
+                          <td><%= citas.fechaHora %></td>
+                          <td>
+                            <% if (citas.estado==='pendiente' ) { %>
+                                🟡 Pendiente
+                                <% } else if (citas.estado==='confirmada' ) { %>
+                                    🔵Confirmada
+                                    <% } else if (citas.estado==='cancelada' ) { %>
+                                        🔴 Cancelada
+                                        <% } else if (citas.estado==='completada' ) { %>
+                                            🟢 Completada
+                                            <% } %>
+                        </td>
+                          <td> 
+                            <button class="btn__icon" title="Editar">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>                     
+                          </td>
+                        </tr>
+                      <% }) %>
                 </tbody>
             </table>
         </div>
@@ -24,7 +55,56 @@
 </div>
 
 <script>
-new DataTable('#tablaHorarios', {
-    responsive: true
-});
+
+document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tblCitas')) {
+            $('#tblCitas').DataTable().clear().destroy();
+        }
+
+    $(document).ready(function () {
+      $('#tblCitas').DataTable({
+        responsive: true,
+        scrollX: true,  
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+        },
+        columns: [
+    { data: 'doctor'    },
+    { data: 'paciente'  },
+    { data: 'sucursal'  },
+    {
+      data: 'fechaHora',
+      render: function (val) {
+        if (!val) return '';
+        const d = new Date(val);
+        const fecha = d.toLocaleDateString('es-ES', {
+          weekday: 'long',
+          year:    'numeric',
+          month:   'long',
+          day:     'numeric'
+        });
+        const hora  = d.toLocaleTimeString('es-ES', {
+          hour:   '2-digit',
+          minute: '2-digit'
+        }); 
+        return fecha.charAt(0).toUpperCase() + fecha.slice(1) + ', ' + hora;
+      }
+    },
+    { data: 'estado'  },
+    { data: 'accion'  },
+    ]
+      });
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('creada') === '1') {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Cita registrada correctamente!',
+        showConfirmButton: false,
+        timer: 2000
+      });
+    }
+})
+
 </script>

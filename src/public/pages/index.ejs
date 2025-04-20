@@ -9,7 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
 
 </head>
@@ -60,11 +59,11 @@
                     </a>
                 </li>
 
-                <li class="list__item <%= request.originalUrl.includes('/listacitas') ? 'list__item--active' : '' %>">
+                <li class="list__item <%= request.originalUrl.includes('/listaCitas') ? 'list__item--active' : '' %>">
                     <a class="item__area" href="/admin/listaCitas" title="Citas">
                         <i class="fa-solid fa-box"></i>
                         <span
-                            class="area__text <%= request.originalUrl.includes('/listacitas') ? 'area__text--active' : '' %>">Citas</span>
+                            class="area__text <%= request.originalUrl.includes('/listaCitas') ? 'area__text--active' : '' %>">Citas</span>
                     </a>
                 </li>
                 <li

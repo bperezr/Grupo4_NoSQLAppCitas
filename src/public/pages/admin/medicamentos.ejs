@@ -25,12 +25,12 @@
                 <tbody>
                     <% item.forEach(med => { %>
                         <tr>
-                          <td class="text-center"><%= med.nombre %></td>
-                          <td class="text-center"><%= med.marca %></td>
-                          <td class="text-center"><%= med.tipo %></td>
-                          <td class="text-center"><%= med.stock %></td>
-                          <td class="text-center"><%= med.fechaIngreso.toISOString().split('T')[0] %></td>
-                          <td class="text-center">
+                          <td><%= med.nombre %></td>
+                          <td><%= med.marca %></td>
+                          <td><%= med.tipo %></td>
+                          <td><%= med.stock %></td>
+                          <td><%= med.fechaIngreso.toISOString().split('T')[0] %></td>
+                          <td>
                             <!-- Botón Editar -->
                             <button class="btn__icon" title="Editar"
                               data-medicamento='<%- JSON.stringify(med) %>'
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    // Confirmar edición antes de enviar
+
 const formEditar = document.getElementById('formEditarMedicamento');
   if (formEditar) {
     formEditar.addEventListener('submit', function (e) {

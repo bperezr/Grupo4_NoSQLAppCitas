@@ -2,7 +2,7 @@
     <div class="content__title">
         <h1>Crear cita</h1>
     </div>
-  <form id="citaForm" action="/admin/crearCitas" method="POST">
+<form id="citaForm" action="/admin/crearCitas" method="POST">
     <div class="dashboard-grid">
         <!-- Citas del día -->
         <div class="card card--principal">
@@ -38,8 +38,7 @@
                                     <%= s.nombre %>
                                 </option>
                                 <% }) %>
-                        </select>
-                    </label>
+                        </select>                  
                     </div>
               
                     <!-- Especialidad -->
@@ -73,11 +72,10 @@
             <h3 class="card__title">Seleccione la fecha</h3>
             <div class="agenda-container">                    
                 <div class="calendar-container">
-                    <input type="hidden" id="doctorIdInput" value="68000a08774fcfc27226ad06">
                     <div class="calendar-header tituloAgenda">
-                      <button onclick="changeMonth(-1)"><i class="fa fa-chevron-left"></i></button>
+                      <button type="button" onclick="changeMonth(-1)"><i class="fa fa-chevron-left"></i></button>
                       <h2 id="monthYear">Mes Año</h2>
-                      <button onclick="changeMonth(1)"><i class="fa fa-chevron-right"></i></button>
+                      <button type="button" onclick="changeMonth(1)"><i class="fa fa-chevron-right"></i></button>
                     </div>
                     <div class="calendar-grid" id="calendarGrid">                    
                     </div>
@@ -94,10 +92,12 @@
                 </div>
               </div>
         </div>
-
-        <div style="text-align:center; margin-top:1rem;">
-            <button type="submit" class="btn btn--primary">Guardar cita</button>
-        </div>
+        <input type="hidden" name="selectedDate" id="selectedDateInput">
+        <input type="hidden" name="selectedHour" id="selectedHourInput">        
+    </div>
+    <div style="display: flex; justify-content: center; text-align:center; margin-top:1rem;">
+        <button type="submit" class="btnBuscar">Guardar cita</button>
+    </div>
     </form>
     </div>
 
@@ -234,6 +234,7 @@ document.getElementById('especialidad').addEventListener('change', function() {
         const iso = new Date(y,m,d).toISOString().split('T')[0];
         cell.onclick = () => {
           selectedDate = iso;
+          document.getElementById('selectedDateInput').value = iso;
           document.querySelectorAll('.calendar-cell')
                   .forEach(c=>c.classList.remove('selected'));
           cell.classList.add('selected');
@@ -271,6 +272,7 @@ function cargarHoras(fecha, doctorId) {
 
         btn.onclick = () => {
           selectedHour = hora;
+          document.getElementById('selectedHourInput').value = hora;
           document
             .querySelectorAll('#timeSlots button')
             .forEach(b => b.classList.remove('selected'));
@@ -284,37 +286,7 @@ function cargarHoras(fecha, doctorId) {
 
  renderCalendar(currentDate);
 
-    // Envío del formulario
-    $("#citaForm").on('submit', function(e) {
-        e.preventDefault();
-        if (!selectedDate || !selectedHour) {
-            return alert('Seleccione fecha y hora');
-        }
 
-        const form = this;
-        const fechaHora = new Date(`${selectedDate}T${selectedHour}:00`);
-        const payload = {
-            pacienteId:      form.pacienteId.value,
-            especialidadId:  form.especialidadId.value,
-            doctorId:        form.doctorId.value,
-            sucursalId:      form.sucursalId?.value,
-            fechaHora,
-            estado:          form.estado.value,
-            motivo:          form.motivo.value
-        };
-
-        fetch('/admin/crearCitas', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        .then(r => {
-            if (!r.ok) throw new Error('Error al crear cita');
-            return r.json();
-        })
-        .then(res => alert('Cita creada ID: ' + res._id))
-        .catch(err => alert(err.message));
-        });
   </script>
 
 
