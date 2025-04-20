@@ -114,6 +114,13 @@
                     <p><strong>Especialidad:</strong> <span id="detalleCitaEspecialidad"></span></p>
                     <p><strong>Sucursal:</strong> <span id="detalleCitaSucursal"></span></p>
                 </section>
+
+                <section class="detalle__seccion">
+                    <h3 class="detalle__titulo">🧾 Recetas Asociadas</h3>
+                    <div id="detalleCitaRecetas">
+                        <p style="color:#777;">No hay recetas para esta cita.</p>
+                    </div>
+                </section>
             </div>
         </div>
     </div>
@@ -189,6 +196,32 @@
 
             // modal
             document.getElementById("modalDetallesCita").style.display = "block";
+
+            // Recetas
+            const contenedorRecetas = document.getElementById("detalleCitaRecetas");
+            contenedorRecetas.innerHTML = ''; // Limpia contenido previo
+
+            if (cita.recetas && cita.recetas.length > 0) {
+                let html = cita.recetas.map(receta => {
+                    const medicamentos = receta.medicamentos.map(med =>
+                        `• ${med.medicamentoId?.nombre || '---'} – Cantidad: ${med.cantidad}`
+                    ).join('<br>');
+
+                    return `
+            <div style="border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 10px; background: #f9f9f9;">
+                <p><strong>Estado:</strong> ${receta.estado}</p>
+                <p><strong>Notas:</strong> ${receta.notas || '---'}</p>
+                <p><strong>Fecha:</strong> ${new Date(receta.fechaEntrega).toLocaleString('es-CR')}</p>
+                <p><strong>Medicamentos:</strong><br>${medicamentos}</p>
+            </div>
+        `;
+                }).join("");
+
+                contenedorRecetas.innerHTML = html;
+            } else {
+                contenedorRecetas.innerHTML = '<p style="color:#999;">No hay recetas asociadas a esta cita.</p>';
+            }
+
         }
 
         function cerrarModalDetallesCita() {
