@@ -40,7 +40,7 @@
         <div class="header__logo">
             <img class="logo__img" src="/images/logo1-b.svg" alt="Logo MediConnect">
         </div>
-<!--         <div class="header__profile">
+        <!--         <div class="header__profile">
             <a class="profile__text">
                 <%= usuario.email %>
             </a>
@@ -51,7 +51,7 @@
     <nav class="sidebar">
         <ul class="sidebar__list">
 
-<!--             <li class="sidebar__usuario">
+            <!--             <li class="sidebar__usuario">
                 <p class="usuario__correo">
                     <%= usuario.email %>
                 </p>
@@ -201,17 +201,38 @@
 
                             <% if (usuario.rol==='farmaceutico' ) { %>
 
-                                <li class="list__item">
-                                    <a class="item__area" href="/recetas.html" title="Recetas">
+                                <li
+                                    class="list__item <%= request.originalUrl === '/farmaceutico/recetas' ? 'list__item--active' : '' %>">
+                                    <a class="item__area" href="/farmaceutico/recetas" title="Recetas">
                                         <i class="fa-solid fa-hospital-user"></i>
-                                        <span class="area__text">Recetas</span>
+                                        <span
+                                            class="area__text <%= request.originalUrl === '/farmaceutico/recetas' ? 'area__text--active' : '' %>">
+                                            Recetas
+                                        </span>
                                     </a>
                                 </li>
 
-                                <li class="list__item">
-                                    <a class="item__area" href="/proveedores.html" title="Medicamentos">
-                                        <i class="fa-solid fa-prescription-bottle-medical"></i>
-                                        <span class="area__text">Medicamentos</span>
+                                <li
+                                    class="list__item <%= request.originalUrl === '/farmaceutico/recetas_historial' ? 'list__item--active' : '' %>">
+                                    <a class="item__area" href="/farmaceutico/recetas_historial"
+                                        title="Historial de Recetas">
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
+                                        <span
+                                            class="area__text <%= request.originalUrl === '/farmaceutico/recetas_historial' ? 'area__text--active' : '' %>">
+                                            Historial de Recetas
+                                        </span>
+                                    </a>
+                                </li>
+
+
+                                <li
+                                    class="list__item <%= request.originalUrl === '/farmaceutico/medicamentos' ? 'list__item--active' : '' %>">
+                                    <a class="item__area" href="/farmaceutico/medicamentos" title="Medicamentos">
+                                        <i class="fa-solid fa-pills"></i>
+                                        <span
+                                            class="area__text <%= request.originalUrl === '/farmaceutico/medicamentos' ? 'area__text--active' : '' %>">
+                                            Medicamentos
+                                        </span>
                                     </a>
                                 </li>
 

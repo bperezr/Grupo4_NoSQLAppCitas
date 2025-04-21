@@ -6,6 +6,7 @@ const Especialidad = require('../models/especialidades');
 const BitacoraUso = require('../models/bitacoraUso');
 const Usuario = require('../models/usuarios');
 const Receta = require('../models/recetas');
+const Medicamento = require('../models/medicamentos');
 const bcrypt = require('bcrypt');
 
 
@@ -423,6 +424,9 @@ exports.procesarAtencionCita = async (req, res) => {
 };
 
 exports.eliminarReceta = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
         const recetaId = req.params.id;
 
@@ -430,14 +434,32 @@ exports.eliminarReceta = async (req, res) => {
             return res.status(400).json({ error: 'ID de receta inválido' });
         }
 
-        const receta = await Receta.findById(recetaId);
+        const receta = await Receta.findById(recetaId).session(session);
         if (!receta) {
+            await session.abortTransaction();
             return res.status(404).json({ error: 'Receta no encontrada' });
         }
 
-        await Receta.findByIdAndDelete(recetaId);
-        res.json({ mensaje: 'Receta eliminada correctamente' });
+        // Restaurar stock
+        for (const item of receta.medicamentos) {
+            const medicamento = await Medicamento.findById(item.medicamentoId).session(session);
+            if (medicamento) {
+                medicamento.stock += item.cantidad;
+                await medicamento.save({ session });
+            }
+        }
+
+        // Eliminar receta
+        await Receta.findByIdAndDelete(recetaId).session(session);
+
+        await session.commitTransaction();
+        session.endSession();
+
+        res.json({ mensaje: 'Receta eliminada correctamente y stock restaurado' });
+
     } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
         console.error('❌ Error al eliminar receta:', error);
         res.status(500).json({ error: 'No se pudo eliminar la receta' });
     }

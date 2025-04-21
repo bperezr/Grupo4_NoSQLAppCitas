@@ -2,7 +2,7 @@ function getRedirectURL(rol) {
     switch (rol) {
         case 'admin': return '/admin';
         case 'doctor': return '/doctor';
-        case 'paciente': return '/paciente';
+        case 'farmaceutico': return '/farmaceutico';
         default: return '/login';
     }
 }

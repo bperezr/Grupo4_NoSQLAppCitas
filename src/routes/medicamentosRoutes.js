@@ -11,4 +11,9 @@ router.post('/medicamento/eliminar/:id', verificarRol('admin'), medicamentosCont
 // ruta API para obtener medicamentos por sucursal
 router.get('/api/medicamentos', verificarRol(['admin', 'doctor', 'farmaceutico']), medicamentosController.obtenerPorSucursal);
 
+router.get('/farmaceutico/medicamentos', verificarRol('farmaceutico'), medicamentosController.listarPorSucursal);
+router.post('/farmaceutico/crear', verificarRol('farmaceutico'), medicamentosController.crearPorSucursal);
+router.post('/farmaceutico/actualizar/:id', verificarRol('farmaceutico'), medicamentosController.actualizarPorSucursal);
+router.post('/farmaceutico/eliminar/:id', verificarRol('farmaceutico'), medicamentosController.eliminarPorSucursal);
+
 module.exports = router;

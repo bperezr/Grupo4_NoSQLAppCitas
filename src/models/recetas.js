@@ -23,9 +23,7 @@ const recetaSchema = new Schema({
     required: true
   },
   fechaEntrega: {
-    type: Date,
-    required: true,
-    default: Date.now
+    type: Date
   },
   estado: {
     type: String,
@@ -47,6 +45,14 @@ const recetaSchema = new Schema({
   }],
   notas: {
     type: String
+  },
+  notaFarmaceutico: {
+    type: String
+  },
+  fechaCreacion: {
+    type: Date,
+    required: true,
+    default: Date.now
   }
 });
 

@@ -8,4 +8,10 @@ router.post('/admin/farmaceuticos', verificarRol('admin'), farmaceuticosControll
 router.post('/admin/farmaceuticos/editar/:id', verificarRol('admin'), farmaceuticosController.actualizar);
 router.post('/admin/farmaceuticos/eliminar/:id', verificarRol('admin'), farmaceuticosController.eliminar);
 
+// ------------------------------------------------ Rutas para rol el farmaceutico
+
+router.get('/farmaceutico/recetas', verificarRol('farmaceutico'), farmaceuticosController.listarRecetasSucursal);
+router.get('/farmaceutico/recetas_historial', verificarRol('farmaceutico'), farmaceuticosController.listarRecetasSucursalHistorial);
+router.post('/farmaceutico/atender/:id', verificarRol('farmaceutico'), farmaceuticosController.atenderReceta);
+
 module.exports = router;

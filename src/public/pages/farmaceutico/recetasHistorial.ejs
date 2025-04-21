@@ -1,0 +1,353 @@
+<div class="content">
+    <div class="content__title">
+        <h1>Recetas Médicas</h1>
+    </div>
+
+    <section class="main__container">
+        <div class="table-container table-responsive">
+            <table id="tablaRecetas" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th class="table-drop"></th>
+                        <th>Paciente</th>
+                        <th>Cédula</th>
+                        <th>Doctor</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% recetas.forEach(receta=> { const paciente = receta.pacienteId; const doctor = receta.doctorId; %>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <%= paciente?.nombre %>
+                                    <%= paciente?.apellido %>
+                            </td>
+                            <td>
+                                <%= paciente?.cedula %>
+                            </td>
+                            <td>
+                                <%= doctor?.nombre %>
+                                    <%= doctor?.apellidos %>
+                            </td>
+                            <td>
+                                <%= new Date(receta.fechaCreacion).toLocaleDateString('es-CR') %>
+                            </td>
+                            <td class="text-center">
+                                <% if (receta.estado==='Pendiente' ) { %>
+                                    🟡 Pendiente
+                                    <% } else if (receta.estado==='Entregado' ) { %>
+                                        🟢 Entregado
+                                        <% } else if (receta.estado==='Cancelado' ) { %>
+                                            🔴 Cancelado
+                                            <% } %>
+                            </td>
+                            <td class="text-center">
+                                <button class="btn__icon" title="Ver detalles"
+                                    data-receta='<%- JSON.stringify(receta) %>'
+                                    onclick="abrirModalDetallesReceta(this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <% if (receta.estado==='Pendiente' ) { %>
+                                    <button class="btn__icon procesar-btn" data-receta='<%- JSON.stringify(receta) %>'
+                                        title="Entrega" onclick="abrirModalAtenderReceta(this)">
+                                        <i class="fa-solid fa-gear"></i>
+                                    </button>
+
+                                    <% } %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para ver detalles de la receta -->
+<div id="modalDetallesReceta" class="modal">
+    <div class="modal__content modal__content--detalles">
+        <span class="modal__close" onclick="cerrarModalDetalles()">&times;</span>
+        <h2 class="modal__title">📄 Detalles de la Receta</h2>
+
+        <div class="modal__info">
+            <!-- Paciente -->
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">🧍 Información del Paciente</h3>
+                <p><strong>Nombre:</strong> <span id="detallePacienteNombre"></span></p>
+                <p><strong>Cédula:</strong> <span id="detallePacienteCedula"></span></p>
+                <p><strong>Email:</strong> <span id="detallePacienteEmail"></span></p>
+                <p><strong>Teléfono:</strong> <span id="detallePacienteTelefono"></span></p>
+                <p><strong>Dirección:</strong> <span id="detallePacienteDireccion"></span></p>
+                <p><strong>Fecha Nacimiento:</strong> <span id="detallePacienteNacimiento"></span></p>
+            </section>
+
+            <!-- Medicamentos -->
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">💊 Medicamentos Recetados</h3>
+                <ul id="detalleMedicamentos"></ul>
+            </section>
+
+            <!-- Información adicional -->
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">📝 Información Adicional</h3>
+                <p><strong>Notas:</strong> <span id="detalleNotasReceta"></span></p>
+                <p><strong>Fecha de Creación:</strong> <span id="detalleFechaCreacion"></span></p>
+                <p><strong>Estado:</strong> <span id="detalleEstadoReceta"></span></p>
+            </section>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para atender receta -->
+<div id="modalAtenderReceta" class="modal">
+    <div class="modal__content modal__content--detalles">
+        <span class="modal__close" onclick="cerrarModalAtencion()">&times;</span>
+        <h2 class="modal__title">🧾 Atender Receta Médica</h2>
+
+        <div class="modal__info">
+            <!-- Info Paciente -->
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">🧍 Paciente</h3>
+                <p><strong>Nombre:</strong> <span id="atencionPacienteNombre"></span></p>
+                <p><strong>Cédula:</strong> <span id="atencionPacienteCedula"></span></p>
+                <p><strong>Email:</strong> <span id="atencionPacienteEmail"></span></p>
+                <p><strong>Teléfono:</strong> <span id="atencionPacienteTelefono"></span></p>
+            </section>
+
+            <!-- Medicamentos Detallados -->
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">💊 Medicamentos Recetados</h3>
+                <table class="table table--striped">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Marca</th>
+                            <th>Tipo</th>
+                            <th>Unidad</th>
+                            <th>Cantidad</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaAtencionMedicamentos">
+                        <!-- Se cargan con JS -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Nota del Doctor -->
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">🩺 Nota del Doctor</h3>
+                <p id="notaDoctorReceta" style="white-space: pre-wrap;"></p>
+            </section>
+
+            <!-- Nota y Estado -->
+            <section class="detalle__seccion">
+                <h3 class="detalle__titulo">📝 Atención Farmacéutica</h3>
+                <label for="notaFarmaceutico"><strong>Nota del Farmacéutico:</strong></label>
+                <textarea id="notaFarmaceutico" rows="3" placeholder="Observaciones sobre la receta..."></textarea>
+
+                <label for="estadoReceta"><strong>Estado de la Receta:</strong></label>
+                <select id="estadoReceta">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Entregado">Entregado</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+            </section>
+
+            <!-- Botón Guardar -->
+            <div class="text-center" style="margin-top: 20px;">
+                <button id="btnGuardarAtencion" class="btn__agregar-nueva">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tablaRecetas')) {
+            $('#tablaRecetas').DataTable().clear().destroy();
+        }
+
+        $('#tablaRecetas').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 0
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'control',
+                    orderable: false,
+                    targets: 0
+                }
+            ],
+            order: [3, 'desc'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            }
+        });
+    });
+
+    function abrirModalDetallesReceta(btn) {
+        const receta = JSON.parse(btn.getAttribute('data-receta'));
+        recetaIdActual = receta._id;
+
+        const paciente = receta.pacienteId || {};
+
+        document.getElementById("detallePacienteNombre").textContent = `${paciente.nombre || ''} ${paciente.apellido || ''}`;
+        document.getElementById("detallePacienteCedula").textContent = paciente.cedula || '---';
+        document.getElementById("detallePacienteEmail").textContent = paciente.email || '---';
+        document.getElementById("detallePacienteTelefono").textContent = paciente.telefono || '---';
+        document.getElementById("detallePacienteDireccion").textContent = paciente.direccion || '---';
+        document.getElementById("detallePacienteNacimiento").textContent = paciente.fechaNacimiento
+            ? new Date(paciente.fechaNacimiento).toLocaleDateString('es-CR')
+            : '---';
+
+        document.getElementById("detalleNotasReceta").textContent = receta.notas || '---';
+        document.getElementById("detalleFechaCreacion").textContent = receta.fechaCreacion
+            ? new Date(receta.fechaCreacion).toLocaleString('es-CR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: 'America/Costa_Rica'
+            })
+            : '---';
+
+        document.getElementById("detalleEstadoReceta").textContent = receta.estado || '---';
+
+        // Medicamentos
+        const listaMedicamentos = document.getElementById("detalleMedicamentos");
+        listaMedicamentos.innerHTML = '';
+
+        if (Array.isArray(receta.medicamentos) && receta.medicamentos.length > 0) {
+            receta.medicamentos.forEach(item => {
+                const medicamento = item.medicamentoId || {};
+                const nombre = medicamento.nombre || 'Desconocido';
+                const unidad = medicamento.unidad || '';
+                const cantidad = item.cantidad || 0;
+
+                const li = document.createElement('li');
+                li.textContent = `${nombre} ${unidad} – ${cantidad} unidad(es)`;
+                listaMedicamentos.appendChild(li);
+            });
+        } else {
+            const li = document.createElement('li');
+            li.textContent = 'No hay medicamentos registrados.';
+            listaMedicamentos.appendChild(li);
+        }
+
+
+        document.getElementById("modalDetallesReceta").style.display = "block";
+    }
+
+    function cerrarModalDetalles() {
+        document.getElementById("modalDetallesReceta").style.display = "none";
+    }
+
+
+</script>
+
+<script>
+    function abrirModalAtenderReceta(btn) {
+        const receta = JSON.parse(btn.getAttribute('data-receta'));
+        recetaIdActual = receta._id;
+
+        const paciente = receta.pacienteId || {};
+        document.getElementById("atencionPacienteNombre").textContent = `${paciente.nombre || ''} ${paciente.apellido || ''}`;
+        document.getElementById("atencionPacienteCedula").textContent = paciente.cedula || '---';
+        document.getElementById("atencionPacienteEmail").textContent = paciente.email || '---';
+        document.getElementById("atencionPacienteTelefono").textContent = paciente.telefono || '---';
+        document.getElementById("notaDoctorReceta").textContent = receta.notas || '---';
+        document.getElementById("modalAtenderReceta").style.display = "block";
+
+        // Limpiar tabla
+        const tabla = document.getElementById("tablaAtencionMedicamentos");
+        tabla.innerHTML = '';
+
+        if (Array.isArray(receta.medicamentos)) {
+            receta.medicamentos.forEach(item => {
+                const med = item.medicamentoId || {};
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${med.nombre || '---'}</td>
+                    <td>${med.marca || '---'}</td>
+                    <td>${med.tipo || '---'}</td>
+                    <td>${med.unidad || '---'}</td>
+                    <td>${item.cantidad || 0}</td>
+                `;
+                tabla.appendChild(row);
+            });
+        }
+
+        // Set estado actual en dropdown
+        document.getElementById("estadoReceta").value = receta.estado || 'Pendiente';
+        document.getElementById("notaFarmaceutico").value = receta.notaFarmaceutico || '';
+
+        // Mostrar modal
+        document.getElementById("modalAtenderReceta").style.display = "block";
+    }
+
+    function cerrarModalAtencion() {
+        document.getElementById("modalAtenderReceta").style.display = "none";
+    }
+</script>
+
+<script>
+    document.getElementById("btnGuardarAtencion").addEventListener("click", async function () {
+        const estado = document.getElementById("estadoReceta").value;
+        const notaFarmaceutico = document.getElementById("notaFarmaceutico").value;
+
+        Swal.fire({
+            title: '¿Guardar atención?',
+            text: 'Se actualizará el estado y nota de esta receta.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, guardar',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const res = await fetch(`/farmaceutico/atender/${recetaIdActual}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            estado,
+                            notaFarmaceutico
+                        })
+                    });
+
+                    if (res.ok) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Receta actualizada!',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload(); // recarga para reflejar los cambios
+                        });
+                    } else {
+                        const data = await res.json();
+                        Swal.fire('Error', data.error || 'No se pudo guardar.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Error al enviar atención:', err);
+                    Swal.fire('Error', 'Ocurrió un problema inesperado.', 'error');
+                }
+            }
+        });
+    });
+</script>

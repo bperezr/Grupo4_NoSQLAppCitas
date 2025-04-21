@@ -3,7 +3,13 @@ const ObjectId = mongoose.Types.ObjectId;
 const Farmaceutico = require('../models/farmaceuticos');
 const Usuario = require('../models/usuarios');
 const BitacoraUso = require('../models/bitacoraUso');
+const Receta = require('../models/recetas');
+const Medicamento = require('../models/medicamentos');
+const Paciente = require('../models/pacientes');
+const Doctor = require('../models/doctores');
+const Especialidad = require('../models/especialidades');
 const bcrypt = require('bcrypt');
+
 
 const Sucursal = mongoose.model('Sucursales');
 
@@ -146,5 +152,162 @@ exports.eliminar = async (req, res) => {
     } catch (error) {
         console.error('Error al eliminar farmacéutico:', error);
         res.status(500).send('Error al eliminar');
+    }
+};
+
+//---------------------------------------------------------------------- Vistas de farmaceuticos
+
+exports.listarRecetasSucursal = async (req, res) => {
+    try {
+        const idSucursal = req.session.usuario?.idSucursal;
+
+        if (!idSucursal) {
+            return res.status(403).send('Sucursal no disponible en la sesión.');
+        }
+
+        const recetas = await Receta.find({
+            sucursalId: idSucursal,
+            estado: { $in: ['Pendiente'] }
+        })
+            .populate('pacienteId', 'nombre apellido cedula email telefono direccion fechaNacimiento historialMedico')
+            .populate({
+                path: 'doctorId',
+                select: 'nombre apellidos email telefono especialidadId sucursalId estado',
+                populate: [
+                    {
+                        path: 'especialidadId',
+                        model: 'Especialidades',
+                        select: 'nombre'
+                    },
+                    {
+                        path: 'sucursalId',
+                        model: 'Sucursales',
+                        select: 'nombre direccion telefono'
+                    }
+                ]
+            })
+            .populate('medicamentos.medicamentoId', 'nombre unidad marca tipo')
+            .sort({ fechaCreacion: 1 });
+
+        await new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: 'Vio las recetas de su sucursal',
+            fechaHora: new Date()
+        }).save();
+
+        res.render('index', {
+            usuario: req.session.usuario,
+            recetas,
+            viewParcial: 'farmaceutico/recetas'
+        });
+    } catch (error) {
+        console.error('Error al listar recetas por sucursal:', error);
+        res.status(500).send('Error al obtener las recetas');
+    }
+};
+
+
+exports.atenderReceta = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        const recetaId = req.params.id;
+        const { estado, notaFarmaceutico } = req.body;
+
+        if (!mongoose.Types.ObjectId.isValid(recetaId)) {
+            return res.status(400).json({ error: 'ID de receta inválido' });
+        }
+
+        const receta = await Receta.findById(recetaId).session(session);
+        if (!receta) {
+            await session.abortTransaction();
+            return res.status(404).json({ error: 'Receta no encontrada' });
+        }
+
+        if (receta.estado === 'Pendiente' && estado === 'Cancelado') {
+            for (const item of receta.medicamentos) {
+                const medicamento = await Medicamento.findById(item.medicamentoId).session(session);
+                if (medicamento) {
+                    medicamento.stock += item.cantidad;
+                    await medicamento.save({ session });
+                }
+            }
+        }
+
+        receta.estado = estado;
+        receta.notaFarmaceutico = notaFarmaceutico;
+        if (estado === 'Entregado') {
+            receta.fechaEntrega = new Date();
+        }
+
+        await receta.save({ session });
+
+        await new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: `Atendió receta ID ${recetaId} - Estado: ${estado}`,
+            fechaHora: new Date()
+        }).save({ session });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return res.json({ ok: true });
+
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        console.error('❌ Error al atender receta:', error);
+        return res.status(500).json({ error: 'Error al procesar la receta' });
+    }
+};
+
+
+exports.listarRecetasSucursalHistorial = async (req, res) => {
+    try {
+        const idSucursal = req.session.usuario?.idSucursal;
+
+        if (!idSucursal) {
+            return res.status(403).send('Sucursal no disponible en la sesión.');
+        }
+
+        const recetas = await Receta.find({
+            sucursalId: idSucursal,
+            estado: { $in: ['Entregado', 'Cancelado'] }
+        })
+            .populate('pacienteId', 'nombre apellido cedula email telefono direccion fechaNacimiento historialMedico')
+            .populate({
+                path: 'doctorId',
+                select: 'nombre apellidos email telefono especialidadId sucursalId estado',
+                populate: [
+                    {
+                        path: 'especialidadId',
+                        model: 'Especialidades',
+                        select: 'nombre'
+                    },
+                    {
+                        path: 'sucursalId',
+                        model: 'Sucursales',
+                        select: 'nombre direccion telefono'
+                    }
+                ]
+            })
+            .populate('medicamentos.medicamentoId', 'nombre unidad marca tipo')
+            .sort({ fechaEntrega: -1 });
+
+        await new BitacoraUso({
+            usuarioId: req.session.usuario.id,
+            tipoAccion: 'Vio el historial de recetas completadas y canceladas de su sucursal',
+            fechaHora: new Date()
+        }).save();
+
+        res.render('index', {
+            usuario: req.session.usuario,
+            recetas,
+            viewParcial: 'farmaceutico/recetasHistorial'
+        });
+    } catch (error) {
+        console.error('Error al listar recetas por sucursal:', error);
+        res.status(500).send('Error al obtener las recetas');
     }
 };

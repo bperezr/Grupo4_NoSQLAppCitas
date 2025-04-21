@@ -373,7 +373,14 @@ db.createCollection("Recetas", {
   validator: {
     $jsonSchema: {
       bsonType: "object",
-      required: ["pacienteId", "doctorId", "sucursalId", "fechaEntrega", "estado", "medicamentos"],
+      required: [
+        "pacienteId",
+        "doctorId",
+        "sucursalId",
+        "estado",
+        "medicamentos",
+        "fechaCreacion"
+      ],
       properties: {
         pacienteId: {
           bsonType: "objectId",
@@ -393,7 +400,7 @@ db.createCollection("Recetas", {
         },
         estado: {
           bsonType: "string",
-          enum: ["Pendiente", "Entregado","Cancelado"],
+          enum: ["Pendiente", "Entregado", "Cancelado"],
           description: "El estado debe ser uno de: Pendiente, Entregado, Cancelado."
         },
         medicamentos: {
@@ -417,7 +424,15 @@ db.createCollection("Recetas", {
         },
         notas: {
           bsonType: "string",
-          description: "Campo opcional para observaciones adicionales."
+          description: "Campo opcional para observaciones adicionales del doctor."
+        },
+        notaFarmaceutico: {
+          bsonType: "string",
+          description: "Campo opcional para observaciones del farmacéutico."
+        },
+        fechaCreacion: {
+          bsonType: "date",
+          description: "Fecha en la que se creó la receta."
         }
       }
     }
@@ -425,6 +440,14 @@ db.createCollection("Recetas", {
   validationLevel: "strict",
   validationAction: "error"
 });
+
+
+db.Recetas.createIndex({ sucursalId: 1 });
+db.Recetas.createIndex({ doctorId: 1 });
+db.Recetas.createIndex({ pacienteId: 1 });
+db.Recetas.createIndex({ sucursalId: 1, estado: 1 });
+
+
 
 // Entregas
 db.createCollection("Entregas", {
