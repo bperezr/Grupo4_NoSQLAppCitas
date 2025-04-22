@@ -25,7 +25,7 @@ exports.getEspecialidades = async (req, res) => {
 };
 
 exports.listarEspecialidades = async (req, res) => {
-    try {        
+    try {
         const listaEspecialidad = await Especialidades.find();
         res.json(listaEspecialidad);
     } catch (error) {

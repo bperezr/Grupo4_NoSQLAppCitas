@@ -186,7 +186,6 @@ class CitasController {
     }
   }
 
-
   async editarCita(req, res) {
     try {
       const { id } = req.params;

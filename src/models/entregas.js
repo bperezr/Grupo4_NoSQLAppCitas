@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 const entregaSchema = new Schema({
   recetaId: { type: Schema.Types.ObjectId, ref: 'Receta', required: true },
@@ -13,4 +13,4 @@ const Entrega = mongoose.model('Entrega', entregaSchema);
 
 module.exports = {
   Entrega
-}; 
+};

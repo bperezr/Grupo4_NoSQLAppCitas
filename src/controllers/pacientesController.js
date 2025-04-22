@@ -28,9 +28,9 @@ exports.consultarCedula = async (req, res) => {
     try {
         const { cedula } = req.params;
 
-        const paciente = await Paciente.findOne({cedula});
+        const paciente = await Paciente.findOne({ cedula });
         res.json(paciente);
-        
+
 
     } catch (error) {
         console.error('Error al consultar al paciente:', error);

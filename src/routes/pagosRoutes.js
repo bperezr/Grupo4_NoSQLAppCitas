@@ -6,5 +6,4 @@ const { verificarRol } = require('../middleware/verificarRol');
 router.get('/admin/pagos', verificarRol('admin'), pagosController.listarPagos);
 router.post('/admin/pagos/estado/:id', pagosController.cambiarEstadoPago);
 
-
 module.exports = router;

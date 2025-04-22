@@ -66,7 +66,6 @@ router.get('/cambiar-contrasena', (req, res) => {
     res.render('cambiar-contrasena');
 });
 
-// cambio de contraseña
 router.post('/cambiar-contrasena', async (req, res) => {
     const { nuevaContrasena } = req.body;
     const usuarioTemp = req.session.usuarioTemporal;

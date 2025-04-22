@@ -8,7 +8,6 @@ router.post('/medicamento/crear', verificarRol('admin'), medicamentosController.
 router.post('/medicamento/actualizar/:id', verificarRol('admin'), medicamentosController.actualizar);
 router.post('/medicamento/eliminar/:id', verificarRol('admin'), medicamentosController.eliminar);
 
-// ruta API para obtener medicamentos por sucursal
 router.get('/api/medicamentos', verificarRol(['admin', 'doctor', 'farmaceutico']), medicamentosController.obtenerPorSucursal);
 
 router.get('/farmaceutico/medicamentos', verificarRol('farmaceutico'), medicamentosController.listarPorSucursal);

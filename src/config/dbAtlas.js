@@ -10,7 +10,7 @@ const connectDB = async () => {
                 useUnifiedTopology: true
             }
         );
-        console.log(`\n🍃 \x1b[32m[MongoDB]\x1b[0m Atlas conectado correctamente ✅`);
+        console.log(`\n☁️  \x1b[32m[MongoDB]\x1b[0m Conectado correctamente a \x1b[1;36mMongo Atlas\x1b[0m`);
 
     } catch (err) {
         console.error('Error al conectar (Atlas):', err);

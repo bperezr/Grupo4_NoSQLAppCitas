@@ -12,10 +12,10 @@
             </div>
         </div>
         <div class="table-container table-responsive">
-            <table id="tblCitas" class="display" style="width:100%"> 
+            <table id="tblCitas" class="display" style="width:100%">
                 <thead>
                     <tr>
-                      <th class="table-drop"></th>
+                        <th class="table-drop"></th>
                         <th>Doctor</th>
                         <th>Paciente</th>
                         <th>Sucursal</th>
@@ -25,55 +25,50 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% item.forEach(citas => { %>
+                    <% item.forEach(citas=> { %>
                         <tr>
-                          <td></td>
-                          <td><%= citas.doctor %></td>
-                          <td><%= citas.paciente %></td>
-                          <td><%= citas.sucursal %></td>
-                          <td>
-                            <%                                 
-                            const d = new Date(citas.fechaHora);                       
-                            const optsFecha = {
-                              weekday: 'long',
-                              day:     'numeric',
-                              month:   'long',
-                              year:    'numeric',
-                              timeZone:'America/Costa_Rica'
-                            };                                   
-                            const optsHora = {
-                              hour:   '2-digit',
-                              minute: '2-digit',
-                              timeZone: 'America/Costa_Rica'
-                            };                               
-                            let fechaStr = d.toLocaleDateString('es-CR', optsFecha);                                     
-                            fechaStr = fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1);
-                            const horaStr  = d.toLocaleTimeString('es-CR', optsHora);
-                          %>
-                          <%= `${fechaStr}, ${horaStr}` %>                         
-                          </td>
-                          <td>
-                            <% if (citas.estado==='pendiente' ) { %>
-                                🟡 Pendiente
-                                <% } else if (citas.estado==='confirmada' ) { %>
-                                    🔵Confirmada
-                                    <% } else if (citas.estado==='cancelada' ) { %>
-                                        🔴 Cancelada
-                                        <% } else if (citas.estado==='completada' ) { %>
-                                            🟢 Completada
-                                            <% } %>
-                        </td>
-                          <td> 
-                            <button class="btn__icon" title="Ver detalles" data-Cita='<%- JSON.stringify(citas) %>'
-                                onclick="abrirModalDetalles(this)">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                            <button onclick="window.location.href = '/admin/citas/editar/<%= citas._id %>'" class="btn__icon" title="Editar">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>                     
-                          </td>
+                            <td></td>
+                            <td>
+                                <%= citas.doctor %>
+                            </td>
+                            <td>
+                                <%= citas.paciente %>
+                            </td>
+                            <td>
+                                <%= citas.sucursal %>
+                            </td>
+                            <td>
+                                <% const d=new Date(citas.fechaHora); const optsFecha={ weekday: 'long' , day: 'numeric'
+                                    , month: 'long' , year: 'numeric' , timeZone:'America/Costa_Rica' }; const
+                                    optsHora={ hour: '2-digit' , minute: '2-digit' , timeZone: 'America/Costa_Rica' };
+                                    let fechaStr=d.toLocaleDateString('es-CR', optsFecha);
+                                    fechaStr=fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1); const
+                                    horaStr=d.toLocaleTimeString('es-CR', optsHora); %>
+                                    <%= `${fechaStr}, ${horaStr}` %>
+                            </td>
+                            <td>
+                                <% if (citas.estado==='pendiente' ) { %>
+                                    🟡 Pendiente
+                                    <% } else if (citas.estado==='confirmada' ) { %>
+                                        🔵Confirmada
+                                        <% } else if (citas.estado==='cancelada' ) { %>
+                                            🔴 Cancelada
+                                            <% } else if (citas.estado==='completada' ) { %>
+                                                🟢 Completada
+                                                <% } %>
+                            </td>
+                            <td>
+                                <button class="btn__icon" title="Ver detalles" data-Cita='<%- JSON.stringify(citas) %>'
+                                    onclick="abrirModalDetalles(this)">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                                <button onclick="window.location.href = '/admin/citas/editar/<%= citas._id %>'"
+                                    class="btn__icon" title="Editar">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                </button>
+                            </td>
                         </tr>
-                      <% }) %>
+                        <% }) %>
                 </tbody>
             </table>
         </div>
@@ -91,28 +86,28 @@
                 <p><strong>Nombre:</strong> <span id="detalleNombreDoc"></span></p>
             </section>
             <section class="detalle__seccion">
-                
+
                 <h3 class="detalle__titulo">🧍 Información del paciente</h3>
                 <p><strong>Cédula:</strong> <span id="detalleCedula"></span></p>
                 <p><strong>Nombre:</strong> <span id="detalleNombre"></span></p>
                 <p><strong>Teléfono:</strong> <span id="detalleTelefono"></span></p>
                 <p><strong>Correo electrónico:</strong> <span id="detalleCorreo"></span></p>
-            </section>  
-            
+            </section>
+
             <section class="detalle__seccion">
                 <h3 class="detalle__titulo">🏥 Especialidad</h3>
                 <p><strong>Nombre:</strong> <span id="detalleNombreEspecialidad"></span></p>
                 <p><strong>Precio consulta:</strong>¢<span id="detallePrecio"></span></p>
             </section>
-        </div>    
+        </div>
     </div>
 </div>
 
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  if ($.fn.DataTable.isDataTable('#tblCitas')) {
+    document.addEventListener('DOMContentLoaded', function () {
+        if ($.fn.DataTable.isDataTable('#tblCitas')) {
             $('#tblCitas').DataTable().clear().destroy();
         }
 
@@ -136,24 +131,24 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('creada') === '1') {
-      Swal.fire({
-        icon: 'success',
-        title: '¡Cita registrada correctamente!',
-        showConfirmButton: false,
-        timer: 2000
-      });      
-    }
-    if (params.get('editada') === '1') {
-      Swal.fire({
-        icon: 'success',
-        title: '¡Cita editada correctamente!',
-        showConfirmButton: false,
-        timer: 2000
-      });      
-    }
-});
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('creada') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Cita registrada correctamente!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+        if (params.get('editada') === '1') {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Cita editada correctamente!',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+    });
 
     // -------------------------------------------- Función Modal para ver detalles del doctor
 
@@ -168,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("detalleCorreo").textContent = infoCita.email;
         document.getElementById("detalleNombreEspecialidad").textContent = infoCita.nombreEspecialidad;
         document.getElementById("detallePrecio").textContent = infoCita.precioConsulta;
-        
+
         document.getElementById("modalDetalleCita").style.display = "block";
     }
 

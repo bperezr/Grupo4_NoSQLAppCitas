@@ -5,12 +5,12 @@ const BitacoraUso = require('../models/bitacoraUso');
 exports.listarPagos = async (req, res) => {
     try {
         const pagos = await Pago.find()
-        .populate('pacienteId', 'email')
+            .populate('pacienteId', 'email')
             .populate({
-                path: "citaId",  
+                path: "citaId",
                 populate: {
-                    path: "doctorId",  
-                    select: "nombre"   
+                    path: "doctorId",
+                    select: "nombre"
                 }
             });
 

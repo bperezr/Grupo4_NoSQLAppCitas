@@ -1,101 +1,101 @@
 <div class="content">
-    <div class="content__title">
-        <h1>Crear cita</h1>
-    </div>
+  <div class="content__title">
+    <h1>Crear cita</h1>
+  </div>
   <form id="citaForm" action="/admin/crearCitas" method="POST">
-      <div class="containerCitas">
-          <div class="info-container">
-              <h3 class="card__title">Información de la cita</h3>
-              <div class="horaClass">
-                  <div class="content__title">
-                    <h3>Datos de la cita</h3>
-                  </div>               
-                      <!-- Buscador de paciente -->
-                      <div class="form-group">
-                        <label for="Cedula">Cédula del Paciente</label>
-                        <div class="search-paciente">
-                          <input type="text" id="Cedula" placeholder="Ingrese cédula">
-                          <button class="btnBuscar" type="button" onclick="ConsultarCedula()">Buscar</button>
-                        </div>
-                        <div id="pacienteInfo" class="paciente-info"></div>
-                        <input type="hidden" name="pacienteId" id="pacienteIdInput">
-                      </div>
-                
-                      <!-- Nombre (rellenado por API externa) -->
-                      <div class="form-group">
-                        <label for="Nombre">Nombre del Paciente</label>
-                        <input type="text" id="Nombre" readonly>
-                      </div>
-
-                      <!-- Sucursal -->
-                      <div class="form-group">
-                          <label for="sucursalSelect">Sucursal</label>
-                          <select  id="sucursalId" name="sucursalId" required>
-                              <option value="">Seleccione una sucursal</option>
-                              <% sucursales.forEach(s=> { %>
-                                  <option value="<%= s._id %>">
-                                      <%= s.nombre %>
-                                  </option>
-                                  <% }) %>
-                          </select>                  
-                      </div>
-                
-                      <!-- Especialidad -->
-                      <div class="form-group">
-                          <label for="doctorSelect">Especialidad</label>
-                      <select id="especialidad" name="especialidadId" required>
-                          <option value="">Seleccione una especialidad</option>
-                      </select>
-                      </label>
-                      </div>           
-                
-                      <!-- Doctor -->
-                      <div class="form-group">
-                        <label for="doctorSelect">Doctor</label>
-                        <select id="doctorSelect" name="doctorId" required>                        
-                        </select>
-                      </div>
-                
-                      <!-- Estado oculto -->
-                      <input type="hidden" name="estado" value="pendiente">
-                
-                      <!-- Motivo -->
-                      <div class="form-group">
-                        <label for="motivo">Motivo de la consulta</label>
-                        <textarea id="motivo" name="motivo" rows="2" required></textarea>
-                      </div>
-                </div>
+    <div class="containerCitas">
+      <div class="info-container">
+        <h3 class="card__title">Información de la cita</h3>
+        <div class="horaClass">
+          <div class="content__title">
+            <h3>Datos de la cita</h3>
+          </div>
+          <!-- Buscador de paciente -->
+          <div class="form-group">
+            <label for="Cedula">Cédula del Paciente</label>
+            <div class="search-paciente">
+              <input type="text" id="Cedula" placeholder="Ingrese cédula">
+              <button class="btnBuscar" type="button" onclick="ConsultarCedula()">Buscar</button>
+            </div>
+            <div id="pacienteInfo" class="paciente-info"></div>
+            <input type="hidden" name="pacienteId" id="pacienteIdInput">
           </div>
 
-          <div class="info-container borderCalendario">
-              <h3 class="card__title">Seleccione la fecha</h3>
-              <div class="agenda-container">                    
-                  <div class="calendar-container">
-                      <div class="calendar-header tituloAgenda">
-                        <button type="button" onclick="changeMonth(-1)"><i class="fa fa-chevron-left"></i></button>
-                        <h2 id="monthYear">Mes Año</h2>
-                        <button type="button" onclick="changeMonth(1)"><i class="fa fa-chevron-right"></i></button>
-                      </div>
-                      <div class="calendar-grid" id="calendarGrid">                    
-                      </div>
-                    </div>             
-              </div>
+          <!-- Nombre (rellenado por API externa) -->
+          <div class="form-group">
+            <label for="Nombre">Nombre del Paciente</label>
+            <input type="text" id="Nombre" readonly>
           </div>
 
-          <div class="info-container borderCalendario">
-              <h3 class="card__title">Seleccione la hora</h3>
-              <div class="time-slot-container horaClass">
-                  <h3>Horas disponibles</h3>
-                  <div id="timeSlots" class="time-slot-grid">             
-                  </div>
-                </div>
+          <!-- Sucursal -->
+          <div class="form-group">
+            <label for="sucursalSelect">Sucursal</label>
+            <select id="sucursalId" name="sucursalId" required>
+              <option value="">Seleccione una sucursal</option>
+              <% sucursales.forEach(s=> { %>
+                <option value="<%= s._id %>">
+                  <%= s.nombre %>
+                </option>
+                <% }) %>
+            </select>
           </div>
-          <input type="hidden" name="selectedDate" id="selectedDateInput">
-          <input type="hidden" name="selectedHour" id="selectedHourInput">        
+
+          <!-- Especialidad -->
+          <div class="form-group">
+            <label for="doctorSelect">Especialidad</label>
+            <select id="especialidad" name="especialidadId" required>
+              <option value="">Seleccione una especialidad</option>
+            </select>
+            </label>
+          </div>
+
+          <!-- Doctor -->
+          <div class="form-group">
+            <label for="doctorSelect">Doctor</label>
+            <select id="doctorSelect" name="doctorId" required>
+            </select>
+          </div>
+
+          <!-- Estado oculto -->
+          <input type="hidden" name="estado" value="pendiente">
+
+          <!-- Motivo -->
+          <div class="form-group">
+            <label for="motivo">Motivo de la consulta</label>
+            <textarea id="motivo" name="motivo" rows="2" required></textarea>
+          </div>
+        </div>
       </div>
-      <div style="display: flex; justify-content: center; text-align:center; margin-top:1rem;">
-          <button type="submit" class="btnBuscar">Guardar cita</button>
+
+      <div class="info-container borderCalendario">
+        <h3 class="card__title">Seleccione la fecha</h3>
+        <div class="agenda-container">
+          <div class="calendar-container">
+            <div class="calendar-header tituloAgenda">
+              <button type="button" onclick="changeMonth(-1)"><i class="fa fa-chevron-left"></i></button>
+              <h2 id="monthYear">Mes Año</h2>
+              <button type="button" onclick="changeMonth(1)"><i class="fa fa-chevron-right"></i></button>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+            </div>
+          </div>
+        </div>
       </div>
+
+      <div class="info-container borderCalendario">
+        <h3 class="card__title">Seleccione la hora</h3>
+        <div class="time-slot-container horaClass">
+          <h3>Horas disponibles</h3>
+          <div id="timeSlots" class="time-slot-grid">
+          </div>
+        </div>
+      </div>
+      <input type="hidden" name="selectedDate" id="selectedDateInput">
+      <input type="hidden" name="selectedHour" id="selectedHourInput">
+    </div>
+    <div style="display: flex; justify-content: center; text-align:center; margin-top:1rem;">
+      <button type="submit" class="btnBuscar">Guardar cita</button>
+    </div>
   </form>
 </div>
 
@@ -104,39 +104,39 @@
 <script>
 
 
-document.addEventListener('DOMContentLoaded', () => {
-  const selectEsp = document.getElementById('especialidad');
+  document.addEventListener('DOMContentLoaded', () => {
+    const selectEsp = document.getElementById('especialidad');
 
-  fetch('/admin/especialidades/listar')
-    .then(res => {
-      if (!res.ok) throw new Error('No fue posible cargar especialidades');
-      return res.json();
-    })
-    .then(especialidades => {
-      especialidades.forEach(e => {
-        const opt = document.createElement('option');
-        opt.value = e._id;    
-        opt.textContent = e.nombreEspecialidad;
-        selectEsp.appendChild(opt);
+    fetch('/admin/especialidades/listar')
+      .then(res => {
+        if (!res.ok) throw new Error('No fue posible cargar especialidades');
+        return res.json();
+      })
+      .then(especialidades => {
+        especialidades.forEach(e => {
+          const opt = document.createElement('option');
+          opt.value = e._id;
+          opt.textContent = e.nombreEspecialidad;
+          selectEsp.appendChild(opt);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+
       });
-    })
-    .catch(err => {
-      console.error(err);
+  });
 
-    });
-});
+  let sucursalId = "";
 
-let sucursalId = "";
-
-document.getElementById('sucursalId').addEventListener('change', function() {
-  sucursalId = this.value;
-  console.log('Sucursal elegida:', sucursalId);
-});
+  document.getElementById('sucursalId').addEventListener('change', function () {
+    sucursalId = this.value;
+    console.log('Sucursal elegida:', sucursalId);
+  });
 
 
-document.getElementById('especialidad').addEventListener('change', function() {
+  document.getElementById('especialidad').addEventListener('change', function () {
     const especialidadId = this.value;
-    const doctorSelect   = document.getElementById('doctorSelect');
+    const doctorSelect = document.getElementById('doctorSelect');
 
     doctorSelect.innerHTML = '<option value="">Cargando doctores…</option>';
 
@@ -152,13 +152,13 @@ document.getElementById('especialidad').addEventListener('change', function() {
       })
       .then(doctores => {
         if (!doctores || doctores.length === 0) {
-        doctorSelect.innerHTML = '<option value="">No hay doctores para esta especialidad</option>';
-        return;
+          doctorSelect.innerHTML = '<option value="">No hay doctores para esta especialidad</option>';
+          return;
         }
 
         let options = '<option value="">Seleccione un doctor</option>';
         doctores.forEach(doc => {
-        options += `<option value="${doc._id}">${doc.nombre} ${doc.apellidos}</option>`;
+          options += `<option value="${doc._id}">${doc.nombre} ${doc.apellidos}</option>`;
         });
         doctorSelect.innerHTML = options;
       })
@@ -168,142 +168,142 @@ document.getElementById('especialidad').addEventListener('change', function() {
       });
   });
 
- function ConsultarCedula() {
-      const cedula = $("#Cedula").val().trim();
-      if (!cedula) return alert('Ingrese una cédula');
-      $.ajax({
-        url: "https://apis.gometa.org/cedulas/" + cedula,
-        method: "GET",
-        dataType: "json",
-        success(response) {
-          if (response.results?.length) {
-            const result = response.results[0];
-            let fullName = "";
-            if (response.tipoIdentificacion === "01") {
-              [result.firstname1, result.firstname2, result.lastname1, result.lastname2]
-                .filter(Boolean)
-                .forEach(n => fullName += n + " ");
-            } else {
-              fullName = result.fullname || response.nombre || "";
-            }
-            fullName = fullName.trim().split(" ")
-              .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-              .join(" ");
-            $("#Nombre").val(fullName);
+  function ConsultarCedula() {
+    const cedula = $("#Cedula").val().trim();
+    if (!cedula) return alert('Ingrese una cédula');
+    $.ajax({
+      url: "https://apis.gometa.org/cedulas/" + cedula,
+      method: "GET",
+      dataType: "json",
+      success(response) {
+        if (response.results?.length) {
+          const result = response.results[0];
+          let fullName = "";
+          if (response.tipoIdentificacion === "01") {
+            [result.firstname1, result.firstname2, result.lastname1, result.lastname2]
+              .filter(Boolean)
+              .forEach(n => fullName += n + " ");
+          } else {
+            fullName = result.fullname || response.nombre || "";
+          }
+          fullName = fullName.trim().split(" ")
+            .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+            .join(" ");
+          $("#Nombre").val(fullName);
 
-            $.ajax({
-              url: `/admin/pacientes/consultar/${cedula}`,
-              method: "GET",              
-              success(user) {          
-                if (!user) {         
+          $.ajax({
+            url: `/admin/pacientes/consultar/${cedula}`,
+            method: "GET",
+            success(user) {
+              if (!user) {
                 $("#Nombre").val("");
                 $("#pacienteInfo").html(
-                    'Paciente no encontrado. <a href="/admin/pacientes">Registrar nuevo paciente</a>'
+                  'Paciente no encontrado. <a href="/admin/pacientes">Registrar nuevo paciente</a>'
                 );
                 $("#pacienteIdInput").val("");
                 return;
-                }
-                $("#pacienteIdInput").val(user._id);
-                $("#Nombre").val(`${user.nombre} ${user.apellido}`);
-            },
-                error() {
-                $("#pacienteInfo").text("Error al buscar paciente interno");
               }
-            });
-          } else {
-            $("#pacienteInfo").text("Cédula no encontrada");
-          }
-        }
-      });
-    }
-
-    const horariosBase = [];
-    for (let h = 8; h <= 18; h++) {
-      horariosBase.push(`${String(h).padStart(2,'0')}:00`);
-    }
-
-    let currentDate = new Date(),
-        selectedDate = null,
-        selectedHour = null;
-
-    function renderCalendar(date) {
-
-      const grid = document.getElementById("calendarGrid"),
-            header = document.getElementById("monthYear");
-      grid.innerHTML = "";
-      const y = date.getFullYear(), m = date.getMonth();
-      header.textContent = date.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
-      const firstDay = new Date(y,m,1).getDay(),
-            daysInMonth = new Date(y,m+1,0).getDate();
-      for(let i=0;i<firstDay;i++) grid.appendChild(document.createElement("div"));
-      for(let d=1; d<=daysInMonth; d++){
-        const cell = document.createElement("div");
-        cell.className="calendar-cell";
-        cell.textContent=d;
-        const iso = new Date(y,m,d).toISOString().split('T')[0];
-
-        const today = new Date();
-        today.setHours(0,0,0,0);
-        const cellDate = new Date(y,m,d);
-        cellDate.setHours(0,0,0,0);
-
-        if(cellDate < today){
-          cell.classList.add('disabled');
+              $("#pacienteIdInput").val(user._id);
+              $("#Nombre").val(`${user.nombre} ${user.apellido}`);
+            },
+            error() {
+              $("#pacienteInfo").text("Error al buscar paciente interno");
+            }
+          });
         } else {
-          cell.onclick = () => {
-            selectedDate = iso;
-            document.getElementById('selectedDateInput').value = iso;
-            document.querySelectorAll('.calendar-cell')
-                    .forEach(c=>c.classList.remove('selected'));
-            cell.classList.add('selected');
-            selectedHour = null;
-            cargarHoras(iso, document.getElementById('doctorSelect').value);
-          };
+          $("#pacienteInfo").text("Cédula no encontrada");
         }
-     grid.appendChild(cell);
+      }
+    });
   }
-    }
-    function changeMonth(o){ currentDate.setMonth(currentDate.getMonth()+o); renderCalendar(currentDate); }
 
-function cargarHoras(fecha, doctorId) {
-  const cont = document.getElementById('timeSlots');
-  cont.innerHTML = '';
-  if (!fecha || !doctorId) return;
+  const horariosBase = [];
+  for (let h = 8; h <= 18; h++) {
+    horariosBase.push(`${String(h).padStart(2, '0')}:00`);
+  }
 
-  fetch(`/admin/horariosNoDisponible?fecha=${fecha}&doctorId=${doctorId}`)
-    .then(r => r.json())
-    .then(data => {
-      const bloqueados = [];
+  let currentDate = new Date(),
+    selectedDate = null,
+    selectedHour = null;
 
-      data.forEach(h => {
-        const ini = parseInt(h.horaInicio.split(':')[0], 10);
-        const fin = parseInt(h.horaFin.split(':')[0], 10);
-        for (let i = ini; i < fin; i++) {
-          bloqueados.push(`${String(i).padStart(2, '0')}:00`);
-        }
-      });
+  function renderCalendar(date) {
 
-      horariosBase.forEach(hora => {  
-        const btn = document.createElement('button');
-        btn.type = "button";
-        btn.textContent = hora;
-        btn.disabled = bloqueados.includes(hora);
+    const grid = document.getElementById("calendarGrid"),
+      header = document.getElementById("monthYear");
+    grid.innerHTML = "";
+    const y = date.getFullYear(), m = date.getMonth();
+    header.textContent = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+    const firstDay = new Date(y, m, 1).getDay(),
+      daysInMonth = new Date(y, m + 1, 0).getDate();
+    for (let i = 0; i < firstDay; i++) grid.appendChild(document.createElement("div"));
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement("div");
+      cell.className = "calendar-cell";
+      cell.textContent = d;
+      const iso = new Date(y, m, d).toISOString().split('T')[0];
 
-        btn.onclick = () => {
-          selectedHour = hora;
-          document.getElementById('selectedHourInput').value = hora;
-          document
-            .querySelectorAll('#timeSlots button')
-            .forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const cellDate = new Date(y, m, d);
+      cellDate.setHours(0, 0, 0, 0);
+
+      if (cellDate < today) {
+        cell.classList.add('disabled');
+      } else {
+        cell.onclick = () => {
+          selectedDate = iso;
+          document.getElementById('selectedDateInput').value = iso;
+          document.querySelectorAll('.calendar-cell')
+            .forEach(c => c.classList.remove('selected'));
+          cell.classList.add('selected');
+          selectedHour = null;
+          cargarHoras(iso, document.getElementById('doctorSelect').value);
         };
-        cont.appendChild(btn);
-      });
-    })
-    .catch(console.error);
-}
+      }
+      grid.appendChild(cell);
+    }
+  }
+  function changeMonth(o) { currentDate.setMonth(currentDate.getMonth() + o); renderCalendar(currentDate); }
 
- renderCalendar(currentDate);
+  function cargarHoras(fecha, doctorId) {
+    const cont = document.getElementById('timeSlots');
+    cont.innerHTML = '';
+    if (!fecha || !doctorId) return;
+
+    fetch(`/admin/horariosNoDisponible?fecha=${fecha}&doctorId=${doctorId}`)
+      .then(r => r.json())
+      .then(data => {
+        const bloqueados = [];
+
+        data.forEach(h => {
+          const ini = parseInt(h.horaInicio.split(':')[0], 10);
+          const fin = parseInt(h.horaFin.split(':')[0], 10);
+          for (let i = ini; i < fin; i++) {
+            bloqueados.push(`${String(i).padStart(2, '0')}:00`);
+          }
+        });
+
+        horariosBase.forEach(hora => {
+          const btn = document.createElement('button');
+          btn.type = "button";
+          btn.textContent = hora;
+          btn.disabled = bloqueados.includes(hora);
+
+          btn.onclick = () => {
+            selectedHour = hora;
+            document.getElementById('selectedHourInput').value = hora;
+            document
+              .querySelectorAll('#timeSlots button')
+              .forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+          };
+          cont.appendChild(btn);
+        });
+      })
+      .catch(console.error);
+  }
+
+  renderCalendar(currentDate);
 
 
 </script>

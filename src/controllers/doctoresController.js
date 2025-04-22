@@ -183,15 +183,12 @@ exports.eliminar = async (req, res) => {
             return res.status(404).send('Doctor no encontrado');
         }
 
-        // Eliminar el usuario
         if (doctor.usuarioId) {
             await Usuario.findByIdAndDelete(doctor.usuarioId._id);
         }
 
-        // Eliminar el doctor
         await Doctor.findByIdAndDelete(doctorId);
 
-        // Registrar en bitácora
         const bitacora = new BitacoraUso({
             usuarioId: req.session.usuario.id,
             tipoAccion: `Eliminó al doctor: ${doctor.nombre} ${doctor.apellidos}`,
@@ -205,7 +202,6 @@ exports.eliminar = async (req, res) => {
         res.status(500).send('Error al eliminar');
     }
 };
-
 
 // ------------------------------------------------ Controladores para rol de doctor
 

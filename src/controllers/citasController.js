@@ -1,14 +1,13 @@
 const mongoose = require("mongoose");
 const Cita = require("../models/citas");
 const Horario = require("../models/horariosDisponibles");
-const Usuario = require("../models/usuarios"); 
-const Doctor = require("../models/doctores"); 
+const Usuario = require("../models/usuarios");
+const Doctor = require("../models/doctores");
 const BitacoraUso = require('../models/bitacoraUso');
 const { crearHistorialCita } = require('../services/historialService');
-const HistorialCita = require('../models/historialCitas'); 
+const HistorialCita = require('../models/historialCitas');
 const Pago = require('../models/pagos');
 
-// Agendar cita
 const agendarCita = async (req, res) => {
   try {
     const pacienteId = req.session.usuario.id;
@@ -16,23 +15,19 @@ const agendarCita = async (req, res) => {
 
     console.log("Fecha enviada:", fechaHora);
 
-    // Convertir los IDs a ObjectId
     const pacienteIdObj = new mongoose.Types.ObjectId(pacienteId);
     const doctorIdObj = new mongoose.Types.ObjectId(doctorId);
 
-    // Validar que el paciente exista
     const paciente = await Usuario.findById(pacienteIdObj);
     if (!paciente) {
       return res.status(404).json({ mensaje: "Paciente no encontrado" });
     }
 
-    // Validar que el doctor exista
     const doctor = await Doctor.findById(doctorIdObj);
     if (!doctor) {
       return res.status(404).json({ mensaje: "Doctor no encontrado" });
     }
 
-    // Buscar la especialidad del doctor por nombre
     const especialidad = await mongoose
       .model("Especialidades")
       .findOne({ nombreEspecialidad: doctor.especialidad });
@@ -42,10 +37,8 @@ const agendarCita = async (req, res) => {
         .json({ mensaje: "Especialidad del doctor no encontrada" });
     }
 
-    // Convertir la fechaHora a UTC para hacer comparaciones consistentes
-    const fechaInicio = new Date(fechaHora); // La fecha debe venir como un string ISO o Date en UTC
+    const fechaInicio = new Date(fechaHora);
 
-    // Consultar si existe un horario disponible dentro del rango de la fecha
     const horario = await Horario.findOne({
       doctorId: doctorIdObj,
       horaInicio: { $lte: fechaInicio },
@@ -57,11 +50,10 @@ const agendarCita = async (req, res) => {
       return res.status(400).json({ mensaje: "Horario no disponible" });
     }
 
-    // Crear la cita
     const nuevaCita = new Cita({
       pacienteId: pacienteIdObj,
       doctorId: doctorIdObj,
-      fechaHora: fechaInicio, // La cita también se guarda en UTC
+      fechaHora: fechaInicio,
       estado: "pendiente",
       motivo,
     });
@@ -73,10 +65,8 @@ const agendarCita = async (req, res) => {
     });
     await bitacora.save();
 
-    // Guardar la cita
     await nuevaCita.save();
 
-    //Crear el historial de la cita
     await crearHistorialCita({
       citaId: nuevaCita._id,
       pacienteId: pacienteIdObj,
@@ -84,7 +74,6 @@ const agendarCita = async (req, res) => {
       pago: "pendiente",
     });
 
-    // Crear el pago
     const nuevoPago = new Pago({
       citaId: nuevaCita._id,
       pacienteId: pacienteIdObj,
@@ -94,7 +83,6 @@ const agendarCita = async (req, res) => {
     });
     await nuevoPago.save();
 
-    // Marcar el horario como no disponible
     await Horario.updateOne({ _id: horario._id }, { disponible: false });
 
     res
@@ -106,40 +94,35 @@ const agendarCita = async (req, res) => {
   }
 };
 
-// Cancelar cita
 const cancelarCita = async (req, res) => {
   try {
     const { citaId } = req.params;
 
-    // Buscar la cita por ID
     const cita = await Cita.findById(citaId);
     if (!cita) {
       return res.status(404).json({ mensaje: "Cita no encontrada" });
     }
 
-    // Cambiar el estado de la cita a cancelada
     cita.estado = "cancelada";
     await cita.save();
 
-    // Actualizar historial de cita
     await HistorialCita.findOneAndUpdate(
       { citaId: cita._id },
       { estado: "cancelada" },
       { new: true }
     );
- 
+
     const tipoAccion = `Canceló la cita: ${cita._id}`;
 
     const bitacora = new BitacoraUso({
-            usuarioId: req.session.usuario.id,
-            tipoAccion: tipoAccion,
-            fechaHora: new Date()
-        });
+      usuarioId: req.session.usuario.id,
+      tipoAccion: tipoAccion,
+      fechaHora: new Date()
+    });
     await bitacora.save();
 
-    // Hacer el horario disponible nuevamente
     await Horario.updateOne(
-      { doctorId: cita.doctorId, horaInicio: cita.fechaHora }, 
+      { doctorId: cita.doctorId, horaInicio: cita.fechaHora },
       { disponible: true }
     );
     res.redirect('/admin/historialcitas');

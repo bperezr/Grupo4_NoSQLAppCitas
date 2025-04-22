@@ -50,7 +50,6 @@ exports.eliminarTodos = async (req, res) => {
             fechaHora: new Date()
         });
 
-        // Guardar la acción en la bitácora
         await bitacora.save();
 
         res.json({ success: true });

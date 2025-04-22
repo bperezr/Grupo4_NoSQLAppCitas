@@ -1,4 +1,4 @@
-const RecetaModel = require('../models/recetas'); 
+const RecetaModel = require('../models/recetas');
 
 class Recetas {
 
@@ -9,7 +9,7 @@ class Recetas {
   }
 
   async getRecetas() {
-    return await RecetaModel.find(); 
+    return await RecetaModel.find();
   }
 
   async obtenerRecetaPorId(id) {
@@ -19,7 +19,7 @@ class Recetas {
   async actualizarReceta(id, data) {
     return await RecetaModel.findByIdAndUpdate(id, data, { new: true });
   }
-  
+
   async eliminarReceta(id) {
     return await RecetaModel.findByIdAndDelete(id);
   }

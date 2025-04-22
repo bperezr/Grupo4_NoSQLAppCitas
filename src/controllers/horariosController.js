@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Horario = require("../models/horariosDisponibles"); 
+const Horario = require("../models/horariosDisponibles");
 const Doctor = require("../models/doctores");
 
 //Obtener los horarios disponibles
@@ -14,13 +14,13 @@ const obtenerHorariosDisponibles = async (req, res) => {
             disponible: true,
             fecha: { $gte: todayStart, $lte: todayEnd }
         }).populate('doctorId');
-        
+
         if (!horarios || horarios.length === 0) {
             console.error("No se encontraron horarios.");
             return res.status(404).json({ mensaje: "No hay horarios disponibles" });
         }
 
-        res.status(200).json(horarios); 
+        res.status(200).json(horarios);
     } catch (error) {
         console.error("Error al obtener horarios:", error);
         res.status(500).json({ mensaje: "Error al obtener horarios", error });
@@ -48,11 +48,11 @@ const generarHorarios = async () => {
             }
 
             // Si no existen, generarlos
-            const fechaInicio = new Date(fechaHoy);  
-            fechaInicio.setUTCHours(8, 0, 0, 0); 
+            const fechaInicio = new Date(fechaHoy);
+            fechaInicio.setUTCHours(8, 0, 0, 0);
 
-            const fechaFin = new Date(fechaHoy); 
-            fechaFin.setUTCHours(17, 0, 0, 0); 
+            const fechaFin = new Date(fechaHoy);
+            fechaFin.setUTCHours(17, 0, 0, 0);
 
             const horarios = [];
             let hora = new Date(fechaInicio);
@@ -64,12 +64,12 @@ const generarHorarios = async () => {
                 // Guardar los horarios en formato ISO 
                 horarios.push({
                     doctorId: doctor._id,
-                    fecha: fechaHoy, 
-                    horaInicio: hora.toISOString(),  
+                    fecha: fechaHoy,
+                    horaInicio: hora.toISOString(),
                     horaFin: horaFin.toISOString(),
                     disponible: true,
                     sucursalId: doctor.sucursalId,
-                    fechaHora: hora.toISOString() 
+                    fechaHora: hora.toISOString()
                 });
 
                 hora = new Date(horaFin); // Mover a la siguiente franja horaria

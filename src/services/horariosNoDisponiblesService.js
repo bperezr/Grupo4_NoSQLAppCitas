@@ -9,7 +9,7 @@ class horarioNoDisponibleService {
     }
     return await HorarioNoDisponible.find({
       fecha,
-      doctorId: new mongoose.Types.ObjectId(`${doctorId}`)  
+      doctorId: new mongoose.Types.ObjectId(`${doctorId}`)
     });
   }
 
@@ -18,6 +18,5 @@ class horarioNoDisponibleService {
     return await nuevo.save();
   }
 }
-
 
 module.exports = new horarioNoDisponibleService();

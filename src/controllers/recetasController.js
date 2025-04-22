@@ -86,12 +86,12 @@ exports.historialRecetas = async (req, res) => {
     const Cita = require('../models/citas');
 
     const recetas = await Receta.find()
-    .populate('pacienteId', 'nombre apellido cedula email telefono')
-    .populate('doctorId', 'nombre apellidos email')
-    .populate('sucursalId', 'nombre direccion telefono')
-    .populate('citaId', 'fechaHora estado motivo notas sucursalId')
-    .populate('medicamentos.medicamentoId', 'nombre')
-    .lean();
+      .populate('pacienteId', 'nombre apellido cedula email telefono')
+      .populate('doctorId', 'nombre apellidos email')
+      .populate('sucursalId', 'nombre direccion telefono')
+      .populate('citaId', 'fechaHora estado motivo notas sucursalId')
+      .populate('medicamentos.medicamentoId', 'nombre')
+      .lean();
 
     res.render('index', {
       usuario: req.session.usuario,

@@ -20,9 +20,9 @@ const horariosNoDisponiblesRoutes = require('./routes/horariosNoDisponiblesRoute
 
 // Local
 //const connectDB = require('./config/db');
-
 // Atlas
 const connectDB = require('./config/dbAtlas');
+
 const app = express();
 connectDB();
 
@@ -61,7 +61,6 @@ app.use((req, res, next) => {
     next();
 });
 
-
 app.use('/', authRoutes);
 app.use('/', sucursalesRoutes);
 app.use('/', bitacoraRoutes);
@@ -82,6 +81,6 @@ app.use('/', horariosNoDisponiblesRoutes)
 const PORT = process.env.PORT || 5010;
 app.listen(PORT, () => {
     console.log(`\n✅ \x1b[32m[ÉXITO]\x1b[0m Servidor iniciado correctamente`);
-    console.log(`🌐 \x1b[36mURL:\x1b[0m http://localhost:${PORT}`);
-    console.log(`📡 Escuchando en el puerto: \x1b[33m${PORT}\x1b[0m\n`);
+    console.log(`🌐 \x1b[36mURL:\x1b[0m \x1b[35mhttp://localhost:${PORT}\x1b[0m`);
+    console.log(`📡 \x1b[36mPuerto: \x1b[33m${PORT}\x1b[0m\n`);
 });

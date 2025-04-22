@@ -1,11 +1,11 @@
 const horarioNoDisponibleService = require('../services/horariosNoDisponiblesService');
 
-class horarioNoDisponibleController  {
+class horarioNoDisponibleController {
 
   async obtenerPorFechaYDoctor(req, res) {
     try {
       const { fecha, doctorId } = req.query;
-      const horarios = await horarioNoDisponibleService.obtenerPorFechaYDoctor(fecha,doctorId);
+      const horarios = await horarioNoDisponibleService.obtenerPorFechaYDoctor(fecha, doctorId);
       res.json(horarios);
     } catch (error) {
       console.error('Error al obtener horarios no disponibles:', error);
