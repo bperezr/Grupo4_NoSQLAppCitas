@@ -60,6 +60,28 @@ class CitasController{
       const bloqueos = await horarioNoDisponibleService.obtenerPorFechaYDoctor(selectedDate, doctorId);
       const horaSeleccionadaDecimal = convertirHoraADecimal(selectedHour);
 
+      function sumarUnaHora(horaStr) {    
+        const [h, m] = horaStr.split(':').map(n => parseInt(n, 10));
+        const nuevaHora = (h + 1) % 24;  
+        
+        const hh = String(nuevaHora).padStart(2, '0');
+        const mm = String(m).padStart(2, '0');
+        return `${hh}:${mm}`;
+      }   
+
+      const detalleCita = "Ingreso cita admin";
+
+      const bloquearHorario = {
+        doctorId,
+        fecha: selectedDate,
+        horaInicio: selectedHour,
+        horaFin: sumarUnaHora(selectedHour),
+        detalle: detalleCita,
+        fechaCreacion: new Date(),
+      };
+
+      await horarioNoDisponibleService.crear(bloquearHorario);
+
       const horaOcupada = bloqueos.some(b => {
         const inicio = convertirHoraADecimal(b.horaInicio);
         const fin = convertirHoraADecimal(b.horaFin);
@@ -80,7 +102,7 @@ class CitasController{
         estado
       };
       const nuevaCita =  await citasService.crearCita(data);
-
+      
        const bitacora = new BitacoraUso({
                   usuarioId: req.session.usuario.id,
                   tipoAccion: `Creación de cita para paciente ID: ${pacienteId}`,
@@ -194,6 +216,7 @@ async editarCita(req, res) {
     return res.status(400).send('No se pudo actualizar la cita: ' + err.message);
   }
 }
+
 
 
 }
