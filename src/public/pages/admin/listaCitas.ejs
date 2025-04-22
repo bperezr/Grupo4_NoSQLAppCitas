@@ -11,10 +11,11 @@
                 </button>
             </div>
         </div>
-        <div class="table-container">
-            <table id="tblCitas" class="display compact nowrap" style="width:100%"> 
+        <div class="table-container table-responsive">
+            <table id="tblCitas" style="width:100%"> 
                 <thead>
                     <tr>
+                      <th class="table-drop"></th>
                         <th>Doctor</th>
                         <th>Paciente</th>
                         <th>Sucursal</th>
@@ -26,10 +27,31 @@
                 <tbody>
                     <% item.forEach(citas => { %>
                         <tr>
+                          <td></td>
                           <td><%= citas.doctor %></td>
                           <td><%= citas.paciente %></td>
                           <td><%= citas.sucursal %></td>
-                          <td><%= citas.fechaHora %></td>
+                          <td>
+                            <%                                 
+                            const d = new Date(citas.fechaHora);                       
+                            const optsFecha = {
+                              weekday: 'long',
+                              day:     'numeric',
+                              month:   'long',
+                              year:    'numeric',
+                              timeZone:'America/Costa_Rica'
+                            };                                   
+                            const optsHora = {
+                              hour:   '2-digit',
+                              minute: '2-digit',
+                              timeZone: 'America/Costa_Rica'
+                            };                               
+                            let fechaStr = d.toLocaleDateString('es-CR', optsFecha);                                     
+                            fechaStr = fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1);
+                            const horaStr  = d.toLocaleTimeString('es-CR', optsHora);
+                          %>
+                          <%= `${fechaStr}, ${horaStr}` %>                         
+                          </td>
                           <td>
                             <% if (citas.estado==='pendiente' ) { %>
                                 🟡 Pendiente
@@ -90,44 +112,29 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-        if ($.fn.DataTable.isDataTable('#tblCitas')) {
+  if ($.fn.DataTable.isDataTable('#tblCitas')) {
             $('#tblCitas').DataTable().clear().destroy();
         }
 
-    $(document).ready(function () {
-      $('#tblCitas').DataTable({
-        responsive: true,
-        scrollX: true,  
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-        },
-        columns: [
-    { data: 'doctor'    },
-    { data: 'paciente'  },
-    { data: 'sucursal'  },
-    {
-      data: 'fechaHora',
-      render: function (val) {
-        if (!val) return '';
-        const d = new Date(val);
-        const fecha = d.toLocaleDateString('es-ES', {
-          weekday: 'long',
-          year:    'numeric',
-          month:   'long',
-          day:     'numeric'
+        $('#tblCitas').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 0
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'control',
+                    orderable: false,
+                    targets: 0
+                }
+            ],
+            order: [3, 'desc'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+            }
         });
-        const hora  = d.toLocaleTimeString('es-ES', {
-          hour:   '2-digit',
-          minute: '2-digit'
-        }); 
-        return fecha.charAt(0).toUpperCase() + fecha.slice(1) + ', ' + hora;
-      }
-    },
-    { data: 'estado'  },
-    { data: 'accion'  },
-    ]
-      });
-    });
 
     const params = new URLSearchParams(window.location.search);
     if (params.get('creada') === '1') {
