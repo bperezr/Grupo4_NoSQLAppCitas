@@ -1,5 +1,8 @@
 const citasService = require('../services/citasService');
+const horarioNoDisponibleService = require('../services/horariosNoDisponiblesService');
 const BitacoraUso = require('../models/bitacoraUso');
+const Pago = require('../models/pagos');
+const Doctor = require("../models/doctores"); 
 const mongoose = require('mongoose');
 
 class CitasController{
@@ -49,13 +52,11 @@ class CitasController{
         return res.redirect('/admin/crearCita?error=Hora fuera de horario (08–18)');
       }
 
-      // Convertidor de "08:00" => 8.0, "08:30" => 8.5
       const convertirHoraADecimal = hora => {
         const [horas, minutos] = hora.split(':').map(Number);
         return horas + minutos / 60;
       };
 
-      // Verificar si la hora seleccionada está ocupada
       const bloqueos = await horarioNoDisponibleService.obtenerPorFechaYDoctor(selectedDate, doctorId);
       const horaSeleccionadaDecimal = convertirHoraADecimal(selectedHour);
 
@@ -78,19 +79,43 @@ class CitasController{
         motivo,
         estado
       };
-      await citasService.crearCita(data);
+      const nuevaCita =  await citasService.crearCita(data);
 
        const bitacora = new BitacoraUso({
                   usuarioId: req.session.usuario.id,
                   tipoAccion: `Creación de cita para paciente ID: ${pacienteId}`,
                   fechaHora: new Date()
               });
-              await bitacora.save();
+              await bitacora.save();      
+
+          const doctor = await Doctor.findById(doctorId); 
+          console.log("datos doctor"+doctor );   
+
+          const especialidad = await mongoose
+            .model("Especialidades")
+            .findById(especialidadId);
+
+          if (!especialidad) {
+            return res
+              .status(404)
+              .json({ mensaje: "Especialidad del doctor no encontrada" });
+          }
+      
+ const pacienteIdObj = new mongoose.Types.ObjectId(pacienteId);
+          const nuevoPago = new Pago({
+            citaId: nuevaCita._id,
+            pacienteId: pacienteIdObj,
+            monto: especialidad.precioConsulta,
+            fechaPago: new Date(),
+            estado: "pendiente",
+          });
+          await nuevoPago.save(); 
 
       return res.redirect('/admin/listaCitas?creada=1');
 
     } catch (err) {
       console.error('Error al crear cita:', err);
+      console.error('Reglas no cumplidas:', err.errInfo.details.schemaRulesNotSatisfied);
       return res.redirect('/admin/crearCita?error=' + encodeURIComponent(err.message));
     }
   } 
