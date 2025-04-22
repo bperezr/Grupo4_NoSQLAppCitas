@@ -15,6 +15,7 @@ router.get('/admin/doctores/listar/:especialidad',  doctoresController.listarDoc
 
 router.get('/doctor', verificarRol('doctor'), doctoresController.vistaDashboard);
 router.get('/doctor/citas', verificarRol('doctor'), doctoresController.vistaCitasPendientes);
+router.get('/doctor/historial', verificarRol('doctor'), doctoresController.vistaHistorialCitas);
 router.get('/doctor/citas/:id/atender', verificarRol('doctor'), doctoresController.vistaAtenderCita);
 router.post('/doctor/citas/:id/atender', verificarRol('doctor'), doctoresController.procesarAtencionCita);
 router.delete('/doctor/citas/:id/eliminar', verificarRol('doctor'), doctoresController.eliminarReceta);

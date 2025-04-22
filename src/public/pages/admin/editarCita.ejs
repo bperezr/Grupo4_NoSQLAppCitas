@@ -17,6 +17,24 @@
         <div class="info-container">
           <h3 class="card__title">📝 Información de la cita</h3>
           <div class="horaClass">
+                    <!-- Estado -->
+                    <div class="form-group">
+                      <label for="estado">Estado</label>
+                      <select id="estado" name="estado" required> 
+                        <option value="<%= cita.estado %>">
+                          <%= cita.estado.charAt(0).toUpperCase() + cita.estado.slice(1) %>
+                        </option> 
+                                            
+                        <% if (cita.estado !== 'confirmada') { %>
+                          <option value="confirmada">Confirmada</option>
+                        <% } %>
+
+                        <% if (cita.estado !== 'cancelada') { %>
+                          <option value="cancelada">Cancelada</option>
+                        <% } %>
+
+                      </select>
+                    </div>
             <!-- Cédula (busca de nuevo si quieres cambiar paciente) -->
             <div class="form-group">
               <label for="Cedula">Cédula del Paciente</label>
@@ -98,9 +116,6 @@
               <label for="motivo">Motivo de la consulta</label>
               <textarea id="motivo" name="motivo" rows="2" required><%= cita.motivo %></textarea>
             </div>
-
-            <!-- Estado oculta (podrías permitir cambiar) -->
-            <input type="hidden" name="estado" value="<%= cita.estado %>">
           </div>
         </div>
 
