@@ -44,8 +44,8 @@ exports.listar = async (req, res) => {
 
 exports.listarDoctoresPorEspecialidad = async (req, res) => {
     try {
-        const { especialidad } = req.params;
-
+        const { especialidad, sucursal } = req.params;
+        
         if (!especialidad) {
             return res.status(400).json({ error: 'Falta el parámetro especialidad' });
         }
@@ -54,8 +54,13 @@ exports.listarDoctoresPorEspecialidad = async (req, res) => {
             return res.status(400).json({ error: 'ID de especialidad inválido' });
         }
 
+        if (!mongoose.Types.ObjectId.isValid(sucursal)) {
+            return res.status(400).json({ error: 'ID de sucursal inválido' });
+        }
+
         const docs = await Doctor.find({
-            especialidadId: new mongoose.Types.ObjectId(`${especialidad}`)
+            especialidadId: new mongoose.Types.ObjectId(`${especialidad}`),
+            sucursalId: new mongoose.Types.ObjectId(`${sucursal}`)
         });
 
         return res.json(docs);

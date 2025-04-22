@@ -102,6 +102,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const selectEsp = document.getElementById('especialidad');
 
@@ -124,6 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+let sucursalId = "";
+
+document.getElementById('sucursalId').addEventListener('change', function() {
+  sucursalId = this.value;
+  console.log('Sucursal elegida:', sucursalId);
+});
+
+
 document.getElementById('especialidad').addEventListener('change', function() {
     const especialidadId = this.value;
     const doctorSelect   = document.getElementById('doctorSelect');
@@ -135,7 +145,7 @@ document.getElementById('especialidad').addEventListener('change', function() {
       return;
     }
 
-    fetch(`/admin/doctores/listar/${especialidadId}`)
+    fetch(`/admin/doctores/listar/${especialidadId}/${sucursalId}`)
       .then(res => {
         if (!res.ok) throw new Error('Error al cargar doctores');
         return res.json();
