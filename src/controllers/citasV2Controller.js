@@ -17,7 +17,6 @@ class CitasController{
         sucursales,
         viewParcial: "admin/citas",
       }); 
-      return res.render('crearCita', { especialidades, sucursales });
     } catch (err) {
       console.error('Error al cargar formulario de cita:', err);
       return res.status(500).send('Error interno al cargar el formulario');
