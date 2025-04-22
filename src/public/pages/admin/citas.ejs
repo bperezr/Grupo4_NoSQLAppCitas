@@ -217,6 +217,7 @@ document.getElementById('especialidad').addEventListener('change', function() {
         selectedHour = null;
 
     function renderCalendar(date) {
+
       const grid = document.getElementById("calendarGrid"),
             header = document.getElementById("monthYear");
       grid.innerHTML = "";
@@ -230,17 +231,27 @@ document.getElementById('especialidad').addEventListener('change', function() {
         cell.className="calendar-cell";
         cell.textContent=d;
         const iso = new Date(y,m,d).toISOString().split('T')[0];
-        cell.onclick = () => {
-          selectedDate = iso;
-          document.getElementById('selectedDateInput').value = iso;
-          document.querySelectorAll('.calendar-cell')
-                  .forEach(c=>c.classList.remove('selected'));
-          cell.classList.add('selected');
-          selectedHour = null;
-          cargarHoras(iso, document.getElementById('doctorSelect').value);
-        };
-        grid.appendChild(cell);
-      }
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const cellDate = new Date(y,m,d);
+        cellDate.setHours(0,0,0,0);
+
+        if(cellDate < today){
+          cell.classList.add('disabled');
+        } else {
+          cell.onclick = () => {
+            selectedDate = iso;
+            document.getElementById('selectedDateInput').value = iso;
+            document.querySelectorAll('.calendar-cell')
+                    .forEach(c=>c.classList.remove('selected'));
+            cell.classList.add('selected');
+            selectedHour = null;
+            cargarHoras(iso, document.getElementById('doctorSelect').value);
+          };
+        }
+     grid.appendChild(cell);
+  }
     }
     function changeMonth(o){ currentDate.setMonth(currentDate.getMonth()+o); renderCalendar(currentDate); }
 

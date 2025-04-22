@@ -820,7 +820,7 @@ input:checked+.slider:before {
     grid-template-columns: repeat(7, 50px);   
     grid-auto-rows: 60px;                     
     gap: 6px;                               
-    margin: 0 auto;                           /* centra el grid */
+    margin: 0 auto;             
   }
 
 .calendar-cell {
@@ -844,15 +844,25 @@ input:checked+.slider:before {
   }
 
 .calendar-cell.disabled {
-    background-color: #333;
-    cursor: not-allowed;
-    opacity: 0.3;
-}
+    background-color: #e0e0e0;   
+    color:            #a0a0a0;
+    cursor:           not-allowed;
+    pointer-events:   none; 
+    opacity:          0.6;
+  }
 
 .calendar-cell.selected {
     background-color: #00aaff;
     color: white;
 }
+
+.calendar-cell.disabled:hover {
+    background-color: #e0e0e0;
+  }
+
+.calendar-cell.today:not(.disabled) {
+    border: 2px solid #005f9e;
+  }
 
 .time-slot-container {
     background-color: var(--secondary-clr);
