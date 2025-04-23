@@ -1,8 +1,7 @@
 <div class="content">
   <div class="content__title">
     <h1>Gestión de horarios no disponibles</h1>
-    <p>Doctor: <%= usuario.email %>
-    </p>
+    <p>Doctor: <%= usuario.email %></p>
   </div>
 
   <div class="card card--principal">
@@ -13,36 +12,44 @@
       <input type="hidden" name="accion" id="accion" value="bloquear" />
 
       <label for="fecha">Seleccione el día:</label>
-      <input type="date" name="fecha" id="fecha" class="input-styled" required
+      <input
+        type="date"
+        name="fecha"
+        id="fecha"
+        class="input-styled"
+        required
         min="<%= new Date().toISOString().split('T')[0] %>"
-        value="<%= request.query.fecha ? request.query.fecha : new Date().toISOString().split('T')[0] %>" />
+        value="<%= request.query.fecha ? request.query.fecha : new Date().toISOString().split('T')[0] %>"
+      />
 
       <div style="margin-top: 20px;">
         <h4>Seleccione las horas que desea gestionar:</h4>
         <div class="hours-grid">
-          <% for (let h=8; h <=17; h++) { let hourStr=(h < 10 ? '0' + h : h) + ':00' ; let
-            isBlocked=horasBloqueadas.includes(hourStr); %>
-            <label class="hour-box <%= isBlocked ? 'blocked' : '' %>">
-              <input type="checkbox" name="horas[]" value="<%= hourStr %>" <%=isBlocked ? '' : '' %> >
-              <span>
-                <%= hourStr %>
-              </span>
-            </label>
-            <% } %>
+          <% for (let h = 8; h <= 17; h++) {
+              let hourStr = (h < 10 ? '0' + h : h) + ':00';
+              let isBlocked = horasBloqueadas.includes(hourStr); %>
+              <label class="hour-box <%= isBlocked ? 'blocked' : '' %>">
+                <input type="checkbox" name="horas[]" value="<%= hourStr %>" <%= isBlocked ? '' : '' %>>
+                <span><%= hourStr %></span>
+              </label>
+          <% } %>
         </div>
       </div>
 
       <div style="margin-top: 20px;">
         <label for="detalle">Motivo / Observación (opcional):</label>
-        <textarea name="detalle" id="detalle" rows="3" class="textarea-styled"
+        <textarea
+          name="detalle"
+          id="detalle"
+          rows="3"
+          class="textarea-styled"
           placeholder="Ejemplo: Reunión, emergencia médica..."></textarea>
       </div>
 
-      <div class="btn-container">
-        <button type="submit" class="btn--primary" ...>Bloquear Hora</button>
-        <button type="submit" class="btn--secondary" ...>Desbloquear Hora</button>
+      <div style="margin-top: 20px;">
+        <button type="submit" class="btn--primary" onclick="handleSubmit('bloquear', event)">Bloquear Hora</button>
+        <button type="submit" class="btn--secondary" onclick="handleSubmit('desbloquear', event)">Desbloquear Hora</button>
       </div>
-
     </form>
   </div>
 
@@ -53,14 +60,11 @@
       <p id="mensajeTexto"></p>
     </div>
   </div>
-
 </div>
-
 
 <script>
   function handleSubmit(accion, event) {
     event.preventDefault();
-
     const mensaje =
       accion === 'bloquear'
         ? 'Horario bloqueado exitosamente'
@@ -68,9 +72,6 @@
 
     document.getElementById('accion').value = accion;
 
-    mostrarModal(mensaje);
-
-    // Realizar la solicitud Fetch para bloquear o desbloquear el horario sin redirigir
     fetch('/doctor/gestionar-horarios', {
       method: 'POST',
       headers: {
@@ -80,39 +81,27 @@
     })
       .then(response => response.json())
       .then(data => {
-        console.log('Data recibida desde el backend:', data);
         if (data.mensaje) {
           mostrarModal(mensaje);
           if (data.horarios) {
             actualizarCalendario(data.horarios);
-          } else {
-            console.error('No se recibieron horarios en la respuesta');
           }
 
-          // Verificar si la respuesta contiene la información correcta para redirigir
-          console.log('Mensaje:', data.mensaje);
-
-          // Redirigir a la página de horarios no disponibles después de la acción
           setTimeout(() => {
             window.location.href = '/doctor/horariosNoDisponibles';
           }, 1000);
         }
-        console.log('Acción realizada:', accion);
-        console.log('Data recibida:', data);
       })
       .catch(error => {
         console.error('Error al bloquear o desbloquear el horario:', error);
       });
   }
 
-  // Función para actualizar el calendario con los horarios bloqueados
   function actualizarCalendario(horarios) {
     const horasBloqueadas = horarios.map(h => h.horaInicio);
     const elementosHoras = document.querySelectorAll('.hour-box');
     elementosHoras.forEach(elemento => {
       const hora = elemento.querySelector('span').textContent;
-      const checkbox = elemento.querySelector('input');
-
       if (horasBloqueadas.includes(hora)) {
         elemento.classList.add('blocked');
       } else {
@@ -123,7 +112,6 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     const fechaInput = document.getElementById("fecha");
-
     fechaInput.addEventListener("change", function () {
       const nuevaFecha = fechaInput.value;
       if (nuevaFecha) {
@@ -139,7 +127,6 @@
     mensajeTexto.textContent = mensaje;
     modal.style.display = "block";
 
-    // Cerrar automáticamente después de 2 segundos
     setTimeout(() => {
       cerrarModal();
     }, 2000);
