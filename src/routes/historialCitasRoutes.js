@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const historialCitasController = require('../controllers/historialCitasController');
+const citasController = require('../controllers/historialCitasController');
 const { verificarRol } = require('../middleware/verificarRol');
 
-router.get('/admin/historialcitas', verificarRol('admin'), historialCitasController.listar);
-
+router.get('/admin/historialCitas', verificarRol('admin'), citasController.vistaHistorialTodasCitas);
 
 module.exports = router;

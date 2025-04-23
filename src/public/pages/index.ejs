@@ -91,14 +91,6 @@
                             class="area__text <%= request.originalUrl.includes('/medicamentos') ? 'area__text--active' : '' %>">Medicamentos</span>
                     </a>
                 </li>
-                <li class="list__item <%= request.originalUrl.includes('/recetas') ? 'list__item--active' : '' %>">
-                    <a class="item__area" href="/admin/recetas" title="Recetas">
-                        <i class="fa-solid fa-hospital-user"></i>
-                        <span
-                            class="area__text <%= request.originalUrl.includes('/recetas') ? 'area__text--active' : '' %>">Recetas</span>
-                    </a>
-                </li>
-
                 <li class="list__divider"><span class="divider__text">ADMIN</span></li>
                 <li
                     class="list__item <%= request.originalUrl.includes('/administradores') ? 'list__item--active' : '' %>">
@@ -108,6 +100,13 @@
                             class="area__text <%= request.originalUrl.includes('/administradores') ? 'area__text--active' : '' %>">
                             Administradores
                         </span>
+                    </a>
+                </li>
+                <li class="list__item <%= request.originalUrl.includes('/pagos') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/pagos" title="Pagos">
+                        <i class="fa-solid fa-credit-card"></i>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/pagos') ? 'area__text--active' : '' %>">Pagos</span>
                     </a>
                 </li>
                 <li
@@ -120,27 +119,31 @@
                         </span>
                     </a>
                 </li>
-                <li
-                    class="list__item <%= request.originalUrl.includes('/historialcitas') ? 'list__item--active' : '' %>">
-                    <a class="item__area" href="/admin/historialcitas" title="Citas">
-                        <i class="fa-solid fa-clock"></i>
-                        <span
-                            class="area__text <%= request.originalUrl.includes('/historialcitas') ? 'area__text--active' : '' %>">Historial
-                            Citas</span>
-                    </a>
-                </li>
-                <li class="list__item <%= request.originalUrl.includes('/pagos') ? 'list__item--active' : '' %>">
-                    <a class="item__area" href="/admin/pagos" title="Pagos">
-                        <i class="fa-solid fa-credit-card"></i>
-                        <span
-                            class="area__text <%= request.originalUrl.includes('/pagos') ? 'area__text--active' : '' %>">Pagos</span>
-                    </a>
-                </li>
                 <li class="list__item <%= request.originalUrl.includes('/sucursales') ? 'list__item--active' : '' %>">
                     <a class="item__area" href="/admin/sucursales" title="Sucursales">
                         <i class="fa-solid fa-hospital-user"></i>
                         <span
                             class="area__text <%= request.originalUrl.includes('/sucursales') ? 'area__text--active' : '' %>">Sucursales</span>
+                    </a>
+                </li>
+                <li
+                    class="list__item <%= request.originalUrl.includes('/admin/historialCitas') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/historialCitas" title="Historial Citas">
+                        <i class="fa-solid fa-clock"></i>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/admin/historialCitas') ? 'area__text--active' : '' %>">
+                            Historial de Citas
+                        </span>
+                    </a>
+                </li>
+                <li
+                    class="list__item <%= request.originalUrl.includes('/admin/historialRecetas') ? 'list__item--active' : '' %>">
+                    <a class="item__area" href="/admin/historialRecetas" title="Historial de Recetas">
+                        <i class="fa-solid fa-clock"></i>
+                        <span
+                            class="area__text <%= request.originalUrl.includes('/admin/historialRecetas') ? 'area__text--active' : '' %>">
+                            Historial de Recetas
+                        </span>
                     </a>
                 </li>
                 <li class="list__item <%= request.originalUrl.includes('/bitacora') ? 'list__item--active' : '' %>">
@@ -166,15 +169,15 @@
                         </li>
 
                         <li
-                        class="list__item <%= request.originalUrl.includes('/doctor/historial') ? 'list__item--active' : '' %>">
-                        <a class="item__area" href="/doctor/historial" title="Historial Citas">
-                            <i class="fa-solid fa-calendar-check"></i>
-                            <span
-                                class="area__text <%= request.originalUrl.includes('/doctor/historial') ? 'area__text--active' : '' %>">
-                                Historial citas
-                            </span>
-                        </a>
-                    </li>
+                            class="list__item <%= request.originalUrl.includes('/doctor/historial') ? 'list__item--active' : '' %>">
+                            <a class="item__area" href="/doctor/historial" title="Historial Citas">
+                                <i class="fa-solid fa-calendar-check"></i>
+                                <span
+                                    class="area__text <%= request.originalUrl.includes('/doctor/historial') ? 'area__text--active' : '' %>">
+                                    Historial citas
+                                </span>
+                            </a>
+                        </li>
 
                         <li
                             class="list__item <%= request.originalUrl.includes('/horariosNoDisponibles') ? 'list__item--active' : '' %>">
@@ -183,13 +186,6 @@
                                 <span
                                     class="area__text <%= request.originalUrl.includes('/horariosNoDisponibles') ? 'area__text--active' : '' %>">Horarios
                                     no disponibles</span>
-                            </a>
-                        </li>
-
-                        <li class="list__item">
-                            <a class="item__area" href="/proveedores.html" title="Medicamentos">
-                                <i class="fa-solid fa-pills"></i>
-                                <span class="area__text">Medicamentos</span>
                             </a>
                         </li>
 

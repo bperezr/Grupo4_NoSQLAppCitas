@@ -78,3 +78,29 @@ exports.crear = async (req, res) => {
     return res.status(500).json({ error: 'Error al crear la receta' });
   }
 };
+
+
+exports.historialRecetas = async (req, res) => {
+  try {
+    const Receta = require('../models/recetas');
+    const Cita = require('../models/citas');
+
+    const recetas = await Receta.find()
+    .populate('pacienteId', 'nombre apellido cedula email telefono')
+    .populate('doctorId', 'nombre apellidos email')
+    .populate('sucursalId', 'nombre direccion telefono')
+    .populate('citaId', 'fechaHora estado motivo notas sucursalId')
+    .populate('medicamentos.medicamentoId', 'nombre')
+    .lean();
+
+    res.render('index', {
+      usuario: req.session.usuario,
+      recetas,
+      viewParcial: 'admin/historialRecetas',
+      request: req
+    });
+  } catch (error) {
+    console.error('❌ Error al cargar el historial de recetas:', error);
+    res.status(500).send('Error interno al cargar el historial de recetas');
+  }
+};

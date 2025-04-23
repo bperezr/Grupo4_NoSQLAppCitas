@@ -1,7 +1,8 @@
 <div class="content">
   <div class="content__title">
     <h1>Gestión de horarios no disponibles</h1>
-    <p>Doctor: <%= usuario.email %></p>
+    <p>Doctor: <%= usuario.email %>
+    </p>
   </div>
 
   <div class="card card--principal">
@@ -12,259 +13,100 @@
       <input type="hidden" name="accion" id="accion" value="bloquear" />
 
       <label for="fecha">Seleccione el día:</label>
-      <input
-        type="date"
-        name="fecha"
-        id="fecha"
-        class="input-styled"
-        required
+      <input type="date" name="fecha" id="fecha" class="input-styled" required
         min="<%= new Date().toISOString().split('T')[0] %>"
-        value="<%= request.query.fecha ? request.query.fecha : new Date().toISOString().split('T')[0] %>"
-      />
+        value="<%= request.query.fecha ? request.query.fecha : new Date().toISOString().split('T')[0] %>" />
 
       <div style="margin-top: 20px;">
         <h4>Seleccione las horas que desea gestionar:</h4>
         <div class="hours-grid">
-          <% for (let h = 8; h <= 17; h++) {
-              let hourStr = (h < 10 ? '0' + h : h) + ':00';
-              let isBlocked = horasBloqueadas.includes(hourStr); %>
-              <label class="hour-box <%= isBlocked ? 'blocked' : '' %>">
-                <input type="checkbox" name="horas[]" value="<%= hourStr %>" <%= isBlocked ? '' : '' %> >
-                <span><%= hourStr %></span>
-              </label>
-          <% } %>
+          <% for (let h=8; h <=17; h++) { let hourStr=(h < 10 ? '0' + h : h) + ':00' ; let
+            isBlocked=horasBloqueadas.includes(hourStr); %>
+            <label class="hour-box <%= isBlocked ? 'blocked' : '' %>">
+              <input type="checkbox" name="horas[]" value="<%= hourStr %>" <%=isBlocked ? '' : '' %> >
+              <span>
+                <%= hourStr %>
+              </span>
+            </label>
+            <% } %>
         </div>
       </div>
 
       <div style="margin-top: 20px;">
         <label for="detalle">Motivo / Observación (opcional):</label>
-        <textarea
-          name="detalle"
-          id="detalle"
-          rows="3"
-          class="textarea-styled"
+        <textarea name="detalle" id="detalle" rows="3" class="textarea-styled"
           placeholder="Ejemplo: Reunión, emergencia médica..."></textarea>
       </div>
 
-      <div style="margin-top: 20px;">
-        <button type="submit" class="btn--primary" onclick="handleSubmit('bloquear', event)">Bloquear Hora</button>
-        <button type="submit" class="btn--secondary" onclick="handleSubmit('desbloquear', event)">Desbloquear Hora</button>
+      <div class="btn-container">
+        <button type="submit" class="btn--primary" ...>Bloquear Hora</button>
+        <button type="submit" class="btn--secondary" ...>Desbloquear Hora</button>
       </div>
+
     </form>
   </div>
 
   <!-- Modal de mensaje -->
-<div id="modalMensaje" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="cerrarModal()">&times;</span>
-    <p id="mensajeTexto"></p>
+  <div id="modalMensaje" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <p id="mensajeTexto"></p>
+    </div>
   </div>
-</div>
 
 </div>
 
-<style>
-  .input-styled {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    margin-top: 8px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-  }
-
-  .input-styled:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-
-  .textarea-styled {
-    width: 100%;
-    padding: 10px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    resize: vertical;
-    transition: border-color 0.3s;
-    box-sizing: border-box;
-  }
-
-  .textarea-styled:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-
-  .hours-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
-    margin-top: 10px;
-  }
-
-  .hour-box {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #e0f7e9;
-    border: 2px solid #28a745;
-    color: #155724;
-    font-weight: bold;
-    padding: 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    user-select: none;
-  }
-
-  .hour-box input[type="checkbox"] {
-    display: none;
-  }
-
-  .hour-box input[type="checkbox"]:checked + span {
-    background-color: #28a745;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 6px;
-  }
-
-  .hour-box.blocked {
-    background-color: red;
-    color: white;
-    border-color: darkred; /* Cambia el borde a un rojo más oscuro */
-  }
-
-  .btn--primary {
-    padding: 10px 20px;
-    background-color: #007bff;
-    border: none;
-    color: white;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .btn--primary:hover {
-    background-color: #0056b3;
-  }
-
-  .btn--secondary {
-    padding: 10px 20px;
-    background-color: #dc3545;
-    border: none;
-    color: white;
-    font-weight: bold;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .btn--secondary:hover {
-    background-color: #c82333;
-  }
-
-  /* Modal */
-.modal {
-  display: none; 
-  position: fixed; 
-  z-index: 1000; 
-  padding-top: 100px; 
-  left: 0;
-  top: 0;
-  width: 100%; 
-  height: 100%; 
-  overflow: auto; 
-  background-color: rgba(0,0,0,0.4); 
-}
-
-/* Contenido del modal */
-.modal-content {
-  background-color: #fefefe;
-  margin: auto;
-  padding: 30px;
-  border: 1px solid #888;
-  width: 60%;
-  max-width: 400px;
-  border-radius: 12px;
-  text-align: center;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Animación suave */
-@keyframes fadeIn {
-  from {opacity: 0;}
-  to {opacity: 1;}
-}
-
-/* Botón de cerrar */
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  margin-top: -10px;
-  cursor: pointer;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-}
-
-</style>
 
 <script>
-    function handleSubmit(accion, event) {
-        event.preventDefault();
+  function handleSubmit(accion, event) {
+    event.preventDefault();
 
-        const mensaje =
-            accion === 'bloquear'
-                ? 'Horario bloqueado exitosamente'
-                : 'Horario desbloqueado exitosamente';
+    const mensaje =
+      accion === 'bloquear'
+        ? 'Horario bloqueado exitosamente'
+        : 'Horario desbloqueado exitosamente';
 
-        document.getElementById('accion').value = accion;
+    document.getElementById('accion').value = accion;
 
-        mostrarModal(mensaje);
+    mostrarModal(mensaje);
 
-        // Realizar la solicitud Fetch para bloquear o desbloquear el horario sin redirigir
-        fetch('/doctor/gestionar-horarios', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams(new FormData(document.getElementById('horarioForm'))),
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Data recibida desde el backend:', data); 
-                if (data.mensaje) {
-                    mostrarModal(mensaje);
-                    if (data.horarios) {
-                        actualizarCalendario(data.horarios);
-                    } else {
-                        console.error('No se recibieron horarios en la respuesta');
-                    }
+    // Realizar la solicitud Fetch para bloquear o desbloquear el horario sin redirigir
+    fetch('/doctor/gestionar-horarios', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams(new FormData(document.getElementById('horarioForm'))),
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Data recibida desde el backend:', data);
+        if (data.mensaje) {
+          mostrarModal(mensaje);
+          if (data.horarios) {
+            actualizarCalendario(data.horarios);
+          } else {
+            console.error('No se recibieron horarios en la respuesta');
+          }
 
-                    // Verificar si la respuesta contiene la información correcta para redirigir
-                    console.log('Mensaje:', data.mensaje); 
+          // Verificar si la respuesta contiene la información correcta para redirigir
+          console.log('Mensaje:', data.mensaje);
 
-                    // Redirigir a la página de horarios no disponibles después de la acción
-                    setTimeout(() => {
-                        window.location.href = '/doctor/horariosNoDisponibles';
-                    }, 1000);
-                }
-                console.log('Acción realizada:', accion); 
-                console.log('Data recibida:', data); 
-            })
-            .catch(error => {
-                console.error('Error al bloquear o desbloquear el horario:', error);
-            });
-    }
+          // Redirigir a la página de horarios no disponibles después de la acción
+          setTimeout(() => {
+            window.location.href = '/doctor/horariosNoDisponibles';
+          }, 1000);
+        }
+        console.log('Acción realizada:', accion);
+        console.log('Data recibida:', data);
+      })
+      .catch(error => {
+        console.error('Error al bloquear o desbloquear el horario:', error);
+      });
+  }
 
   // Función para actualizar el calendario con los horarios bloqueados
-  function actualizarCalendario(horarios) {   
+  function actualizarCalendario(horarios) {
     const horasBloqueadas = horarios.map(h => h.horaInicio);
     const elementosHoras = document.querySelectorAll('.hour-box');
     elementosHoras.forEach(elemento => {
@@ -291,20 +133,20 @@
   });
 
   function mostrarModal(mensaje) {
-  const modal = document.getElementById("modalMensaje");
-  const mensajeTexto = document.getElementById("mensajeTexto");
+    const modal = document.getElementById("modalMensaje");
+    const mensajeTexto = document.getElementById("mensajeTexto");
 
-  mensajeTexto.textContent = mensaje;
-  modal.style.display = "block";
+    mensajeTexto.textContent = mensaje;
+    modal.style.display = "block";
 
-  // Cerrar automáticamente después de 2 segundos
-  setTimeout(() => {
-    cerrarModal();
-  }, 2000);
-}
+    // Cerrar automáticamente después de 2 segundos
+    setTimeout(() => {
+      cerrarModal();
+    }, 2000);
+  }
 
-function cerrarModal() {
-  const modal = document.getElementById("modalMensaje");
-  modal.style.display = "none";
-}
+  function cerrarModal() {
+    const modal = document.getElementById("modalMensaje");
+    modal.style.display = "none";
+  }
 </script>

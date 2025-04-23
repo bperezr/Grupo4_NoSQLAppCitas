@@ -38,26 +38,14 @@
                                     <%= cita.pacienteId?.cedula %>
                                 </td>
                                 <td>
-                                    <%                                 
-                                      const d = new Date(cita.fechaHora);                       
-                                      const optsFecha = {
-                                        weekday: 'long',
-                                        day:     'numeric',
-                                        month:   'long',
-                                        year:    'numeric',
-                                        timeZone:'America/Costa_Rica'
-                                      };                                   
-                                      const optsHora = {
-                                        hour:   '2-digit',
-                                        minute: '2-digit',
-                                        timeZone: 'America/Costa_Rica'
-                                      };                               
-                                      let fechaStr = d.toLocaleDateString('es-CR', optsFecha);                                     
-                                      fechaStr = fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1);
-                                      const horaStr  = d.toLocaleTimeString('es-CR', optsHora);
-                                    %>
-                                    <%= `${fechaStr}, ${horaStr}` %>
-                                  </td>
+                                    <% const d=new Date(cita.fechaHora); const optsFecha={ weekday: 'long' ,
+                                        day: 'numeric' , month: 'long' , year: 'numeric' , timeZone:'America/Costa_Rica'
+                                        }; const optsHora={ hour: '2-digit' , minute: '2-digit' ,
+                                        timeZone: 'America/Costa_Rica' }; let fechaStr=d.toLocaleDateString('es-CR',
+                                        optsFecha); fechaStr=fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1); const
+                                        horaStr=d.toLocaleTimeString('es-CR', optsHora); %>
+                                        <%= `${fechaStr}, ${horaStr}` %>
+                                </td>
                                 <td>
                                     <%= cita.motivo || '---' %>
                                 </td>
@@ -122,17 +110,15 @@
                     <h3 class="detalle__titulo">🩺 Información de la Cita</h3>
                     <p><strong>Hora:</strong> <span id="detalleCitaHora"></span></p>
                     <p><strong>Motivo:</strong> <span id="detalleCitaMotivo"></span></p>
-                    <p><strong>Notas:</strong> <span id="detalleCitaNotas"></span></p>
+                    <p><strong>Nota del Doctor:</strong> <span id="detalleCitaNotas"></span></p>
                     <p><strong>Estado:</strong> <span id="detalleCitaEstado"></span></p>
-                </section>
-
-                <section class="detalle__seccion">
-                    <h3 class="detalle__titulo">📌 Especialidad y Sucursal</h3>
+                    <br>
+                    <h3 class="detalle__titulo">📌 Medico</h3>
+                    <p><strong>Doctor:</strong> <span id="detalleCitaDoctorNombre"></span></p>
+                    <p><strong>Correo:</strong> <span id="detalleCitaDoctorCorreo"></span></p>
                     <p><strong>Especialidad:</strong> <span id="detalleCitaEspecialidad"></span></p>
                     <p><strong>Sucursal:</strong> <span id="detalleCitaSucursal"></span></p>
-                </section>
-
-                <section class="detalle__seccion">
+                    <br>
                     <h3 class="detalle__titulo">🧾 Recetas Asociadas</h3>
                     <div id="detalleCitaRecetas">
                         <p style="color:#777;">No hay recetas para esta cita.</p>
@@ -195,7 +181,7 @@
                 document.getElementById("detallePacienteNacimiento").textContent = '---';
             }
 
-            //Cita
+            // Cita
             const horaLocal = new Date(cita.fechaHora).toLocaleTimeString('es-CR', {
                 timeZone: 'America/Costa_Rica',
                 hour: '2-digit',
@@ -205,6 +191,16 @@
             document.getElementById("detalleCitaMotivo").textContent = cita.motivo || '---';
             document.getElementById("detalleCitaNotas").textContent = cita.notas || '---';
             document.getElementById("detalleCitaEstado").textContent = cita.estado || '---';
+
+            // Doctor
+            if (cita.doctorId) {
+                const nombreCompletoDoctor = `${cita.doctorId.nombre || ''} ${cita.doctorId.apellidos || ''}`.trim();
+                document.getElementById("detalleCitaDoctorNombre").textContent = nombreCompletoDoctor || '---';
+                document.getElementById("detalleCitaDoctorCorreo").textContent = cita.doctorId.email || '---';
+            } else {
+                document.getElementById("detalleCitaDoctorNombre").textContent = '---';
+                document.getElementById("detalleCitaDoctorCorreo").textContent = '---';
+            }
 
             // Especialidad Sucursal
             document.getElementById("detalleCitaEspecialidad").textContent = cita.nombreEspecialidad || '---';

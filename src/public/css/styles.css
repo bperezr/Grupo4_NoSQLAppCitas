@@ -49,7 +49,6 @@
 html {
     font-family: "Rubik", serif;
     line-height: 1.5rem;
-    color: var(--primary-text-clr);
     background-color: var(--primary-clr);
 }
 
@@ -792,16 +791,16 @@ input:checked+.slider:before {
     color: white;
 }
 
-  .borderCalendario{
-  border-left: 2px solid var(--c-gray-200);
-  }
+.borderCalendario {
+    border-left: 2px solid var(--c-gray-200);
+}
 
 .tituloAgenda {
     color: var(--primary-clr) !important;
 
 }
 
-.calendar-container { 
+.calendar-container {
     display: block;
     align-items: center;
     background-color: var(--secondary-clr);
@@ -817,11 +816,11 @@ input:checked+.slider:before {
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 50px);   
-    grid-auto-rows: 60px;                     
-    gap: 6px;                               
-    margin: 0 auto;             
-  }
+    grid-template-columns: repeat(7, 50px);
+    grid-auto-rows: 60px;
+    gap: 6px;
+    margin: 0 auto;
+}
 
 .calendar-cell {
     padding: 10px;
@@ -829,27 +828,27 @@ input:checked+.slider:before {
     border-radius: 6px;
     background-color: var(--primary-clr);
     cursor: pointer;
-    line-height: 60px;       
+    line-height: 60px;
     font-size: 1.1rem;
     text-align: center;
     border-radius: 6px;
     cursor: pointer;
-  user-select: none;
-  transition: background .2s, transform .1s;
-  }
+    user-select: none;
+    transition: background .2s, transform .1s;
+}
 
-  .calendar-cell:hover {
+.calendar-cell:hover {
     background: #666;
     transform: translateY(-2px);
-  }
+}
 
 .calendar-cell.disabled {
-    background-color: #e0e0e0;   
-    color:            #a0a0a0;
-    cursor:           not-allowed;
-    pointer-events:   none; 
-    opacity:          0.6;
-  }
+    background-color: #e0e0e0;
+    color: #a0a0a0;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.6;
+}
 
 .calendar-cell.selected {
     background-color: #00aaff;
@@ -858,11 +857,11 @@ input:checked+.slider:before {
 
 .calendar-cell.disabled:hover {
     background-color: #e0e0e0;
-  }
+}
 
 .calendar-cell.today:not(.disabled) {
     border: 2px solid #005f9e;
-  }
+}
 
 .time-slot-container {
     background-color: var(--secondary-clr);
@@ -940,9 +939,10 @@ input:checked+.slider:before {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-  }
-  
-  .calendar-container, .time-slot-container {
+}
+
+.calendar-container,
+.time-slot-container {
     background-color: var(--c-gray-300);
     padding: 1rem;
     border-radius: 8px;
@@ -1068,15 +1068,15 @@ input:checked+.slider:before {
 
 /*------------------------------------------------------------- Cita form*/
 
-.containerCitas{
-display: flex;
-margin-right: 0.5rem;  
+.containerCitas {
+    display: flex;
+    margin-right: 0.5rem;
 }
 
 
-.btnBuscar{
-background: var(--primary-clr) !important;
-color:var(--white-clr)
+.btnBuscar {
+    background: var(--primary-clr) !important;
+    color: var(--white-clr)
 }
 
 
@@ -1407,4 +1407,181 @@ select:focus {
 
 .btn-eliminar-receta:hover {
     background-color: #e53935;
+}
+
+/* ===================== ESTILOS DE Horarios no disponibles ===================== */
+
+.hour-box input[type="checkbox"]:checked+span {
+    background-color: #28a745;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    box-shadow: 0 0 0 2px white inset;
+}
+
+.card--principal form>div {
+    margin-bottom: 16px;
+}
+
+@media (max-width: 480px) {
+
+    .btn--primary,
+    .btn--secondary {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+.input-styled {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-top: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.input-styled:focus {
+    border-color: var(--primary-text-clr);
+    outline: none;
+}
+
+.textarea-styled {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    resize: vertical;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.textarea-styled:focus {
+    border-color: var(--primary-text-clr);
+    outline: none;
+}
+
+.hours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.hour-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e0f7e9;
+    color: #155724;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    user-select: none;
+}
+
+.hour-box input[type="checkbox"] {
+    display: none;
+}
+
+.hour-box input[type="checkbox"]:checked+span {
+    background-color: var(--c-success);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+.hour-box.blocked {
+    background-color: var(--secondary-clr);
+    color: white;
+    border-color: none;
+    /* Cambia el borde a un rojo más oscuro */
+}
+
+.btn--primary {
+    padding: 10px 20px;
+    background-color: var(--primary-text-clr);
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn--primary:hover {
+    background-color: var(--primary-clr);
+}
+
+.btn--secondary {
+    padding: 10px 20px;
+    background-color: var(--c-danger);
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn--secondary:hover {
+    background-color: #c82333;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Contenido del modal */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #888;
+    width: 60%;
+    max-width: 400px;
+    border-radius: 12px;
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animación suave */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Botón de cerrar */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: -10px;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
 }

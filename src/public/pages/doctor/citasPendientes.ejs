@@ -38,26 +38,14 @@
                                     <%= cita.pacienteId?.cedula %>
                                 </td>
                                 <td>
-                                    <%                                 
-                                      const d = new Date(cita.fechaHora);                       
-                                      const optsFecha = {
-                                        weekday: 'long',
-                                        day:     'numeric',
-                                        month:   'long',
-                                        year:    'numeric',
-                                        timeZone:'America/Costa_Rica'
-                                      };                                   
-                                      const optsHora = {
-                                        hour:   '2-digit',
-                                        minute: '2-digit',
-                                        timeZone: 'America/Costa_Rica'
-                                      };                               
-                                      let fechaStr = d.toLocaleDateString('es-CR', optsFecha);                                     
-                                      fechaStr = fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1);
-                                      const horaStr  = d.toLocaleTimeString('es-CR', optsHora);
-                                    %>
-                                    <%= `${fechaStr}, ${horaStr}` %>
-                                  </td>
+                                    <% const d=new Date(cita.fechaHora); const optsFecha={ weekday: 'long' ,
+                                        day: 'numeric' , month: 'long' , year: 'numeric' , timeZone:'America/Costa_Rica'
+                                        }; const optsHora={ hour: '2-digit' , minute: '2-digit' ,
+                                        timeZone: 'America/Costa_Rica' }; let fechaStr=d.toLocaleDateString('es-CR',
+                                        optsFecha); fechaStr=fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1); const
+                                        horaStr=d.toLocaleTimeString('es-CR', optsHora); %>
+                                        <%= `${fechaStr}, ${horaStr}` %>
+                                </td>
                                 <td>
                                     <%= cita.motivo || '---' %>
                                 </td>

@@ -1,103 +1,259 @@
-<div class="content">
-    <div class="content__title">
-        <h1>Historial citas</h1>
+<% const hoyCR=new Date().toLocaleDateString('es-CR', { timeZone: 'America/Costa_Rica' , year: 'numeric' , month: 'long'
+    , day: 'numeric' }); %>
+
+    <div class="content">
+        <div class="content__title">
+            <h1>Historial Citas – <%= hoyCR %>
+            </h1>
+        </div>
+
+        <section class="main__container">
+            <div class="table-container table-responsive">
+                <table id="tablaCitasDoctor" class="display compact nowrap" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th class="table-drop"></th>
+                            <th>PACIENTE</th>
+                            <th>CÉDULA</th>
+                            <th>FECHA HORA</th>
+                            <th>MOTIVO</th>
+                            <th>ESPECIALIDAD</th>
+                            <th>ESTADO</th>
+                            <th class="text-center">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% citas.forEach(cita=> { %>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <strong>
+                                        <%= cita.pacienteId?.nombre %>
+                                            <%= cita.pacienteId?.apellido %>
+                                    </strong><br>
+                                    <i class="fa-solid fa-phone" style="margin-right: 5px;"></i>
+                                    <%= cita.pacienteId?.telefono %>
+                                </td>
+                                <td>
+                                    <%= cita.pacienteId?.cedula %>
+                                </td>
+                                <td>
+                                    <% const d=new Date(cita.fechaHora); const optsFecha={ weekday: 'long' ,
+                                        day: 'numeric' , month: 'long' , year: 'numeric' , timeZone:'America/Costa_Rica'
+                                        }; const optsHora={ hour: '2-digit' , minute: '2-digit' ,
+                                        timeZone: 'America/Costa_Rica' }; let fechaStr=d.toLocaleDateString('es-CR',
+                                        optsFecha); fechaStr=fechaStr.charAt(0).toUpperCase() + fechaStr.slice(1); const
+                                        horaStr=d.toLocaleTimeString('es-CR', optsHora); %>
+                                        <%= `${fechaStr}, ${horaStr}` %>
+                                </td>
+                                <td>
+                                    <%= cita.motivo || '---' %>
+                                </td>
+                                <td>
+                                    <%= cita.nombreEspecialidad || '---' %>
+                                </td>
+                                <td>
+                                    <% if (cita.estado==='pendiente' ) { %>
+                                        🟡 Pendiente
+                                        <% } else if (cita.estado==='confirmada' ) { %>
+                                            🔵 Confirmada
+                                            <% } else if (cita.estado==='cancelada' ) { %>
+                                                🔴 Cancelada
+                                                <% } else if (cita.estado==='completada' ) { %>
+                                                    🟢 Completada
+                                                    <% } %>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn__icon" title="Ver detalles"
+                                        data-cita='<%- JSON.stringify(cita) %>' onclick="abrirModalDetallesCita(this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
-    <section class="main__container">
-        <div class="table-container">
-            <table id="tblCitas" class="display compact nowrap" style="width:100%"> 
-                <thead>
-                    <tr>
-                        <th>Doctor</th>
-                        <th>Paciente</th>
-                        <th>Sucursal</th>
-                        <th>Fecha y hora</th>
-                        <th>Estado</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% item.forEach(citas => { %>
-                        <tr>
-                          <td><%= citas.doctor %></td>
-                          <td><%= citas.paciente %></td>
-                          <td><%= citas.sucursal %></td>
-                          <td><%= citas.fechaHora %></td>
-                          <td>
-                            <% if (citas.estado==='pendiente' ) { %>
-                                🟡 Pendiente
-                                <% } else if (citas.estado==='confirmada' ) { %>
-                                    🔵Confirmada
-                                    <% } else if (citas.estado==='cancelada' ) { %>
-                                        🔴 Cancelada
-                                        <% } else if (citas.estado==='completada' ) { %>
-                                            🟢 Completada
-                                            <% } %>
-                        </td>
-                          <td> 
-                            <button class="btn__icon" title="Editar">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>                     
-                          </td>
-                        </tr>
-                      <% }) %>
-                </tbody>
-            </table>
+    <!-- Modal para ver detalles de la cita -->
+    <div id="modalDetallesCita" class="modal">
+        <div class="modal__content modal__content--detalles">
+            <span class="modal__close" onclick="cerrarModalDetallesCita()">&times;</span>
+            <h2 class="modal__title">📋 Detalles de la Cita</h2>
+
+            <div class="modal__info">
+                <!-- 🧍 Paciente -->
+                <section class="detalle__seccion">
+                    <h3 class="detalle__titulo">🧍 Paciente</h3>
+                    <p><strong>Nombre:</strong> <span id="detallePacienteNombre"></span></p>
+                    <p><strong>Teléfono:</strong> <span id="detallePacienteTelefono"></span></p>
+                    <p><strong>Cédula:</strong> <span id="detallePacienteCedula"></span></p>
+                    <p><strong>Email:</strong> <span id="detallePacienteEmail"></span></p>
+                    <p><strong>Dirección:</strong> <span id="detallePacienteDireccion"></span></p>
+                    <p><strong>Fecha Nacimiento:</strong> <span id="detallePacienteNacimiento"></span></p>
+                </section>
+
+
+                <section class="detalle__seccion">
+                    <h3 class="detalle__titulo">🩺 Información de la Cita</h3>
+                    <p><strong>Hora:</strong> <span id="detalleCitaHora"></span></p>
+                    <p><strong>Motivo:</strong> <span id="detalleCitaMotivo"></span></p>
+                    <p><strong>Nota del Doctor:</strong> <span id="detalleCitaNotas"></span></p>
+                    <p><strong>Estado:</strong> <span id="detalleCitaEstado"></span></p>
+                    <br>
+                    <h3 class="detalle__titulo">📌 Medico</h3>
+                    <p><strong>Doctor:</strong> <span id="detalleCitaDoctorNombre"></span></p>
+                    <p><strong>Correo:</strong> <span id="detalleCitaDoctorCorreo"></span></p>
+                    <p><strong>Especialidad:</strong> <span id="detalleCitaEspecialidad"></span></p>
+                    <p><strong>Sucursal:</strong> <span id="detalleCitaSucursal"></span></p>
+                    <br>
+                    <h3 class="detalle__titulo">🧾 Recetas Asociadas</h3>
+                    <div id="detalleCitaRecetas">
+                        <p style="color:#777;">No hay recetas para esta cita.</p>
+                    </div>
+                </section>
+            </div>
         </div>
-    </section>
-</div>
+    </div>
 
-<script>
+    <script>
 
-document.addEventListener('DOMContentLoaded', function () {
-        if ($.fn.DataTable.isDataTable('#tblCitas')) {
-            $('#tblCitas').DataTable().clear().destroy();
+        // Inicializar el DataTable
+        document.addEventListener('DOMContentLoaded', function () {
+            if ($.fn.DataTable.isDataTable('#tablaCitasDoctor')) {
+                $('#tablaCitasDoctor').DataTable().clear().destroy();
+            }
+
+            $('#tablaCitasDoctor').DataTable({
+                responsive: {
+                    details: {
+                        type: 'column',
+                        target: 0
+                    }
+                },
+                columnDefs: [
+                    {
+                        className: 'control',
+                        orderable: false,
+                        targets: 0
+                    }
+                ],
+                order: [3, 'desc'],
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
+                }
+            });
+
+        });
+
+        function abrirModalDetallesCita(btn) {
+            const cita = JSON.parse(btn.getAttribute('data-cita'));
+
+            //Paciente
+            document.getElementById("detallePacienteNombre").textContent =
+                `${cita.pacienteId?.nombre || '---'} ${cita.pacienteId?.apellido || ''}`;
+            document.getElementById("detallePacienteTelefono").textContent = cita.pacienteId?.telefono || '---';
+            document.getElementById("detallePacienteCedula").textContent = cita.pacienteId?.cedula || '---';
+            document.getElementById("detallePacienteEmail").textContent = cita.pacienteId?.email || '---';
+            document.getElementById("detallePacienteDireccion").textContent = cita.pacienteId?.direccion || '---';
+
+            if (cita.pacienteId?.fechaNacimiento) {
+                const nacimiento = new Date(cita.pacienteId.fechaNacimiento).toLocaleDateString('es-CR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    timeZone: 'America/Costa_Rica'
+                });
+                document.getElementById("detallePacienteNacimiento").textContent = nacimiento;
+            } else {
+                document.getElementById("detallePacienteNacimiento").textContent = '---';
+            }
+
+            // Cita
+            const horaLocal = new Date(cita.fechaHora).toLocaleTimeString('es-CR', {
+                timeZone: 'America/Costa_Rica',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            document.getElementById("detalleCitaHora").textContent = horaLocal;
+            document.getElementById("detalleCitaMotivo").textContent = cita.motivo || '---';
+            document.getElementById("detalleCitaNotas").textContent = cita.notas || '---';
+            document.getElementById("detalleCitaEstado").textContent = cita.estado || '---';
+
+            // Doctor
+            if (cita.doctorId) {
+                const nombreCompletoDoctor = `${cita.doctorId.nombre || ''} ${cita.doctorId.apellidos || ''}`.trim();
+                document.getElementById("detalleCitaDoctorNombre").textContent = nombreCompletoDoctor || '---';
+                document.getElementById("detalleCitaDoctorCorreo").textContent = cita.doctorId.email || '---';
+            } else {
+                document.getElementById("detalleCitaDoctorNombre").textContent = '---';
+                document.getElementById("detalleCitaDoctorCorreo").textContent = '---';
+            }
+
+            // Especialidad Sucursal
+            document.getElementById("detalleCitaEspecialidad").textContent = cita.nombreEspecialidad || '---';
+            document.getElementById("detalleCitaSucursal").textContent = cita.sucursalNombre || '---';
+
+
+            // modal
+            document.getElementById("modalDetallesCita").style.display = "block";
+
+            // Recetas
+            const contenedorRecetas = document.getElementById("detalleCitaRecetas");
+            contenedorRecetas.innerHTML = ''; // Limpia contenido previo
+
+            if (cita.recetas && cita.recetas.length > 0) {
+                let html = cita.recetas.map(receta => {
+                    const medicamentos = receta.medicamentos.map(med =>
+                        `• ${med.medicamentoId?.nombre || '---'} – Cantidad: ${med.cantidad}`
+                    ).join('<br>');
+
+                    return `
+            <div style="border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 10px; background: #f9f9f9;">
+                <p><strong>Estado:</strong> ${receta.estado}</p>
+                <p><strong>Notas:</strong> ${receta.notas || '---'}</p>
+                <p><strong>Fecha:</strong> ${new Date(receta.fechaEntrega).toLocaleString('es-CR')}</p>
+                <p><strong>Medicamentos:</strong><br>${medicamentos}</p>
+            </div>
+        `;
+                }).join("");
+
+                contenedorRecetas.innerHTML = html;
+            } else {
+                contenedorRecetas.innerHTML = '<p style="color:#999;">No hay recetas asociadas a esta cita.</p>';
+            }
+
         }
 
-    $(document).ready(function () {
-      $('#tblCitas').DataTable({
-        responsive: true,
-        scrollX: true,  
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-        },
-        columns: [
-    { data: 'doctor'    },
-    { data: 'paciente'  },
-    { data: 'sucursal'  },
-    {
-      data: 'fechaHora',
-      render: function (val) {
-        if (!val) return '';
-        const d = new Date(val);
-        const fecha = d.toLocaleDateString('es-ES', {
-          weekday: 'long',
-          year:    'numeric',
-          month:   'long',
-          day:     'numeric'
+        function cerrarModalDetallesCita() {
+            document.getElementById("modalDetallesCita").style.display = "none";
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // ✅ Cita atendida
+            if (urlParams.get('atendida') === '1') {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Cita completada!',
+                    text: 'La atención se ha guardado correctamente.',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+
+            // ✅ Cita cancelada
+            if (urlParams.get('cancelada') === '1') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Cita cancelada',
+                    text: 'La cita fue marcada como cancelada.',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
         });
-        const hora  = d.toLocaleTimeString('es-ES', {
-          hour:   '2-digit',
-          minute: '2-digit'
-        }); 
-        return fecha.charAt(0).toUpperCase() + fecha.slice(1) + ', ' + hora;
-      }
-    },
-    { data: 'estado'  },
-    { data: 'accion'  },
-    ]
-      });
-    });
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('creada') === '1') {
-      Swal.fire({
-        icon: 'success',
-        title: '¡Cita registrada correctamente!',
-        showConfirmButton: false,
-        timer: 2000
-      });
-    }
-})
-
-</script>
+    </script>

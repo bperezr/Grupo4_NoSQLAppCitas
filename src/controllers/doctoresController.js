@@ -45,7 +45,7 @@ exports.listar = async (req, res) => {
 exports.listarDoctoresPorEspecialidad = async (req, res) => {
     try {
         const { especialidad, sucursal } = req.params;
-        
+
         if (!especialidad) {
             return res.status(400).json({ error: 'Falta el parámetro especialidad' });
         }
@@ -206,6 +206,7 @@ exports.eliminar = async (req, res) => {
     }
 };
 
+
 // ------------------------------------------------ Controladores para rol de doctor
 
 exports.vistaDashboard = async (req, res) => {
@@ -304,7 +305,7 @@ exports.vistaCitasPendientes = async (req, res) => {
             $or: [
                 { estado: 'pendiente' },
                 { estado: 'confirmada' }
-              ]
+            ]
         })
             .populate('pacienteId', 'nombre apellido cedula telefono email direccion fechaNacimiento')
             .populate({
@@ -375,11 +376,12 @@ exports.vistaHistorialCitas = async (req, res) => {
             $and: [
                 { estado: { $ne: 'pendiente' } },
                 { estado: { $ne: 'confirmada' } }
-              ] 
+            ]
         })
             .populate('pacienteId', 'nombre apellido cedula telefono email direccion fechaNacimiento')
             .populate({
                 path: 'doctorId',
+                select: 'nombre apellidos email',
                 populate: {
                     path: 'sucursalId',
                     select: 'nombre direccion telefono'
