@@ -37,7 +37,7 @@ exports.crear = async (req, res) => {
       ...req.body,
       sucursalId: new ObjectId(req.body.sucursalId),
       fechaIngreso: new Date(),
-      activo: req.body.activo === 'true' || req.body.activo === true
+      activo: true
     };
 
     const item = await medicamentosService.crearMedicamento(data);
@@ -102,26 +102,6 @@ exports.eliminar = async (req, res) => {
   }
 };
 
-exports.obtenerPorSucursal = async (req, res) => {
-  try {
-    const { sucursalId } = req.query;
-
-    if (!sucursalId) {
-      return res.status(400).json({ error: 'El parámetro sucursalId es obligatorio.' });
-    }
-
-    const medicamentos = await Medicamento.find({
-      sucursalId,
-      activo: true
-    });
-
-    res.json(medicamentos);
-  } catch (error) {
-    console.error('Error al obtener medicamentos por sucursal:', error);
-    res.status(500).json({ error: 'Error interno del servidor.' });
-  }
-};
-
 //------------------------------------------------------- Listar medicamentos por sucursal
 
 exports.listarPorSucursal = async (req, res) => {
@@ -160,7 +140,7 @@ exports.crearPorSucursal = async (req, res) => {
       ...req.body,
       sucursalId: new ObjectId(idSucursal),
       fechaIngreso: new Date(),
-      activo: req.body.activo === 'true' || req.body.activo === true
+      activo: true
     };
 
     const item = await Medicamento.create(data);
