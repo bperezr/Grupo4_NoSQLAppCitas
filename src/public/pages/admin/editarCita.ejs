@@ -161,6 +161,70 @@
 
   <script>
 
+document.addEventListener('DOMContentLoaded', () => {
+    const selectEsp = document.getElementById('especialidad');
+
+    fetch('/admin/especialidades/listar')
+      .then(res => {
+        if (!res.ok) throw new Error('No fue posible cargar especialidades');
+        return res.json();
+      })
+      .then(especialidades => {
+        especialidades.forEach(e => {
+          const opt = document.createElement('option');
+          opt.value = e._id;
+          opt.textContent = e.nombreEspecialidad;
+          selectEsp.appendChild(opt);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+
+      });
+  });
+
+  let sucursalId = "";
+
+  document.getElementById('sucursalId').addEventListener('change', function () {
+    sucursalId = this.value;
+    console.log('Sucursal elegida:', sucursalId);
+  });
+
+
+  document.getElementById('especialidad').addEventListener('change', function () {
+    const especialidadId = this.value;
+    const doctorSelect = document.getElementById('doctorSelect');
+
+    doctorSelect.innerHTML = '<option value="">Cargando doctores…</option>';
+
+    if (!especialidadId) {
+      doctorSelect.innerHTML = '<option value="">Seleccione una especialidad </option>';
+      return;
+    }
+
+    fetch(`/admin/doctores/listar/${especialidadId}/${sucursalId}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Error al cargar doctores');
+        return res.json();
+      })
+      .then(doctores => {
+        if (!doctores || doctores.length === 0) {
+          doctorSelect.innerHTML = '<option value="">No hay doctores para esta especialidad</option>';
+          return;
+        }
+
+        let options = '<option value="">Seleccione un doctor</option>';
+        doctores.forEach(doc => {
+          options += `<option value="${doc._id}">${doc.nombre} ${doc.apellidos}</option>`;
+        });
+        doctorSelect.innerHTML = options;
+      })
+      .catch(err => {
+        console.error(err);
+        doctorSelect.innerHTML = '<option value="">No fue posible cargar doctores</option>';
+      });
+  });
+
     const fechaHoraInput = document.getElementById('fechaHoraInput');
 
     function actualizarFechaHora() {
