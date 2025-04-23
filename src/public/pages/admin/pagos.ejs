@@ -4,8 +4,8 @@
     </div>
 
     <section class="main__container">
-        <div class="table-container">
-            <table id="tablaPagos" class="display compact nowrap" style="width:100%">
+        <div class="table-container table-responsive">
+            <table id="tablaPagos" class="display  style="width:100%">
                 <thead>
                     <tr>
                         <th>Email Paciente</th>
@@ -52,16 +52,29 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+ document.addEventListener('DOMContentLoaded', function () {
         if ($.fn.DataTable.isDataTable('#tablaPagos')) {
             $('#tablaPagos').DataTable().clear().destroy();
         }
 
         $('#tablaPagos').DataTable({
+            responsive: {
+                details: {
+                    type: 'column',
+                    target: 0
+                }
+            },
+            columnDefs: [
+                {
+                    className: 'control',
+                    orderable: false,
+                    targets: 0
+                }
+            ],
+            order: [3, 'desc'],
             language: {
                 url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json'
-            },
-            responsive: true
+            }
         });
     });
 </script>
